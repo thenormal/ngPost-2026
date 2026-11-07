@@ -29,6 +29,8 @@ class QFileInfo;
 namespace Ui {
 class AutoPostWidget;
 }
+class QLabel;
+class QPushButton;
 
 class AutoPostWidget : public QWidget
 {
@@ -38,6 +40,18 @@ private:
     MainWindow         *_hmi;
     NgPost             *_ngPost;
     bool                _isMonitoring;
+
+    // ngPost 2026 layout (built in code over the widgets of the .ui)
+    QLabel             *_filesTitle;
+    QLabel             *_sourceTitle;
+    QLabel             *_archiveTitle;
+    QLabel             *_advancedTitle;
+    QLabel             *_monitorTitle;
+    QWidget            *_advancedCard;
+    QPushButton        *_advancedToggle;
+    bool                _showAdvanced;
+    void _buildLayout();
+    void _retranslateLayout();
     int                 _currentPostIdx;
 
     static constexpr int sCompletedRole = Qt::UserRole + 1; //!< set on the items uploaded without error

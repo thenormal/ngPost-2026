@@ -203,6 +203,7 @@ private:
     QFrame *_card(const QString &key, QGridLayout *&grid);
     void _retranslateShell();
     void _fixIconButtons();
+    void _adaptIcons();
     void _updateThemeButton();
     static QIcon _navIcon(const QString &path, const QColor &normal, const QColor &checked);
 

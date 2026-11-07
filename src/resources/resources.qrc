@@ -53,6 +53,8 @@
         <file>icons/down.png</file>
         <file>icons/down_dark.png</file>
         <file>icons/check.png</file>
+        <file>icons/tab_close.png</file>
+        <file>icons/tab_close_dark.png</file>
         <file>icons/check_dark.png</file>
     </qresource>
 </RCC>

@@ -91,11 +91,20 @@ void SignedListWidget::_updateEmptyState()
 
 void SignedListWidget::_placeEmptyState()
 {
+    // when the list is small, the logo then the title are hidden so the help and the buttons stay readable
     QSize area = viewport()->size();
-    int width  = qMin(area.width() - 20, 460);
-    int height = qMin(area.height(), _emptyState->layout()->heightForWidth(width) > 0 ?
-                                         _emptyState->layout()->heightForWidth(width) :
-                                         _emptyState->sizeHint().height());
+    int width  = qMax(0, qMin(area.width() - 20, 460));
+    _emptyLogo->show();
+    _emptyTitle->show();
+    auto neededHeight = [this, width]() {
+        int h = _emptyState->layout()->hasHeightForWidth() ? _emptyState->layout()->heightForWidth(width) : -1;
+        return h > 0 ? h : _emptyState->layout()->sizeHint().height();
+    };
+    if (neededHeight() > area.height())
+        _emptyLogo->hide();
+    if (neededHeight() > area.height())
+        _emptyTitle->hide();
+    int height = qMin(area.height(), neededHeight());
     _emptyState->setGeometry((area.width() - width) / 2, qMax(0, (area.height() - height) / 2), width, height);
 }
 

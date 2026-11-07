@@ -151,6 +151,15 @@ void MainWindow::init(NgPost *ngPost)
     connect(tabBar, &QWidget::customContextMenuRequested, this, &MainWindow::onTabContextMenu);
     connect(tabBar, &QTabBar::tabCloseRequested,          this, &MainWindow::onCloseJob);
     _ui->postTabWidget->setTabsClosable(true);
+    // the Quick Post, Auto Posting and New tabs can't be closed: no close button
+    for (int i = 0; i < 3; ++i)
+    {
+        if (QWidget *closeButton = tabBar->tabButton(i, QTabBar::RightSide))
+        {
+            tabBar->setTabButton(i, QTabBar::RightSide, nullptr);
+            closeButton->deleteLater();
+        }
+    }
     _ui->postTabWidget->installEventFilter(this);
 //    _ui->postTabWidget->setCurrentIndex(1);
 
@@ -1182,6 +1191,8 @@ void MainWindow::_buildShell()
     _postsTitle = newLabel("pageTitle", postsPage);
     postsLayout->addWidget(_postsTitle);
     _ui->fileBox->setTitle(QString());
+    _ui->fileBox->setObjectName("plainBox"); // the cards are inside the posts
+    _ui->fileBox->layout()->setContentsMargins(0, 0, 0, 0);
     _ui->postSplitter->setParent(postsPage);
     _ui->postSplitter->setOrientation(Qt::Vertical); // the post takes the whole width, the log below
     _ui->postSplitter->setHandleWidth(10);
@@ -1414,6 +1425,7 @@ void MainWindow::onThemeApplied()
     for (int i = 0; i < 4; ++i)
         _navButtons[i]->setIcon(_navIcon(icons[i], normal, checked));
     _themeButton->setIcon(_navIcon(":/icons/nav_theme.png", normal, checked));
+    _adaptIcons();
     _aboutButton->setIcon(_navIcon(":/icons/nav_about.png", normal, checked));
     _updateThemeButton();
 }
@@ -1465,6 +1477,62 @@ void MainWindow::onThemeButtonClicked()
     _themeCB->setCurrentIndex((_themeCB->currentIndex() + 1) % 3);
 }
 
+// the black icons of the original ngPost (trash, pause, file...) are lightened on the dark theme
+void MainWindow::_adaptIcons()
+{
+    if (!_ngPost)
+        return;
+    bool dark = _ngPost->isDarkTheme();
+    for (QAbstractButton *b : findChildren<QAbstractButton*>())
+    {
+        if (b->objectName() == "navButton")
+            continue;
+        QVariant orig = b->property("ngOrigIcon");
+        if (!orig.isValid())
+        {
+            if (b->icon().isNull())
+                continue;
+            // keep only the icons that are black/grey (no colour)
+            QImage img = b->icon().pixmap(32, 32).toImage().convertToFormat(QImage::Format_ARGB32);
+            bool mono = true, hasPixel = false;
+            for (int y = 0; y < img.height() && mono; ++y)
+                for (int x = 0; x < img.width(); ++x)
+                {
+                    QColor c = QColor::fromRgba(img.pixel(x, y));
+                    if (c.alpha() < 40)
+                        continue;
+                    hasPixel = true;
+                    if (c.hsvSaturation() > 40 || c.lightness() > 110)
+                    {
+                        mono = false;
+                        break;
+                    }
+                }
+            if (!mono || !hasPixel)
+            {
+                b->setProperty("ngOrigIcon", QIcon());
+                continue;
+            }
+            b->setProperty("ngOrigIcon", b->icon());
+            orig = b->property("ngOrigIcon");
+        }
+        QIcon icon = orig.value<QIcon>();
+        if (icon.isNull())
+            continue; // not a black icon
+        if (!dark)
+            b->setIcon(icon);
+        else
+        {
+            QPixmap pix = icon.pixmap(64, 64);
+            QPainter p(&pix);
+            p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+            p.fillRect(pix.rect(), QColor("#d6d6d6"));
+            p.end();
+            b->setIcon(QIcon(pix));
+        }
+    }
+}
+
 void MainWindow::_fixIconButtons()
 {
     // the small "..." buttons (choose a file or a folder) become folder icons
@@ -1482,4 +1550,5 @@ void MainWindow::_fixIconButtons()
             }
         }
     }
+    _adaptIcons();
 }

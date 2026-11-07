@@ -35,9 +35,12 @@ AutoPostWidget::AutoPostWidget(NgPost *ngPost, MainWindow *hmi) :
     _hmi(hmi),
     _ngPost(ngPost),
     _isMonitoring(false),
-    _currentPostIdx(1)
+    _currentPostIdx(1),
+    _filesTitle(nullptr), _sourceTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
+    _monitorTitle(nullptr), _advancedCard(nullptr), _advancedToggle(nullptr), _showAdvanced(false)
 {
     _ui->setupUi(this);
+    _buildLayout();
     _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose the folder to scan: each file or folder becomes a post."),
                                   tr("Select Files"), tr("Choose a folder to scan"));
     connect(_ui->filesList, &SignedListWidget::emptyAction1, this, &AutoPostWidget::onSelectFilesClicked);
@@ -96,6 +99,7 @@ void AutoPostWidget::init()
 
     connect(_ui->postButton,   &QAbstractButton::clicked, this,    &AutoPostWidget::onGenQuickPosts);
     connect(_ui->aboutButton,  &QAbstractButton::clicked, _ngPost, &NgPost::onAboutClicked);
+    _ui->aboutButton->hide(); // About is in the side bar
     connect(_ui->removeCompletedButton, &QAbstractButton::clicked, this, &AutoPostWidget::onRemoveCompleted);
     connect(_ui->removeAllButton,       &QAbstractButton::clicked, this, &AutoPostWidget::onRemoveAll);
     connect(_ui->closeTabsButton,       &QAbstractButton::clicked, _hmi, &MainWindow::onCloseAllFinishedQuickTabs);
@@ -509,6 +513,7 @@ bool AutoPostWidget::deleteFilesOncePosted() const { return _ui->delFilesCB->isC
 void AutoPostWidget::retranslate()
 {
     _ui->retranslateUi(this);
+    _retranslateLayout();
     _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose the folder to scan: each file or folder becomes a post."),
                                   tr("Select Files"), tr("Choose a folder to scan"));
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
@@ -580,4 +585,186 @@ void AutoPostWidget::handleDropEvent(QDropEvent *e)
             _ui->filesList->addPathIfNotInList(fileName, currentNbFiles, QFileInfo(fileName).isDir());
         }
     }
+}
+
+
+//========================================================================
+// ngPost 2026 layout: list, Source / Monitoring / Archive cards,
+// advanced options hidden by default, Generate Posts button
+//========================================================================
+#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QFrame>
+#include <QCheckBox>
+#include <QLabel>
+
+static QFrame *newAutoCard(QLabel *&title, QGridLayout *&grid)
+{
+    QFrame *card = new QFrame();
+    card->setObjectName("card");
+    card->setAttribute(Qt::WA_StyledBackground, true);
+    QVBoxLayout *v = new QVBoxLayout(card);
+    v->setContentsMargins(16, 12, 16, 14);
+    v->setSpacing(10);
+    title = new QLabel(card);
+    title->setObjectName("cardTitle");
+    v->addWidget(title);
+    grid = new QGridLayout();
+    grid->setHorizontalSpacing(10);
+    grid->setVerticalSpacing(8);
+    v->addLayout(grid);
+    v->addStretch();
+    return card;
+}
+
+static QHBoxLayout *autoRow(std::initializer_list<QWidget*> widgets, bool stretch = false)
+{
+    QHBoxLayout *h = new QHBoxLayout();
+    h->setSpacing(8);
+    for (QWidget *w : widgets)
+        h->addWidget(w);
+    if (stretch)
+        h->addStretch();
+    return h;
+}
+
+void AutoPostWidget::_buildLayout()
+{
+    QWidget *page = new QWidget(this);
+    QVBoxLayout *root = new QVBoxLayout(page);
+    root->setContentsMargins(2, 12, 2, 2);
+    root->setSpacing(12);
+
+    // list: title + list actions
+    QHBoxLayout *head = new QHBoxLayout();
+    head->setSpacing(8);
+    _filesTitle = new QLabel(page);
+    _filesTitle->setObjectName("cardTitle");
+    head->addWidget(_filesTitle);
+    head->addStretch();
+    head->addWidget(_ui->removeCompletedButton);
+    head->addWidget(_ui->removeAllButton);
+    head->addWidget(_ui->closeTabsButton);
+    root->addLayout(head);
+    root->addWidget(_ui->filesList, 1);
+
+    QHBoxLayout *cards = new QHBoxLayout();
+    cards->setSpacing(12);
+    QGridLayout *g = nullptr;
+
+    // source folder: scan
+    QFrame *source = newAutoCard(_sourceTitle, g);
+    g->addWidget(_ui->autoDirLbl, 0, 0);
+    g->addLayout(autoRow({_ui->autoDirEdit, _ui->autoDirButton, _ui->scanAutoDirButton}), 0, 1);
+    g->addWidget(_ui->extentionFilterLbl, 1, 0);
+    g->addWidget(_ui->extensionFilterEdit, 1, 1);
+    g->addWidget(_ui->dirAllowedCB, 2, 1);
+    g->addWidget(_ui->latestFilesFirstCB, 3, 1);
+    g->setColumnStretch(1, 1);
+    _ui->autoDirEdit->setMinimumWidth(120);
+    _ui->autoDirEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    _ui->extensionFilterEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    cards->addWidget(source, 3);
+
+    // monitoring
+    QFrame *monitor = newAutoCard(_monitorTitle, g);
+    g->addLayout(autoRow({_ui->monitorButton, _ui->addMonitoringFolderButton}, true), 0, 0);
+    g->addWidget(_ui->delFilesCB, 1, 0);
+    cards->addWidget(monitor, 2);
+
+    // archive
+    QFrame *archive = newAutoCard(_archiveTitle, g);
+    g->addWidget(_ui->compressCB, 0, 0);
+    g->addWidget(_ui->keepRarCB, 0, 1);
+    g->addWidget(_ui->genNameCB, 1, 0);
+    g->addWidget(_ui->nameLengthSB, 1, 1);
+    g->addWidget(_ui->genPassCB, 2, 0);
+    g->addWidget(_ui->passLengthSB, 2, 1);
+    g->addWidget(_ui->par2CB, 3, 0);
+    g->addWidget(_ui->redundancySB, 3, 1);
+    _ui->redundancyLbl->hide();
+    _ui->redundancySB->setSuffix(" %");
+    g->setColumnStretch(2, 1);
+    cards->addWidget(archive, 3);
+    root->addLayout(cards);
+
+    // advanced options
+    _advancedCard = newAutoCard(_advancedTitle, g);
+    g->addWidget(_ui->compressPathLbl, 0, 0);
+    g->addLayout(autoRow({_ui->compressPathEdit, _ui->compressPathButton}), 0, 1);
+    g->addWidget(_ui->rarLbl, 1, 0);
+    g->addLayout(autoRow({_ui->rarEdit, _ui->rarPathButton}), 1, 1);
+    g->addWidget(_ui->rarSizeLbl, 2, 0);
+    g->addLayout(autoRow({_ui->rarSizeEdit, _ui->rarMaxCB}, true), 2, 1);
+    g->setColumnStretch(1, 1);
+    _ui->compressPathEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    _ui->rarEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    _ui->rarSizeEdit->setMaximumWidth(100);
+    _advancedCard->hide();
+    root->addWidget(_advancedCard);
+
+    // bottom: advanced toggle, start option and Generate Posts
+    QHBoxLayout *bottom = new QHBoxLayout();
+    bottom->setSpacing(12);
+    _advancedToggle = new QPushButton(page);
+    _advancedToggle->setObjectName("linkButton");
+    _advancedToggle->setCursor(Qt::PointingHandCursor);
+    connect(_advancedToggle, &QAbstractButton::clicked, this, [this](){
+        _showAdvanced = !_showAdvanced;
+        _advancedCard->setVisible(_showAdvanced);
+        _retranslateLayout();
+    });
+    bottom->addWidget(_advancedToggle);
+    bottom->addStretch();
+    bottom->addWidget(_ui->startJobsCB);
+    _ui->postButton->setObjectName("accentButton");
+    _ui->postButton->setIcon(QIcon());
+    _ui->postButton->setMinimumSize(170, 38);
+    bottom->addWidget(_ui->postButton);
+    root->addLayout(bottom);
+
+    _ui->aboutButton->hide(); // About is in the side bar
+
+    // the .ui limited the width of some labels and check boxes (they were on one long line)
+    for (QWidget *w : page->findChildren<QWidget*>())
+        if (qobject_cast<QLabel*>(w) || qobject_cast<QCheckBox*>(w))
+            w->setMaximumWidth(QWIDGETSIZE_MAX);
+
+    delete layout();
+    QVBoxLayout *outer = new QVBoxLayout(this);
+    outer->setContentsMargins(0, 0, 0, 0);
+    outer->addWidget(page);
+
+    _retranslateLayout();
+}
+
+void AutoPostWidget::_retranslateLayout()
+{
+    if (!_filesTitle)
+        return;
+    _filesTitle->setText(tr("Files and folders to post"));
+    _sourceTitle->setText(tr("Folder to scan"));
+    _monitorTitle->setText(tr("Monitoring"));
+    _archiveTitle->setText(tr("Archive"));
+    _advancedTitle->setText(tr("Advanced options"));
+    _advancedToggle->setText(_showAdvanced ? tr("▾ Hide advanced options") : tr("▸ Advanced options (temporary folder, rar / 7z, volumes)"));
+
+    _ui->autoDirLbl->setText(tr("Folder"));
+    _ui->extentionFilterLbl->setText(tr("Extensions"));
+    _ui->extensionFilterEdit->setPlaceholderText(tr("all (ex: mkv,mp4,iso)"));
+    _ui->scanAutoDirButton->setText(tr("Scan"));
+    _ui->dirAllowedCB->setText(tr("post the folders"));
+    _ui->delFilesCB->setText(tr("delete the files once posted"));
+    _ui->compressCB->setText(tr("Compress"));
+    _ui->keepRarCB->setText(tr("keep the archives"));
+    _ui->genNameCB->setText(tr("random name"));
+    _ui->genPassCB->setText(tr("random password"));
+    _ui->par2CB->setText(tr("par2"));
+    _ui->redundancyLbl->setText(tr("redundancy (%)"));
+    _ui->compressPathLbl->setText(tr("Temporary folder"));
+    _ui->rarLbl->setText(tr("rar / 7z program"));
+    _ui->rarSizeLbl->setText(tr("Volume size (MB)"));
+    _ui->rarMaxCB->setText(tr("limit the number of volumes"));
+    _ui->startJobsCB->setText(tr("start the posts directly"));
 }

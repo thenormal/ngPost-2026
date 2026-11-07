@@ -25,6 +25,8 @@ class NgPost;
 class NntpFile;
 class MainWindow;
 class PostingJob;
+class QLabel;
+class QPushButton;
 #include <QFileInfoList>
 
 namespace Ui {
@@ -45,6 +47,18 @@ private:
     PostingJob        *_postingJob;
     STATE              _state;
     bool               _postingFinished;
+
+    // ngPost 2026 layout (built in code over the widgets of the .ui)
+    QLabel            *_filesTitle;
+    QLabel            *_nzbTitle;
+    QLabel            *_archiveTitle;
+    QLabel            *_advancedTitle;
+    QWidget           *_advancedCard;
+    QPushButton       *_advancedToggle;
+    static bool        sShowAdvanced; //!< same state for all the Quick Post tabs
+    void _buildLayout();
+    void _retranslateLayout();
+    void _showAdvanced(bool show);
 
 public:
     explicit PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber);
