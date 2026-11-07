@@ -55,6 +55,7 @@
 #include <QNetworkReply>
 #include <QRegularExpression>
 #include <QDir>
+#include <QStandardPaths>
 #include <QNetworkProxy>
 #ifdef __USE_TMP_RAM__
   #include <QStorageInfo>
@@ -2571,13 +2572,31 @@ void NgPost::_syntax(char *appName)
           << MB_FLUSH;
 }
 
-QString NgPost::parseDefaultConfig()
+QString NgPost::defaultConfigPath()
 {
 #if defined(WIN32) || defined(__MINGW64__)
-    QString conf = sDefaultConfig;
+    // 1. ngPost.conf in the working folder: the portable package (ZIP) and the previous versions
+    if (QFileInfo(sDefaultConfig).isFile())
+        return sDefaultConfig;
+    // 2. next to the program
+    QString nextToExe = QString("%1/%2").arg(QCoreApplication::applicationDirPath(), sDefaultConfig);
+    if (QFileInfo(nextToExe).isFile())
+        return nextToExe;
+    // 3. the installed program (C:\Program Files is read only): the user's folder %APPDATA%\ngPost Deluxe
+    QString appData = qEnvironmentVariable("APPDATA");
+    if (appData.isEmpty())
+        appData = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
+    QString dir = QString("%1/ngPost Deluxe").arg(appData);
+    QDir().mkpath(dir);
+    return QString("%1/%2").arg(dir, sDefaultConfig);
 #else
-    QString conf = QString("%1/%2").arg(getenv("HOME")).arg(sDefaultConfig);
+    return QString("%1/%2").arg(getenv("HOME")).arg(sDefaultConfig);
 #endif
+}
+
+QString NgPost::parseDefaultConfig()
+{
+    QString conf = defaultConfigPath();
     QString err;
     QFileInfo defaultConf(conf);
     if (defaultConf.exists() && defaultConf.isFile())
@@ -2588,6 +2607,20 @@ QString NgPost::parseDefaultConfig()
     }
     else
         qCritical() << "The default config file doesn't exist: " << conf;
+
+#if defined(WIN32) || defined(__MINGW64__)
+    // no nzb folder defined and the working folder is not writable (program installed in C:\Program Files)
+    if (_nzbPath.isEmpty() && !QFileInfo(QDir::currentPath()).isWritable())
+    {
+        _nzbPath = _nzbPathConf = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        QDir().mkpath(_nzbPath);
+    }
+
+    // 7-Zip shipped with the program (folder "7-Zip" next to ngPostDeluxe.exe): used when no valid path is defined
+    QString bundled7z = QString("%1/7-Zip/7z.exe").arg(QCoreApplication::applicationDirPath());
+    if (QFileInfo(bundled7z).isFile() && (_rarPath.isEmpty() || !QFileInfo(_rarPath).isFile()))
+        _rarPath = bundled7z;
+#endif
 
     return err;
 }
@@ -2678,11 +2711,7 @@ void NgPost::_showVersionASCII() const
 
 void NgPost::saveConfig(bool quiet)
 {
-#if defined(WIN32) || defined(__MINGW64__)
-    QString conf = sDefaultConfig;
-#else
-    QString conf = QString("%1/%2").arg(getenv("HOME")).arg(sDefaultConfig);
-#endif
+    QString conf = defaultConfigPath();
     if (_configPath.isEmpty())
         _configPath = QFileInfo(conf).absoluteFilePath();
     _historyKeyInConfig = true; // the key "history" is written below

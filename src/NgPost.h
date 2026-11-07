@@ -279,6 +279,9 @@ private:
 #endif
     static constexpr const char *sDefaultLogFile = "ngPost.log";
 
+    //! path of the default configuration file ($HOME/.ngPost, on Windows see the implementation)
+    static QString defaultConfigPath();
+
 
     static const int sprogressbarBarWidth = 50;
     static const int sDefaultRefreshRate = 500; //!< how often shall we refresh the progressbar bar?

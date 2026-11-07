@@ -8,7 +8,9 @@
 Es ist ein Fork von [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, Lizenz GPL v3). Das Verdienst für das ursprüngliche Programm gebührt seinem Autor, Matthieu Bruel.<br/>
 
 ### Download
-Fertige Pakete für Windows (ohne Installation) gibt es auf der Seite [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest): `ngPostDeluxe-v1.0-win64.zip` (Windows 64 Bit) und `ngPostDeluxe-v1.0-win32.zip` (Windows 32 Bit). Den Ordner irgendwo entpacken und `ngPostDeluxe.exe` starten. Zum Komprimieren der Posts wird außerdem [7-Zip](https://www.7-zip.org/) oder WinRAR benötigt (Pfad in den Einstellungen angeben).
+**Installer**: Lade `ngPostDeluxe-v1.0-win64-setup.exe` (Windows 64 Bit) oder `ngPostDeluxe-v1.0-win32-setup.exe` (Windows 32 Bit) von der Seite [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) herunter und folge den Schritten. [7-Zip](https://www.7-zip.org/) ist enthalten: Es muss nichts weiter installiert werden. Deine Einstellungen und der Verlauf liegen in `%APPDATA%\ngPost Deluxe` und bleiben bei Updates und Deinstallation erhalten.<br/>
+Windows zeigt eventuell „Der Computer wurde durch Windows geschützt“, weil der Installer nicht digital signiert ist: Klicke auf **Weitere Informationen**, dann auf **Trotzdem ausführen**.<br/>
+**Portable Version**: `ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`, ohne Installation: Ordner irgendwo entpacken und `ngPostDeluxe.exe` starten (die Einstellungen liegen in der `ngPost.conf` neben dem Programm).
 
 ### Screenshots
 | Quick Post (helles Design) | Verlauf |
@@ -28,7 +30,7 @@ Fertige Pakete für Windows (ohne Installation) gibt es auf der Seite [Releases]
 -   **Italienische Oberfläche**: GUI/CMD sind jetzt auch auf Italienisch übersetzt (bereits verfügbar auf Chinesisch, Niederländisch, Englisch, Französisch, Deutsch, Portugiesisch und Spanisch)
 -   **Neue README**: für diesen Fork neu geschrieben und in 8 Sprachen verfügbar (Englisch, Französisch, Deutsch, Italienisch, Spanisch, Niederländisch, Portugiesisch, Chinesisch)
 -   **ngPost Deluxe v1.0**: neuer Name und neue Version (das Windows-Programm heißt jetzt `ngPostDeluxe.exe`; die Konfigurationsdatei bleibt gleich), neu gestaltetes Über-Fenster, die ursprünglichen Spenden-Schaltflächen wurden durch eine **Ko-fi**-Schaltfläche für diesen Fork ersetzt (im Über-Fenster und in den Einstellungen)
--   Windows-Pakete für **64 Bit und 32 Bit**, automatisch auf GitHub erstellt und in den Releases veröffentlicht (`ngPostDeluxe.exe`)
+-   **Windows-Installer** (64 Bit und 32 Bit, **7-Zip inklusive**) und portable ZIP-Pakete, automatisch auf GitHub erstellt und in den Releases veröffentlicht (`ngPostDeluxe.exe`)
 -   **Schnellere Komprimierung unter Windows**: die Ausgabe von 7-Zip / rar wird jetzt laufend gelesen (ein Post mit 115 MB wartete vorher 200 s, jetzt 1 s)
 -   **Neuer Server-Bereich**: Liste der Server mit Statuspunkt und Ein/Aus-Kästchen, Detailformular (Passwort auf Wunsch sichtbar) und eine Schaltfläche **Verbindung testen**, die die Anmeldung prüft. Das Ändern der Server während eines Uploads kann ngPost nicht mehr abstürzen lassen
 -   **Automatisches Speichern**: jede Änderung der Einstellungen wird automatisch gespeichert (die vorherige Datei bleibt als `ngPost.conf.bak` erhalten)
