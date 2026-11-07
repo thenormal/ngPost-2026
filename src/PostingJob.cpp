@@ -941,16 +941,46 @@ bool PostingJob::startCompressFiles(const QString &cmdRar,
         args.prepend("a");
     if (!_use7z && !args.contains("-idp"))
         args << "-idp";
+    // The archive password is NOT put on the command line anymore (it would be visible in the
+    // process list / Task Manager): 7z reads it on its standard input, rar from the RAR environment variable.
+    // Fallback on the command line only for passwords that those channels can't carry safely
+    // (non ASCII characters for both, double quotes for rar).
+    QByteArray passForStdin;
     if (!pass.isEmpty())
     {
+        bool asciiOnly = true;
+        for (const QChar &c : pass)
+        {
+            if (c.unicode() < 0x20 || c.unicode() > 0x7E)
+            {
+                asciiOnly = false;
+                break;
+            }
+        }
         if (_use7z)
         {
             if (!args.contains("-mhe=on"))
                 args << "-mhe=on";
-            args << QString("-p%1").arg(pass);
+            if (asciiOnly)
+            {
+                args << "-p"; // empty => 7z asks it on stdin (twice on some versions to verify)
+                passForStdin = QString("%1\n%1\n").arg(pass).toLatin1();
+            }
+            else
+                args << QString("-p%1").arg(pass);
         }
         else
-            args << QString("-hp%1").arg(pass);
+        {
+            if (asciiOnly && !pass.contains('"'))
+            {
+                QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+                QString rarEnv = env.value("RAR"); // keep the user's default switches if any
+                env.insert("RAR", QString("%1%2-hp\"%3\"").arg(rarEnv, rarEnv.isEmpty() ? "" : " ", pass));
+                _extProc->setProcessEnvironment(env);
+            }
+            else
+                args << QString("-hp%1").arg(pass);
+        }
     }
     if (volSize > 0 || _useRarMax)
     {
@@ -1054,6 +1084,11 @@ bool PostingJob::startCompressFiles(const QString &cmdRar,
         _log(QString("%1...\n").arg(tr("Compressing files")));
     _limitProcDisplay = false;
     _extProc->start(cmdRar, args);
+    if (!passForStdin.isEmpty())
+    {
+        _extProc->write(passForStdin);
+        _extProc->closeWriteChannel();
+    }
 
 #ifdef __DEBUG__
     _log("[PostingJob::_compressFiles] compression started...");
