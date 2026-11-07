@@ -1,0 +1,64 @@
+name: Build Windows (x64)
+
+# Builds ngPost-2026 on a Windows runner (Qt 5.15.2 + MinGW 8.1, 64bit) and publishes a
+# ready-to-run folder as a downloadable artifact: Actions tab > the run > "Artifacts".
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt 5.15.2 (MinGW 8.1, 64bit)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_mingw81'
+          tools: 'tools_mingw,qt.tools.win64_mingw810'
+          cache: true
+
+      - name: Build
+        shell: pwsh
+        run: |
+          mkdir build
+          cd build
+          qmake ../src/ngPost.pro CONFIG+=release CONFIG-=debug CONFIG-=debug_and_release
+          mingw32-make -j2
+
+      - name: Assemble the package
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path build -Recurse -Filter ngPost.exe | Select-Object -First 1
+          if (-not $exe) { throw "ngPost.exe not found" }
+          mkdir dist
+          Copy-Item $exe.FullName dist/
+          # Qt DLLs, plugins and the MinGW runtime
+          windeployqt --release --no-translations dist/ngPost.exe
+          # OpenSSL 1.1 DLLs needed by Qt 5 for ssl connections (taken from the repository)
+          Expand-Archive release/libs/libs_win7_64bit.zip -DestinationPath openssl_tmp
+          Copy-Item openssl_tmp/libs/libssl-1_1-x64.dll, openssl_tmp/libs/libcrypto-1_1-x64.dll dist/
+          # ParPar (par2 generator), used automatically when parpar.exe is next to ngPost.exe
+          7z x release/libs/parpar-v0.4.6-win64.7z -oparpar_tmp
+          Copy-Item (Get-ChildItem -Path parpar_tmp -Recurse -Filter parpar.exe | Select-Object -First 1).FullName dist/
+          Copy-Item ngPost.conf, LICENSE dist/
+          Get-ChildItem dist | Format-Table Name, Length
+
+      - name: Smoke test (the program must start and print its help)
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $out = & dist/ngPost.exe --help 2>&1 | Out-String
+          Write-Host $out
+          if ($LASTEXITCODE -ne 0) { throw "exit code $LASTEXITCODE" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ngPost-2026-win64-${{ github.sha }}
+          path: dist
