@@ -110,6 +110,12 @@ private:
     QElapsedTimer _diagTimer;               //!< diagnostics: duration of the compression / par2 phase
     qint64        _diagInputSize   = 0;     //!< diagnostics: size of the files to pack
     bool          _diagRegistered  = false; //!< diagnostics: secrets (names, password) already registered
+    bool          _diagCompressing = false; //!< diagnostics: the external process is the compressor
+    qint64        _diagFirstOut    = -1;    //!< diagnostics: ms (since the start) of the first output of the compressor
+    qint64        _diagLastOut     = -1;    //!< diagnostics: ms of the last output
+    qint64        _diagProcDone    = -1;    //!< diagnostics: ms when the compressor really exited
+    int           _diagNbOut       = 0;     //!< diagnostics: number of outputs of the compressor
+    QByteArray    _diagOutTail;             //!< diagnostics: end of the output of the compressor
     quint64       _totalSize; //!< total size (in Bytes) to be uploaded
     QElapsedTimer _pauseTimer;   //!< to record the time when ngPost is in pause
     qint64        _pauseDuration; //!< total duration of all pauses
