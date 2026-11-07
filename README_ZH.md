@@ -7,6 +7,16 @@
 **ngPost Deluxe** 是著名 Usenet 上传工具 **ngPost** 的重新审视与重新设计版本。<br/>
 它是 [mbruel/ngPost](https://github.com/mbruel/ngPost)（v4.16，GPL v3 许可证）的分支（fork）。原始程序的全部功劳归于其作者 Matthieu Bruel。<br/>
 
+### 下载
+适用于 Windows 的即用型软件包（无需安装）在 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面：`ngPostDeluxe-v1.0-win64.zip`（Windows 64 位）和 `ngPostDeluxe-v1.0-win32.zip`（Windows 32 位）。将文件夹解压到任意位置，运行 `ngPostDeluxe.exe` 即可。要压缩帖子，还需要 [7-Zip](https://www.7-zip.org/) 或 WinRAR（在设置中填写其路径）。
+
+### 截图
+| Quick Post（浅色主题） | 历史记录 |
+|---|---|
+| ![Quick Post（浅色主题）](docs/screenshots/quick-post.png) | ![历史记录](docs/screenshots/history.png) |
+| **设置（深色主题）** | **服务器（深色主题）** |
+| ![设置（深色主题）](docs/screenshots/settings-dark.png) | ![服务器（深色主题）](docs/screenshots/servers-dark.png) |
+
 ### 本分支的不同之处
 -   **安全修复**：修复 yEnc 编码缓冲区中可能的堆溢出（对于某些数据，输出可能超出缓冲区大小）
 -   **yEnc 修复**：行尾的空格或制表符现在会被正确转义（某些服务器会将其去除，导致数据损坏）
@@ -17,7 +27,9 @@
 -   **全新界面**：侧边栏（快速发布、自动发布、服务器、设置、历史记录），卡片式页面，高级选项在需要时才显示，新图标，以及说明操作方法的空白页面。**浅色和深色主题**，或跟随 Windows 自动切换（`theme` 键）。设置环境变量 `NGPOST_NO_THEME` 可恢复原生外观
 -   **意大利语界面**：图形界面/命令行现在也已翻译为意大利语（此前已有中文、荷兰语、英语、法语、德语、葡萄牙语和西班牙语）
 -   **新的 README**：为本分支重写，提供 8 种语言（英语、法语、德语、意大利语、西班牙语、荷兰语、葡萄牙语、中文）
--   **ngPost Deluxe v5.0 beta**：新名称和新版本（Windows 程序现在名为 `ngPostDeluxe.exe`；配置文件不变），重新设计的“关于”窗口，原来的捐赠按钮已替换为本分支的 **Ko-fi** 按钮（在“关于”窗口和设置中）
+-   **ngPost Deluxe v1.0**：新名称和新版本（Windows 程序现在名为 `ngPostDeluxe.exe`；配置文件不变），重新设计的“关于”窗口，原来的捐赠按钮已替换为本分支的 **Ko-fi** 按钮（在“关于”窗口和设置中）
+-   **64 位和 32 位** Windows 软件包，在 GitHub 上自动构建并发布在 Releases 中（`ngPostDeluxe.exe`）
+-   **Windows 上压缩更快**：现在会随时读取 7-Zip / rar 的输出（115 MB 的帖子以前要等 200 秒，现在 1 秒）
 -   **全新的服务器区域**：服务器列表带状态指示点和启用/禁用复选框，详情表单（密码可按需显示），以及检查登录的 **测试连接** 按钮。发布过程中修改服务器不会再导致 ngPost 崩溃
 -   **自动保存**：每次修改设置都会自动保存（之前的文件保留为 `ngPost.conf.bak`）
 -   **Auto Posting 标签页**：新增 **移除已完成**、**全部移除** 和 **关闭已完成的标签页** 按钮
