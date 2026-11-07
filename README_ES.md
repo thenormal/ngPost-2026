@@ -2,7 +2,7 @@
 
 # ngPost-2026
 
-[English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | **Español**
+[English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | **Español** | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
 **ngPost-2026** es una versión revisada y rediseñada del famoso cargador de Usenet **ngPost**.<br/>
 Es un fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licencia GPL v3). Todo el mérito del programa original corresponde a su autor, Matthieu Bruel.<br/>
@@ -27,7 +27,7 @@ puede **vigilar carpetas y publicar cada nuevo archivo/carpeta** por separado tr
 puede **borrar automáticamente archivos/carpetas una vez publicados** (solo con la vigilancia en la interfaz gráfica y con --auto y --monitor a la vez en la línea de comandos)<br/>
 puede **ejecutar un COMANDO o un script tras cada publicación** (ver NZB_POST_CMD en el archivo de configuración)<br/>
 puede **apagar el ordenador** cuando todas las publicaciones han terminado<br/>
-está **traducido al chino, neerlandés, inglés, francés, alemán, portugués y español**.<br/>
+está **traducido al chino, neerlandés, inglés, francés, alemán, italiano, portugués y español**.<br/>
 
 
 ![ngPost_v4.3](pics/ngPost_v4.3.png)
@@ -257,7 +257,7 @@ Una lista de cargadores de Usenet del GitHub de Nyuu [se encuentra aquí](https:
 
 
 ### Idiomas admitidos
-Por ahora ngPost está traducido al chino, neerlandés, inglés, francés, alemán, portugués y español. Para este fork está prevista una traducción al italiano.<br/>
+Por ahora ngPost está traducido al chino, neerlandés, inglés, francés, alemán, italiano, portugués y español (la traducción al italiano se añadió en este fork).<br/>
 Si quieres traducir ngPost a tu idioma, es fácil (hay una buena interfaz para ello: QtLinguist). Los archivos de traducción están en la carpeta **src/lang**.
 
 

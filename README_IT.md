@@ -2,7 +2,7 @@
 
 # ngPost-2026
 
-[English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | **Italiano** | [Español](README_ES.md)
+[English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | **Italiano** | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
 **ngPost-2026** è una versione rivista e ridisegnata del famoso uploader Usenet **ngPost**.<br/>
 È un fork di [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licenza GPL v3). Il merito del programma originale va al suo autore, Matthieu Bruel.<br/>
@@ -27,7 +27,7 @@ può **monitorare cartelle e postare ogni nuovo file/cartella** singolarmente do
 può **eliminare automaticamente file/cartelle dopo il post** (solo con il monitoraggio nell'interfaccia grafica e con --auto e --monitor insieme da riga di comando)<br/>
 può **eseguire un COMANDO o uno script dopo ogni post** (vedi NZB_POST_CMD nel file di configurazione)<br/>
 può **spegnere il computer** quando tutti i post sono finiti<br/>
-è **tradotto in cinese, olandese, inglese, francese, tedesco, portoghese e spagnolo**.<br/>
+è **tradotto in cinese, olandese, inglese, francese, tedesco, italiano, portoghese e spagnolo**.<br/>
 
 
 ![ngPost_v4.3](pics/ngPost_v4.3.png)
@@ -257,7 +257,7 @@ Un elenco di poster Usenet dal GitHub di Nyuu [si trova qui](https://github.com/
 
 
 ### Lingue supportate
-Per ora ngPost è tradotto in cinese, olandese, inglese, francese, tedesco, portoghese e spagnolo. Per questo fork è prevista una traduzione italiana.<br/>
+Per ora ngPost è tradotto in cinese, olandese, inglese, francese, tedesco, italiano, portoghese e spagnolo (la traduzione italiana è stata aggiunta in questo fork).<br/>
 Se vuoi tradurre ngPost nella tua lingua è facile (c'è una comoda interfaccia: QtLinguist). I file di traduzione sono nella cartella **src/lang**.
 
 

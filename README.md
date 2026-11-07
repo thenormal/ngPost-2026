@@ -2,7 +2,7 @@
 
 # ngPost-2026
 
-**English** | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md)
+**English** | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
 **ngPost-2026** is a revisited and redesigned version of the famous Usenet uploader **ngPost**.<br/>
 It is a fork of [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licence GPL v3). All the credit for the original program goes to its author, Matthieu Bruel.<br/>
@@ -27,7 +27,7 @@ it can **monitor folder(s) to post each new file/folder** individually after hav
 it can **auto delete files/folders once posted** (only for monitoring with the HMI and with both --auto and --monitor in cmd)<br/>
 it can **execute a COMMAND or script after each Post** (cf NZB_POST_CMD in the configuration file)<br/>
 it can **switch off the computer** when all the posts are finished<br/>
-it is **translated in Chinese, Dutch, English, French, German, Portuguese and Spanish**.
+it is **translated in Chinese, Dutch, English, French, German, Italian, Portuguese and Spanish**.
 
 
 ![ngPost_v4.3](pics/ngPost_v4.3.png)
@@ -257,7 +257,7 @@ A list of Usenet posters from Nyuu github [can be found here](https://github.com
 
 
 ### Supported Languages
-For now, ngPost is translated in Chinese, Dutch, English, French, German, Portuguese and Spanish. An Italian translation is planned for this fork.<br/>
+For now, ngPost is translated in Chinese, Dutch, English, French, German, Italian, Portuguese and Spanish (the Italian translation has been added in this fork).<br/>
 If you'd like to translate ngPost in your language, it's easy to do (there is a nice GUI for that: QtLinguist), the translation files are in the **src/lang** folder.
 
 

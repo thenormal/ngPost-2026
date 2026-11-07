@@ -2,7 +2,7 @@
 
 # ngPost-2026
 
-[English](README.md) | [Français](README_FR.md) | **Deutsch** | [Italiano](README_IT.md) | [Español](README_ES.md)
+[English](README.md) | [Français](README_FR.md) | **Deutsch** | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
 **ngPost-2026** ist eine überarbeitete und neu gestaltete Version des bekannten Usenet-Uploaders **ngPost**.<br/>
 Es ist ein Fork von [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, Lizenz GPL v3). Das Verdienst für das ursprüngliche Programm gebührt seinem Autor, Matthieu Bruel.<br/>
@@ -27,7 +27,7 @@ er kann **Ordner überwachen und jede neue Datei/jeden neuen Ordner** einzeln po
 er kann **Dateien/Ordner nach dem Posten automatisch löschen** (nur beim Überwachen in der GUI und mit --auto und --monitor in der Kommandozeile)<br/>
 er kann nach jedem Post **einen BEFEHL oder ein Skript ausführen** (siehe NZB_POST_CMD in der Konfigurationsdatei)<br/>
 er kann **den Computer ausschalten**, wenn alle Posts fertig sind<br/>
-er ist **übersetzt in Chinesisch, Niederländisch, Englisch, Französisch, Deutsch, Portugiesisch und Spanisch**.<br/>
+er ist **übersetzt in Chinesisch, Niederländisch, Englisch, Französisch, Deutsch, Italienisch, Portugiesisch und Spanisch**.<br/>
 
 
 ![ngPost_v4.3](pics/ngPost_v4.3.png)
@@ -257,7 +257,7 @@ Eine Liste von Usenet-Postern aus dem Nyuu-GitHub [findest du hier](https://gith
 
 
 ### Unterstützte Sprachen
-Derzeit ist ngPost in Chinesisch, Niederländisch, Englisch, Französisch, Deutsch, Portugiesisch und Spanisch übersetzt. Für diesen Fork ist eine italienische Übersetzung geplant.<br/>
+Derzeit ist ngPost in Chinesisch, Niederländisch, Englisch, Französisch, Deutsch, Italienisch, Portugiesisch und Spanisch übersetzt (die italienische Übersetzung stammt aus diesem Fork).<br/>
 Wenn du ngPost in deine Sprache übersetzen möchtest, ist das einfach (es gibt dafür eine praktische GUI: QtLinguist). Die Übersetzungsdateien liegen im Ordner **src/lang**.
 
 
