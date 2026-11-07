@@ -9,10 +9,12 @@ Het is een fork van [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, li
 
 ### Wat is er anders in deze fork
 -   **Beveiligingsfix**: mogelijke heap-overflow in de yEnc-codeerbuffer (bij bepaalde gegevens kon de uitvoer groter zijn dan de buffer)
+-   **yEnc-fix**: een spatie of tab aan het einde van een regel wordt nu correct geëscaped (sommige servers verwijderden die, waardoor de gegevens beschadigd raakten)
 -   **Veiligere wachtwoorden**: de gegenereerde archiefwachtwoorden en -namen gebruiken de cryptografische willekeurige generator van het besturingssysteem (Qt >= 5.10) in plaats van `std::rand()`
 -   **NZB_POST_CMD**: de plaatshouders mogen spaties bevatten (een pad zoals `C:\Mijn mappen\bestand.nzb` blijft ÉÉN argument) en het commando wordt op de achtergrond gestart (ngPost wacht er niet meer op, dus de exitcode wordt niet meer gelogd)
 -   **RAR_EXTRA en PAR2_ARGS**: worden verwerkt met respect voor dubbele aanhalingstekens. 7-Zip wordt herkend aan de programmanaam en niet aan het hele pad
 -   **ParPar** (een veel snellere par2-generator) wordt meegeleverd voor Windows 64bit (v0.4.6, publiek domein) en automatisch gebruikt als `parpar.exe` in de ngPost-map staat. De 64bit par2cmdline is uit het pakket verwijderd, de 32bit-versie blijft voor Windows 32bit
+-   **Modern licht thema**: de GUI heeft een schoon uiterlijk geïnspireerd op Windows 11 (Fusion-stijl + stylesheet). Stel de omgevingsvariabele `NGPOST_NO_THEME` in om het native uiterlijk terug te krijgen
 -   **Italiaanse interface**: de GUI/CMD is nu ook in het Italiaans vertaald (al beschikbaar in het Chinees, Nederlands, Engels, Frans, Duits, Portugees en Spaans)
 -   **Nieuwe README**: herschreven voor deze fork en beschikbaar in 8 talen (Engels, Frans, Duits, Italiaans, Spaans, Nederlands, Portugees, Chinees)
 
