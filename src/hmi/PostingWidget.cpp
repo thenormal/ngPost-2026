@@ -639,7 +639,7 @@ void PostingWidget::setPosting()
 
 
 //========================================================================
-// ngPost 2026 layout: file list, then the NZB and Archive cards,
+// ngPost Deluxe layout: file list, then the NZB and Archive cards,
 // advanced options (folders, rar, volumes) hidden by default, Post button
 //========================================================================
 #include <QGridLayout>

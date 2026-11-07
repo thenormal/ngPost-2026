@@ -1,10 +1,10 @@
 <img align="left" width="80" height="80" src="src/resources/icons/ngPost.png" alt="ngPost">
 
-# ngPost-2026
+# ngPost Deluxe
 
 [English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | **中文**
 
-**ngPost-2026** 是著名 Usenet 上传工具 **ngPost** 的重新审视与重新设计版本。<br/>
+**ngPost Deluxe** 是著名 Usenet 上传工具 **ngPost** 的重新审视与重新设计版本。<br/>
 它是 [mbruel/ngPost](https://github.com/mbruel/ngPost)（v4.16，GPL v3 许可证）的分支（fork）。原始程序的全部功劳归于其作者 Matthieu Bruel。<br/>
 
 ### 本分支的不同之处
@@ -17,7 +17,7 @@
 -   **全新界面**：侧边栏（快速发布、自动发布、服务器、设置、历史记录），卡片式页面，高级选项在需要时才显示，新图标，以及说明操作方法的空白页面。**浅色和深色主题**，或跟随 Windows 自动切换（`theme` 键）。设置环境变量 `NGPOST_NO_THEME` 可恢复原生外观
 -   **意大利语界面**：图形界面/命令行现在也已翻译为意大利语（此前已有中文、荷兰语、英语、法语、德语、葡萄牙语和西班牙语）
 -   **新的 README**：为本分支重写，提供 8 种语言（英语、法语、德语、意大利语、西班牙语、荷兰语、葡萄牙语、中文）
--   **ngPost 2026 v5.0 beta**：新名称和新版本，重新设计的“关于”窗口，移除了捐赠按钮（如需支持原作者，请见本页末尾）
+-   **ngPost Deluxe v5.0 beta**：新名称和新版本（Windows 程序现在名为 `ngPostDeluxe.exe`；配置文件不变），重新设计的“关于”窗口，原来的捐赠按钮已替换为本分支的 **Ko-fi** 按钮（在“关于”窗口和设置中）
 -   **全新的服务器区域**：服务器列表带状态指示点和启用/禁用复选框，详情表单（密码可按需显示），以及检查登录的 **测试连接** 按钮。发布过程中修改服务器不会再导致 ngPost 崩溃
 -   **自动保存**：每次修改设置都会自动保存（之前的文件保留为 `ngPost.conf.bak`）
 -   **Auto Posting 标签页**：新增 **移除已完成**、**全部移除** 和 **关闭已完成的标签页** 按钮
@@ -116,6 +116,10 @@
 - hunesco：葡萄牙语翻译
 - Peng：中文翻译
 - 所有 ngPost 用户 ;)
+
+### 支持本分支
+ngPost Deluxe 是免费的。如果它对你有用，你可以在 Ko-fi 上支持它的开发：<br/>
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support%20ngPost%20Deluxe-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/thenormal)
 
 ### 支持原作者
 ngPost 由 Matthieu Bruel 创建。如果你使用该应用并希望为这项工作做出贡献，请通过[原始项目](https://github.com/mbruel/ngPost)进行。

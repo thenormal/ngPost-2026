@@ -66,7 +66,7 @@ private:
     bool            _autoSaveAutoTab;   //!< a setting of the Auto Posting tab changed
     static constexpr int sAutoSaveDelayMs = 1000;
 
-    // new layout of ngPost 2026: side bar + pages
+    // new layout of ngPost Deluxe: side bar + pages
     enum Page {PAGE_POSTS = 0, PAGE_SERVERS, PAGE_SETTINGS, PAGE_HISTORY};
     enum Nav  {NAV_QUICK = 0, NAV_AUTO, NAV_SERVERS, NAV_SETTINGS, NAV_HISTORY, NB_NAV};
     QStackedWidget *_pages;
@@ -79,6 +79,8 @@ private:
     QLineEdit      *_historyPathEdit;
     QPushButton    *_historyPathButton;
     QLabel         *_historyHint;
+    QLabel         *_supportHint;
+    QPushButton    *_supportButton;
     QPushButton    *_themeButton;  //!< side bar: switch Auto / Light / Dark
     QPushButton    *_aboutButton;
     QLabel         *_postsTitle;

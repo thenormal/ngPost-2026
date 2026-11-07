@@ -589,7 +589,7 @@ void AutoPostWidget::handleDropEvent(QDropEvent *e)
 
 
 //========================================================================
-// ngPost 2026 layout: list, Source / Monitoring / Archive cards,
+// ngPost Deluxe layout: list, Source / Monitoring / Archive cards,
 // advanced options hidden by default, Generate Posts button
 //========================================================================
 #include <QGridLayout>

@@ -65,7 +65,7 @@
    <item>
     <widget class="QLabel" name="titleLbl">
      <property name="text">
-      <string>ngPost 2026</string>
+      <string>ngPost Deluxe</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

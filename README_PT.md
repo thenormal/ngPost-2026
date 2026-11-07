@@ -1,10 +1,10 @@
 <img align="left" width="80" height="80" src="src/resources/icons/ngPost.png" alt="ngPost">
 
-# ngPost-2026
+# ngPost Deluxe
 
 [English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | **Português** | [中文](README_ZH.md)
 
-**ngPost-2026** é uma versão revisitada e redesenhada do famoso uploader de Usenet **ngPost**.<br/>
+**ngPost Deluxe** é uma versão revisitada e redesenhada do famoso uploader de Usenet **ngPost**.<br/>
 É um fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licença GPL v3). Todo o mérito do programa original pertence ao autor, Matthieu Bruel.<br/>
 
 ### O que muda neste fork
@@ -17,7 +17,7 @@
 -   **Nova interface**: barra lateral (Quick Post, Postagem Automática, Servidores, Definições, Histórico), páginas com cartões, opções avançadas ocultas até serem precisas, um novo ícone e um ecrã vazio que explica o que fazer. **Temas claro e escuro**, ou automático como o Windows (chave `theme`). Defina a variável de ambiente `NGPOST_NO_THEME` para voltar ao aspeto nativo
 -   **Interface em italiano**: a GUI/CMD agora também está traduzida para italiano (já disponível em chinês, holandês, inglês, francês, alemão, português e espanhol)
 -   **Novo README**: reescrito para este fork e disponível em 8 idiomas (inglês, francês, alemão, italiano, espanhol, holandês, português, chinês)
--   **ngPost 2026 v5.0 beta**: novo nome e nova versão, janela Sobre redesenhada, os botões de donativo foram removidos (para apoiar o autor original, ver o fim desta página)
+-   **ngPost Deluxe v5.0 beta**: novo nome e nova versão (o programa para Windows chama-se agora `ngPostDeluxe.exe`; o ficheiro de configuração não muda), janela Sobre redesenhada, os botões de donativo originais foram substituídos por um botão **Ko-fi** para este fork (na janela Sobre e nas Definições)
 -   **Nova secção Servidores**: lista dos servidores com um indicador de estado e uma caixa ativo/inativo, ficha de detalhe (palavra-passe visível a pedido) e um botão **Testar ligação** que verifica o acesso. Alterar os servidores durante um envio já não pode fazer o ngPost falhar
 -   **Gravação automática**: cada alteração das definições é gravada automaticamente (o ficheiro anterior é mantido como `ngPost.conf.bak`)
 -   **Separador Auto Posting**: novos botões **Remover concluídos**, **Remover tudo** e **Fechar separadores concluídos**
@@ -116,6 +116,10 @@ Se quiser traduzir o ngPost para o seu idioma, é fácil (há uma GUI prática p
 - hunesco pela tradução portuguesa
 - Peng pela tradução chinesa
 - todos os usuários do ngPost ;)
+
+### Apoie este fork
+O ngPost Deluxe é gratuito. Se lhe for útil, pode apoiar o seu desenvolvimento no Ko-fi:<br/>
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support%20ngPost%20Deluxe-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/thenormal)
 
 ### Apoie o autor original
 O ngPost foi criado por Matthieu Bruel. Se você usa o aplicativo e quer contribuir com o esforço, faça-o pelo [projeto original](https://github.com/mbruel/ngPost).

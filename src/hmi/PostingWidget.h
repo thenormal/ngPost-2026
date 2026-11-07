@@ -48,7 +48,7 @@ private:
     STATE              _state;
     bool               _postingFinished;
 
-    // ngPost 2026 layout (built in code over the widgets of the .ui)
+    // ngPost Deluxe layout (built in code over the widgets of the .ui)
     QLabel            *_filesTitle;
     QLabel            *_releaseInfo;   //!< shown when the list has several items (they make one release)
     QLabel            *_nzbTitle;

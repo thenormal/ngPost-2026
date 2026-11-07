@@ -60,10 +60,11 @@
   #include <QStorageInfo>
 #endif
 
-const char *NgPost::sAppName          = "ngPost 2026";
+const char *NgPost::sAppName          = "ngPost Deluxe";
 const QString NgPost::sVersion        = QString(QT_STRINGIFY(APP_VERSION)).remove('"');
 const QString NgPost::sStage          = "beta";
-const QString NgPost::sProFileURL     = "https://raw.githubusercontent.com/thenormal/ngPost-2026/master/src/ngPost.pri";
+const QString NgPost::sProFileURL     = "https://raw.githubusercontent.com/thenormal/ngPost-Deluxe/master/src/ngPost.pri";
+const QString NgPost::sSupportURL     = "https://ko-fi.com/thenormal";
 
 const QString NgPost::sMainThreadName     = "MainThread";
 const char *NgPost::sFolderMonitoringName = QT_TRANSLATE_NOOP("NgPost", "Auto Posting");
@@ -975,14 +976,14 @@ void NgPost::onCheckForNewVersion()
                 {
                     QString msg = tr("<center><h3>New version available on GitHUB</h3></center>");
                     msg += tr("<br/>The last release is now <b>v%1</b>").arg(lastRealease);
-                    msg += tr("<br/><br/>You can download it from the <a href='https://github.com/thenormal/ngPost-2026/releases'>release directory</a>");
+                    msg += tr("<br/><br/>You can download it from the <a href='https://github.com/thenormal/ngPost-Deluxe/releases'>release directory</a>");
 
                     QMessageBox::information(_hmi, tr("New version available"), msg);
                 }
                 else
 #endif
                     qCritical() << "There is a new version available on GitHUB: v" << lastRealease
-                                << " (visit https://github.com/thenormal/ngPost-2026/releases to get it)";
+                                << " (visit https://github.com/thenormal/ngPost-Deluxe/releases to get it)";
             }
 
             break; // no need to continue to parse the page
@@ -1103,7 +1104,7 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
 
                 stream << _historyFieldSeparator << _activeJob->groups()
                        << _historyFieldSeparator << _activeJob->from()
-                       // columns added by ngPost 2026 (at the end so the old lines stay valid)
+                       // columns added by ngPost Deluxe (at the end so the old lines stay valid)
                        << _historyFieldSeparator << (_activeJob->nbArticlesFailed() == 0 ?
                                                          QString("OK") :
                                                          QString("ERRORS (%1)").arg(_activeJob->nbArticlesFailed()))

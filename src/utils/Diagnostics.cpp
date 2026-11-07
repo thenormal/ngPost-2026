@@ -1,6 +1,6 @@
 //========================================================================
 //
-// ngPost 2026 fork: https://github.com/thenormal/ngPost-2026
+// ngPost Deluxe fork: https://github.com/thenormal/ngPost-Deluxe
 // (ngPost: Copyright (C) 2020 Matthieu Bruel, https://github.com/mbruel/ngPost)
 //
 // This program is free software: you can redistribute it and/or modify

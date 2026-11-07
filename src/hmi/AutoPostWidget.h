@@ -41,7 +41,7 @@ private:
     NgPost             *_ngPost;
     bool                _isMonitoring;
 
-    // ngPost 2026 layout (built in code over the widgets of the .ui)
+    // ngPost Deluxe layout (built in code over the widgets of the .ui)
     QLabel             *_filesTitle;
     QLabel             *_sourceTitle;
     QLabel             *_archiveTitle;
