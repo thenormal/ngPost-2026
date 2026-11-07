@@ -544,33 +544,24 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="donateButton">
-       <property name="toolTip">
-        <string/>
-       </property>
+      <widget class="QPushButton" name="removeCompletedButton">
        <property name="text">
-        <string>Donate</string>
+        <string>Remove completed</string>
        </property>
        <property name="icon">
         <iconset resource="../resources/resources.qrc">
-         <normaloff>:/icons/donate.png</normaloff>:/icons/donate.png</iconset>
+         <normaloff>:/icons/clear.png</normaloff>:/icons/clear.png</iconset>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btcDonate">
+      <widget class="QPushButton" name="closeTabsButton">
        <property name="text">
-        <string/>
+        <string>Close finished Tabs</string>
        </property>
        <property name="icon">
         <iconset resource="../resources/resources.qrc">
-         <normaloff>:/icons/btc-logo.png</normaloff>:/icons/btc-logo.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
+         <normaloff>:/icons/close.jpg</normaloff>:/icons/close.jpg</iconset>
        </property>
       </widget>
      </item>

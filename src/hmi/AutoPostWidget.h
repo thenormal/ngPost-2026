@@ -40,6 +40,8 @@ private:
     bool                _isMonitoring;
     int                 _currentPostIdx;
 
+    static constexpr int sCompletedRole = Qt::UserRole + 1; //!< set on the items uploaded without error
+
 public:
     explicit AutoPostWidget(NgPost *ngPost, MainWindow *hmi);
     ~AutoPostWidget();
@@ -65,6 +67,7 @@ public slots:
     void onMonitorJobStart();
 
 private slots:
+    void onRemoveCompleted();
     void onSelectFilesClicked();
     void onGenQuickPosts();
     void onCompressPathClicked();

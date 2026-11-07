@@ -29,26 +29,27 @@ AboutNgPost::AboutNgPost(NgPost *ngPost, QWidget *parent) :
 #if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
     setWindowFlag(Qt::FramelessWindowHint);
 #endif
-    setStyleSheet("QDialog {border:2px solid black}");
+    setStyleSheet("QDialog {border:1px solid #c4c4c4}");
 
-    ui->titleLbl->setText(QString("<pre>%1</pre>").arg(ngPost->escapeXML(ngPost->asciiArtWithVersion())));
+    const QString repo     = "https://github.com/thenormal/ngPost-2026";
+    const QString original = "https://github.com/mbruel/ngPost";
 
-    ui->copyrightLbl->setText("Copyright © 2020 - Matthieu Bruel");
-    ui->copyrightLbl->setStyleSheet("QLabel { color : darkgray; }");
-    ui->copyrightLbl->setFont(QFont( "Arial", 12, QFont::Bold));
+    ui->titleLbl->setText(QString("<span style='font-size:26pt; font-weight:600;'>%1</span>").arg(ngPost->escapeXML(ngPost->appName())));
+    ui->versionLbl->setText(QString("<span style='font-size:11pt; color:#6b6b6b;'>%1</span>").arg(tr("Version %1").arg(NgPost::versionLabel())));
 
-    ui->descLbl->setTextFormat(Qt::RichText);
-    ui->descLbl->setText(ngPost->desc(true));
-    ui->descLbl->setOpenExternalLinks(true);
-    ui->descLbl->setStyleSheet(QString("QLabel { color : %1; }").arg(sTextColor));
-    ui->descLbl->setFont(QFont( "Caladea", 14, QFont::Medium));
-//    ui->cosi7->setFont(QFont( "DejaVu Serif", 28, QFont::Bold));
+    ui->descLbl->setText(tr("A fast and safe Usenet poster with a graphical and a command line interface: "
+                            "it compresses (RAR / 7z), generates the par2 and posts your files, "
+                            "folders or whole monitored directories, then writes the nzb."));
 
+    ui->linksLbl->setTextFormat(Qt::RichText);
+    ui->linksLbl->setOpenExternalLinks(true);
+    ui->linksLbl->setText(QString("<a href=\"%1\">%2</a> &nbsp;&middot;&nbsp; <a href=\"%3\">%4</a>")
+                          .arg(repo, tr("Project page"), original, tr("Original project")));
 
-    ui->donateButton->setToolTip(ngPost->donationTooltip());
-    ui->btcDonate->setToolTip(ngPost->donationBtcTooltip());
-    connect(ui->donateButton, &QAbstractButton::clicked, ngPost, &NgPost::onDonation);
-    connect(ui->btcDonate,    &QAbstractButton::clicked, ngPost, &NgPost::onDonationBTC);
+    ui->copyrightLbl->setText(QString("%1<br/>Copyright &copy; 2020 - Matthieu Bruel<br/>%2")
+                              .arg(tr("Released under the GPL v3 licence."),
+                                   tr("Fork maintained by %1").arg("thenormal")));
+    ui->copyrightLbl->setStyleSheet("QLabel { color : #6b6b6b; }");
 
     connect(ui->closeButton, &QAbstractButton::clicked, this, &QWidget::close);
 }
