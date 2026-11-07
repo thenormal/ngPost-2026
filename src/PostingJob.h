@@ -106,6 +106,7 @@ private:
     uint         _part;     //!< part number (Article) on the current file
 
     QElapsedTimer _timeStart; //!< to get some stats (upload time and avg speed)
+    QElapsedTimer _jobTimer;  //!< whole duration of the post (compression, par2 and upload) for the history
     QElapsedTimer _diagTimer;               //!< diagnostics: duration of the compression / par2 phase
     qint64        _diagInputSize   = 0;     //!< diagnostics: size of the files to pack
     bool          _diagRegistered  = false; //!< diagnostics: secrets (names, password) already registered
@@ -135,6 +136,7 @@ private:
 
     AtomicBool  _delFilesAfterPost;
     const QFileInfoList _originalFiles;
+    const int           _nbInputFiles; //!< number of files and folders given to post (for the history)
 
 
     QMutex _secureDiskAccess;
@@ -207,6 +209,8 @@ public:
     inline const QString &rarName() const;
     inline const QString &rarPass() const;
     inline QString postSize() const;
+    inline int nbOriginalFiles() const { return _nbInputFiles; }
+    inline qint64 jobDurationMs() const { return _jobTimer.isValid() ? _jobTimer.elapsed() - _pauseDuration : 0; }
 
     inline bool hasCompressed() const;
     inline bool hasPacking() const;

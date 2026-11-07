@@ -38,6 +38,8 @@
   #include <QMessageBox>
   #include <QPalette>
   #include <QFile>
+  #include <QSettings>
+  #include <QStyle>
 #else
   #include <QCoreApplication>
 #endif
@@ -281,13 +283,13 @@ NgPost::NgPost(int &argc, char *argv[]):
     _inputDir(),
     _activeJob(nullptr), _pendingJobs(), _packingJob(nullptr),
     _historyFieldSeparator(sDefaultFieldSeparator),
-    _postHistoryFile(),
+    _postHistoryFile(), _historyEnabled(true), _historyKeyInConfig(false), _configPath(),
     _autoDirs(),
     _folderMonitor(nullptr), _monitorThread(nullptr),
     _delAuto(false),
     _monitor_nzb_folders(false), _monitorExtensions(), _monitorIgnoreDir(false), _monitorSecDelayScan(1),
     _keepRar(false), _packAuto(false), _packAutoKeywords(),
-    _lang("en"), _translators(),
+    _lang("en"), _theme("auto"), _darkTheme(false), _translators(),
     _netMgr(), _urlNzbUpload(nullptr), _urlNzbUploadStr(),
     _doShutdownWhenDone(false), _shutdownProc(nullptr),
 #if defined(WIN32) || defined(__MINGW64__)
@@ -482,6 +484,24 @@ void NgPost::updateGroups(const QString &groups)
 
 
 #ifdef __USE_HMI__
+bool NgPost::systemUsesDarkTheme()
+{
+#if defined(WIN32) || defined(__MINGW64__)
+    QSettings reg("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+                  QSettings::NativeFormat);
+    return reg.value("AppsUseLightTheme", 1).toInt() == 0;
+#else
+    // other OS: dark if the system palette has a dark window
+    return QGuiApplication::palette().color(QPalette::Window).lightness() < 128;
+#endif
+}
+
+void NgPost::setTheme(const QString &theme)
+{
+    _theme = theme.toLower();
+    applyTheme();
+}
+
 void NgPost::applyTheme()
 {
     // set the environment variable NGPOST_NO_THEME to get the native look of the system back
@@ -489,35 +509,88 @@ void NgPost::applyTheme()
         return;
 
     // Fusion gives the same, predictable base on every OS (the native styles ignore most of the style sheet)
-    QApplication::setStyle("Fusion");
+    static QPalette sSystemPalette = QApplication::palette(); // before we change it (for the auto mode on Linux)
+    if (QApplication::style()->objectName().compare("fusion", Qt::CaseInsensitive) != 0)
+        QApplication::setStyle("Fusion");
+
+    if (_theme == "dark")
+        _darkTheme = true;
+    else if (_theme == "light")
+        _darkTheme = false;
+    else
+    {
+#if defined(WIN32) || defined(__MINGW64__)
+        _darkTheme = systemUsesDarkTheme();
+#else
+        _darkTheme = sSystemPalette.color(QPalette::Window).lightness() < 128;
+#endif
+    }
+
+    // colours of the two themes (Windows 11 inspired), used by the palette and by :/theme/theme.qss
+    static const QMap<QString, QString> sLight = {
+        {"window", "#f3f3f3"}, {"sidebar", "#ebebeb"}, {"card", "#ffffff"}, {"border", "#e5e5e5"},
+        {"inputBorder", "#d1d1d1"}, {"input", "#ffffff"}, {"text", "#1b1b1b"}, {"subtext", "#5f5f5f"},
+        {"disabled", "#a0a0a0"}, {"button", "#fdfdfd"}, {"buttonHover", "#f5f5f5"}, {"buttonPressed", "#ebebeb"},
+        {"alt", "#f7f7f7"}, {"accent", "#0067c0"}, {"accentHover", "#1975c5"}, {"accentPressed", "#3a87ca"},
+        {"accentText", "#ffffff"}, {"selection", "#cce4f7"}, {"selectionText", "#1b1b1b"},
+        {"scroll", "#c3c3c3"}, {"scrollHover", "#9e9e9e"}, {"chunk", "#0067c0"}, {"progress", "#e3e3e3"},
+        {"navHover", "#e0e0e0"}, {"navChecked", "#dcdcdc"}, {"tooltip", "#ffffff"}
+    };
+    static const QMap<QString, QString> sDark = {
+        {"window", "#202020"}, {"sidebar", "#1b1b1b"}, {"card", "#2b2b2b"}, {"border", "#383838"},
+        {"inputBorder", "#474747"}, {"input", "#1f1f1f"}, {"text", "#f3f3f3"}, {"subtext", "#a9a9a9"},
+        {"disabled", "#6d6d6d"}, {"button", "#333333"}, {"buttonHover", "#3b3b3b"}, {"buttonPressed", "#2a2a2a"},
+        {"alt", "#262626"}, {"accent", "#4cc2ff"}, {"accentHover", "#48b2ea"}, {"accentPressed", "#42a1d2"},
+        {"accentText", "#000000"}, {"selection", "#264f78"}, {"selectionText", "#ffffff"},
+        {"scroll", "#5c5c5c"}, {"scrollHover", "#7c7c7c"}, {"chunk", "#4cc2ff"}, {"progress", "#3a3a3a"},
+        {"navHover", "#2a2a2a"}, {"navChecked", "#2f2f2f"}, {"tooltip", "#2b2b2b"}
+    };
+    const QMap<QString, QString> &c = _darkTheme ? sDark : sLight;
 
     QPalette pal;
-    pal.setColor(QPalette::Window,          QColor("#f3f3f3"));
-    pal.setColor(QPalette::WindowText,      QColor("#1b1b1b"));
-    pal.setColor(QPalette::Base,            QColor("#ffffff"));
-    pal.setColor(QPalette::AlternateBase,   QColor("#f6f6f6"));
-    pal.setColor(QPalette::Text,            QColor("#1b1b1b"));
-    pal.setColor(QPalette::Button,          QColor("#fdfdfd"));
-    pal.setColor(QPalette::ButtonText,      QColor("#1b1b1b"));
-    pal.setColor(QPalette::Highlight,       QColor("#0067c0"));
-    pal.setColor(QPalette::HighlightedText, QColor("#ffffff"));
-    pal.setColor(QPalette::ToolTipBase,     QColor("#ffffff"));
-    pal.setColor(QPalette::ToolTipText,     QColor("#1b1b1b"));
-    pal.setColor(QPalette::Disabled, QPalette::WindowText, QColor("#a0a0a0"));
-    pal.setColor(QPalette::Disabled, QPalette::Text,       QColor("#a0a0a0"));
-    pal.setColor(QPalette::Disabled, QPalette::ButtonText, QColor("#a0a0a0"));
+    pal.setColor(QPalette::Window,          QColor(c["window"]));
+    pal.setColor(QPalette::WindowText,      QColor(c["text"]));
+    pal.setColor(QPalette::Base,            QColor(c["input"]));
+    pal.setColor(QPalette::AlternateBase,   QColor(c["alt"]));
+    pal.setColor(QPalette::Text,            QColor(c["text"]));
+    pal.setColor(QPalette::Button,          QColor(c["button"]));
+    pal.setColor(QPalette::ButtonText,      QColor(c["text"]));
+    pal.setColor(QPalette::BrightText,      QColor(c["text"]));
+    pal.setColor(QPalette::Highlight,       QColor(c["accent"]));
+    pal.setColor(QPalette::HighlightedText, QColor(c["accentText"]));
+    pal.setColor(QPalette::ToolTipBase,     QColor(c["tooltip"]));
+    pal.setColor(QPalette::ToolTipText,     QColor(c["text"]));
+    pal.setColor(QPalette::Link,            QColor(c["accent"]));
+    pal.setColor(QPalette::PlaceholderText, QColor(c["disabled"]));
+    pal.setColor(QPalette::Light,           QColor(c["border"]));
+    pal.setColor(QPalette::Midlight,        QColor(c["border"]));
+    pal.setColor(QPalette::Mid,             QColor(c["inputBorder"]));
+    pal.setColor(QPalette::Dark,            QColor(c["inputBorder"]));
+    pal.setColor(QPalette::Shadow,          QColor(_darkTheme ? "#000000" : "#a0a0a0"));
+    pal.setColor(QPalette::Disabled, QPalette::WindowText, QColor(c["disabled"]));
+    pal.setColor(QPalette::Disabled, QPalette::Text,       QColor(c["disabled"]));
+    pal.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(c["disabled"]));
     QApplication::setPalette(pal);
 
-    QFile qss(":/theme/light.qss");
+    QFile qss(":/theme/theme.qss");
     if (qss.open(QIODevice::ReadOnly | QIODevice::Text))
-        qApp->setStyleSheet(QString::fromUtf8(qss.readAll()));
+    {
+        QString style = QString::fromUtf8(qss.readAll());
+        for (auto it = c.cbegin(); it != c.cend(); ++it)
+            style.replace(QString("@%1@").arg(it.key()), it.value());
+        style.replace("@arrows@", _darkTheme ? "_dark" : "");
+        qApp->setStyleSheet(style);
+    }
+
+    MainWindow::setThemeColors(_darkTheme);
+    if (_hmi)
+        _hmi->onThemeApplied();
 }
 
 int NgPost::startHMI()
 {
-    applyTheme();
-
     QString err = parseDefaultConfig();
+    applyTheme(); // after the config (theme)
     if (!err.isEmpty())
         _error(err);
 
@@ -1007,16 +1080,21 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
                                                   job->nbArticlesFailed());
 #endif
 
-        if (_activeJob->hasPostFinished() && !_postHistoryFile.isEmpty())
+        QString historyPath = historyFile();
+        if (_activeJob->hasPostFinished() && !historyPath.isEmpty())
         {
-            QFile hist(_postHistoryFile);
+            QFile hist(historyPath);
+            bool newFile = !hist.exists() || hist.size() == 0;
             if (hist.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
             {
                 QTextStream stream(&hist);
+                if (newFile)
+                    stream << historyHeader().join(_historyFieldSeparator) << "\n";
+                qint64 sec = _activeJob->jobDurationMs() / 1000;
                 stream << QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss")
                        << _historyFieldSeparator << _activeJob->nzbName()
                        << _historyFieldSeparator << _activeJob->postSize()
-                       << _historyFieldSeparator << _activeJob->avgSpeed();
+                       << _historyFieldSeparator << _activeJob->avgSpeed().trimmed();
                 if (_activeJob->hasCompressed())
                     stream << _historyFieldSeparator << _activeJob->rarName()
                            << _historyFieldSeparator << _activeJob->rarPass();
@@ -1025,9 +1103,22 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
 
                 stream << _historyFieldSeparator << _activeJob->groups()
                        << _historyFieldSeparator << _activeJob->from()
+                       // columns added by ngPost 2026 (at the end so the old lines stay valid)
+                       << _historyFieldSeparator << (_activeJob->nbArticlesFailed() == 0 ?
+                                                         QString("OK") :
+                                                         QString("ERRORS (%1)").arg(_activeJob->nbArticlesFailed()))
+                       << _historyFieldSeparator << _activeJob->nbOriginalFiles()
+                       << _historyFieldSeparator << QString("%1:%2:%3").arg(sec / 3600, 2, 10, QChar('0'))
+                                                                     .arg((sec / 60) % 60, 2, 10, QChar('0'))
+                                                                     .arg(sec % 60, 2, 10, QChar('0'))
+                       << _historyFieldSeparator << QDir::toNativeSeparators(_activeJob->nzbFilePath())
                        << "\n" << MB_FLUSH;
                 hist.close();
             }
+#ifdef __USE_HMI__
+            if (_hmi)
+                _hmi->onHistoryUpdated();
+#endif
         }
 
 #ifdef __USE_HMI__
@@ -1945,6 +2036,7 @@ QString NgPost::_parseConfig(const QString &configPath)
 {
     QString err;
     QFileInfo fileInfo(configPath);
+    _configPath = fileInfo.absoluteFilePath();
     if (!fileInfo.exists() || !fileInfo.isFile() || !fileInfo.isReadable())
         err = tr("The config file '%1' is not readable...").arg(configPath);
 
@@ -2176,6 +2268,20 @@ QString NgPost::_parseConfig(const QString &configPath)
 
                     else if (opt == sOptionNames[Opt::LANG])
                         changeLanguage(val.toLower());
+
+                    else if (opt == "history")
+                    {
+                        val = val.toLower();
+                        _historyEnabled = !(val == "off" || val == "false" || val == "0" || val == "no");
+                        _historyKeyInConfig = true;
+                    }
+
+                    else if (opt == "theme")
+                    {
+                        val = val.toLower();
+                        if (val == "light" || val == "dark" || val == "auto")
+                            _theme = val;
+                    }
 
                     else if (opt == sOptionNames[Opt::SHUTDOWN_CMD])
                         _shutdownCmd = val;
@@ -2424,25 +2530,6 @@ QString NgPost::_parseConfig(const QString &configPath)
         file.close();
     }
 
-    if (err.isEmpty() && !_postHistoryFile.isEmpty())
-    {
-        QFile file(_postHistoryFile);
-        if (!file.exists() && file.open(QIODevice::WriteOnly|QIODevice::Text))
-        {
-            QTextStream stream(&file);
-            stream << tr("date")
-                   << _historyFieldSeparator << tr("nzb name")
-                   << _historyFieldSeparator << tr("size")
-                   << _historyFieldSeparator << tr("avg. speed")
-                   << _historyFieldSeparator << tr("archive name")
-                   << _historyFieldSeparator << tr("archive pass")
-                   << _historyFieldSeparator << tr("groups")
-                   << _historyFieldSeparator << tr("from") << "\n";
-
-            file.close();
-        }
-    }
-
     return err;
 }
 
@@ -2595,6 +2682,9 @@ void NgPost::saveConfig(bool quiet)
 #else
     QString conf = QString("%1/%2").arg(getenv("HOME")).arg(sDefaultConfig);
 #endif
+    if (_configPath.isEmpty())
+        _configPath = QFileInfo(conf).absoluteFilePath();
+    _historyKeyInConfig = true; // the key "history" is written below
 
     // the whole file is rewritten: keep a copy of the previous one, once per session (ngPost.conf.bak)
     static bool backupDone = false;
@@ -2618,6 +2708,9 @@ void NgPost::saveConfig(bool quiet)
                << "\n"
                << tr("## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH") << "\n"
                << "lang = " << _lang.toUpper() << "\n"
+               << "\n"
+               << tr("## interface theme: AUTO (same as Windows), LIGHT or DARK") << "\n"
+               << "theme = " << _theme.toUpper() << "\n"
                << "\n"
                << tr("## use Proxy (only Socks5 type!)") << "\n"
                << (_proxyUrl.isEmpty()  ? "#PROXY_SOCKS5 = user:pass@192.168.1.1:5555" : _proxyUrl)  << "\n"
@@ -2680,6 +2773,10 @@ void NgPost::saveConfig(bool quiet)
                << tr("## Default folder to open to select files from the HMI") << "\n"
                << "inputDir = " << _inputDir << "\n"
                << "\n"
+               << tr("## History of the uploads (shown in the History page): ON or OFF") << "\n"
+               << tr("## the file contains the archive passwords in clear text: keep it private") << "\n"
+               << "history = " << (_historyEnabled ? "ON" : "OFF") << "\n"
+               << tr("## by default the history is saved in ngPost_history.csv next to this file") << "\n"
                << tr("## History posting file") << "\n"
                << tr("## each succesful post will append a line with the date, the file name, the archive name, the password...") << "\n"
                << (_postHistoryFile.isEmpty()  ? "#" : "") <<"POST_HISTORY = "
@@ -2927,3 +3024,21 @@ const QString NgPost::sNgPostASCII = QString("\
           \\//_____/                    \\/\n\
 ");
 
+
+
+QStringList NgPost::historyHeader()
+{
+    return {tr("date"), tr("nzb name"), tr("size"), tr("avg. speed"), tr("archive name"), tr("archive pass"),
+            tr("groups"), tr("from"), tr("status"), tr("files"), tr("duration"), tr("nzb file")};
+}
+
+QString NgPost::historyFile() const
+{
+    if (!_historyEnabled)
+        return QString();
+    if (!_postHistoryFile.isEmpty())
+        return _postHistoryFile;
+    if (_configPath.isEmpty())
+        return QString();
+    return QFileInfo(_configPath).absoluteDir().absoluteFilePath("ngPost_history.csv");
+}

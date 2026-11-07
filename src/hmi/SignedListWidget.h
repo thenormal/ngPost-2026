@@ -22,14 +22,17 @@
 
 #include <QListWidget>
 class QLabel;
+class QPushButton;
 class SignedListWidget : public QListWidget
 {
     Q_OBJECT
 
 public:
     SignedListWidget(QWidget *parent = nullptr);
+    ~SignedListWidget() override;
 
-    void setSignature(const QString &str);
+    //! screen shown in the middle of the list when it is empty (logo, name, help and two buttons)
+    void setEmptyState(const QString &hint, const QString &button1, const QString &button2);
 
     void addPath(const QString &path, bool isDir = false);
     bool addPathIfNotInList(const QString &path, int lastIndexToCheck, bool isDir = false);
@@ -39,6 +42,8 @@ public:
 signals:
     void rightClick();
     void empty();
+    void emptyAction1(); //!< first button of the empty screen
+    void emptyAction2(); //!< second button of the empty screen
 
 public slots:
     void clear2();
@@ -53,8 +58,15 @@ protected:
 
 
 private:
-    QLabel *_asciiLbl;
-    QSize   _sizeAscii;
+    void _updateEmptyState();
+    void _placeEmptyState();
+
+    QWidget     *_emptyState;
+    QLabel      *_emptyLogo;
+    QLabel      *_emptyTitle;
+    QLabel      *_emptyHint;
+    QPushButton *_emptyButton1;
+    QPushButton *_emptyButton2;
     QIcon   _fileIcon;
     QIcon   _folderIcon;
 };

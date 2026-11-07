@@ -206,7 +206,7 @@ ServersWidget::ServersWidget(QWidget *parent) :
     _emptyLbl = new QLabel(this);
     _emptyLbl->setAlignment(Qt::AlignCenter);
     _emptyLbl->setWordWrap(true);
-    _emptyLbl->setStyleSheet("QLabel { color: #6b6b6b; }");
+    _emptyLbl->setObjectName("hint");
     _stack->addWidget(_emptyLbl);
 
     QWidget *formPage = new QWidget(this);

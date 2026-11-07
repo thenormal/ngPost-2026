@@ -39,6 +39,25 @@
         <file>lang/ngPost_it.qm</file>
         <file>icons/left.png</file>
         <file>icons/right.png</file>
-        <file>theme/light.qss</file>
+        <file>theme/theme.qss</file>
+        <file>icons/nav_quick.png</file>
+        <file>icons/nav_auto.png</file>
+        <file>icons/nav_servers.png</file>
+        <file>icons/nav_settings.png</file>
+        <file>icons/nav_history.png</file>
+        <file>icons/nav_pause.png</file>
+        <file>icons/nav_play.png</file>
+        <file>icons/nav_about.png</file>
+        <file>icons/nav_theme.png</file>
+        <file>icons/left_dark.png</file>
+        <file>icons/right_dark.png</file>
+        <file>icons/up.png</file>
+        <file>icons/up_dark.png</file>
+        <file>icons/down.png</file>
+        <file>icons/down_dark.png</file>
+        <file>icons/check.png</file>
+        <file>icons/tab_close.png</file>
+        <file>icons/tab_close_dark.png</file>
+        <file>icons/check_dark.png</file>
     </qresource>
 </RCC>

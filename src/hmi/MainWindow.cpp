@@ -22,6 +22,7 @@
 #include "PostingWidget.h"
 #include "AutoPostWidget.h"
 #include "ServersWidget.h"
+#include "HistoryWidget.h"
 #include "NgPost.h"
 #include "nntp/NntpServerParams.h"
 #include "nntp/NntpArticle.h"
@@ -42,19 +43,29 @@
 #include <QSysInfo>
 #include <QThread>
 #include <QSaveFile>
+#include <QStackedWidget>
 #include "utils/Diagnostics.h"
 #include "PostingJob.h"
 
 
-const QColor  MainWindow::sPostingColor = QColor(255,162, 0); // gold (#FFA200)
+QColor        MainWindow::sPostingColor = QColor(255,162, 0); // gold (#FFA200)
 const QString MainWindow::sPostingIcon  = ":/icons/uploading.png";
-const QColor  MainWindow::sPendingColor = Qt::darkBlue;
+QColor        MainWindow::sPendingColor = Qt::darkBlue;
 const QString MainWindow::sPendingIcon  = ":/icons/pending.png";
-const QColor  MainWindow::sDoneOKColor  = Qt::darkGreen;
+QColor        MainWindow::sDoneOKColor  = Qt::darkGreen;
 const QString MainWindow::sDoneOKIcon   = ":/icons/ok.png";
-const QColor  MainWindow::sDoneKOColor  = Qt::darkRed;
+QColor        MainWindow::sDoneKOColor  = Qt::darkRed;
 const QString MainWindow::sDoneKOIcon   = ":/icons/ko.png";
-const QColor  MainWindow::sArticlesFailedColor  = Qt::darkYellow;
+QColor        MainWindow::sArticlesFailedColor  = Qt::darkYellow;
+
+void MainWindow::setThemeColors(bool dark)
+{
+    sPostingColor        = dark ? QColor("#ffb900") : QColor("#c87800");
+    sPendingColor        = dark ? QColor("#6cb8ff") : QColor("#0050a0");
+    sDoneOKColor         = dark ? QColor("#6ccb5f") : QColor("#107c10");
+    sDoneKOColor         = dark ? QColor("#ff99a4") : QColor("#c42b1c");
+    sArticlesFailedColor = dark ? QColor("#fce100") : QColor("#9d5d00");
+}
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -68,7 +79,13 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveTimer(new QTimer(this)),
     _autoSaveReady(false),
     _autoSaveQuickTab(false),
-    _autoSaveAutoTab(false)
+    _autoSaveAutoTab(false),
+    _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr},
+    _history(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr),
+    _themeButton(nullptr), _aboutButton(nullptr),
+    _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
+    _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
+    _themeCB(nullptr), _themeLbl(nullptr), _autoSaveHint(nullptr), _cardTitles()
 {
     _autoSaveTimer->setSingleShot(true);
     _autoSaveTimer->setInterval(sAutoSaveDelayMs);
@@ -76,14 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setAcceptDrops(true);
 
     _ui->setupUi(this);
-
-
-    _ui->hSplitter->setStretchFactor(0, 1);
-    _ui->hSplitter->setStretchFactor(1, 1);
-
-    _ui->vSplitter->setStretchFactor(0, 1);
-    _ui->vSplitter->setStretchFactor(1, 3);
-    _ui->vSplitter->setCollapsible(1, false);
+    _buildShell();
 
     _ui->postSplitter->setStretchFactor(0, 3);
     _ui->postSplitter->setStretchFactor(1, 1);
@@ -143,10 +153,19 @@ void MainWindow::init(NgPost *ngPost)
     connect(tabBar, &QWidget::customContextMenuRequested, this, &MainWindow::onTabContextMenu);
     connect(tabBar, &QTabBar::tabCloseRequested,          this, &MainWindow::onCloseJob);
     _ui->postTabWidget->setTabsClosable(true);
+    // the Quick Post, Auto Posting and New tabs can't be closed: no close button
+    for (int i = 0; i < 3; ++i)
+    {
+        if (QWidget *closeButton = tabBar->tabButton(i, QTabBar::RightSide))
+        {
+            tabBar->setTabButton(i, QTabBar::RightSide, nullptr);
+            closeButton->deleteLater();
+        }
+    }
     _ui->postTabWidget->installEventFilter(this);
 //    _ui->postTabWidget->setCurrentIndex(1);
 
-    setJobLabel(1);
+    setJobLabel(-1);
 
 
     for (const QString &lang : _ngPost->languages())
@@ -160,12 +179,47 @@ void MainWindow::init(NgPost *ngPost)
     _autoPostTab->init();
 
     // autosave: watch the global settings, the servers, the default Quick Post and the Auto Posting tabs
-    _watchForAutoSave(_ui->postingBox, -1);
+    _watchForAutoSave(_pages->widget(PAGE_SETTINGS), -1);
     _watchForAutoSave(_quickJobTab, 0);
     _watchForAutoSave(_autoPostTab, 1);
     QTimer::singleShot(0, this, [this](){ _autoSaveReady = true; }); // after the initialisation of the widgets
 
     _ui->goCmdButton->hide();
+
+    // history page
+    _history = new HistoryWidget(_ngPost, _pages);
+    QWidget *placeholder = _pages->widget(PAGE_HISTORY);
+    _pages->insertWidget(PAGE_HISTORY, _history);
+    _pages->removeWidget(placeholder);
+    placeholder->deleteLater();
+    _historyCB->setChecked(_ngPost->_historyEnabled);
+    _updateHistorySettings();
+    connect(_historyCB,         &QAbstractButton::toggled, this, &MainWindow::onHistoryToggled);
+    connect(_historyPathButton, &QAbstractButton::clicked, this, &MainWindow::onHistoryPathClicked);
+    if (_ngPost->_historyEnabled && !_ngPost->_historyKeyInConfig)
+    {
+        // first start with the history: tell the user once (the key "history" is then saved in the config)
+        QTimer::singleShot(600, this, [this](){
+            QMessageBox::information(this, tr("History of the uploads"),
+                tr("ngPost 2026 now keeps the history of your uploads (History page).\n\n"
+                   "Be careful: the history file also records the password of each archive in clear text, "
+                   "so you can always open your releases again. It stays on this computer and is never sent "
+                   "anywhere, but anyone using this computer can read it.\n\n"
+                   "File: %1\n\nYou can turn the history off in the Settings.").arg(
+                    QDir::toNativeSeparators(_ngPost->historyFile())));
+            _ngPost->_historyKeyInConfig = true;
+            scheduleAutoSave();
+        });
+    }
+
+    _themeCB->setCurrentIndex(_ngPost->theme() == "light" ? 1 : _ngPost->theme() == "dark" ? 2 : 0);
+    connect(_themeCB, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onThemeSelected);
+    connect(_ui->postTabWidget, &QTabWidget::currentChanged, this, &MainWindow::onPostTabChanged);
+    _appVersion->setText(QString("v%1").arg(NgPost::versionLabel()));
+    _retranslateShell();
+    onThemeApplied();
+    _fixIconButtons();
+    _ui->postSplitter->setSizes({3000, 1000}); // 3/4 for the post, 1/4 for the log
 //    connect(_ui->goCmdButton, &QAbstractButton::clicked, _ngPost, &NgPost::onGoCMD, Qt::QueuedConnection);
 
     updateProgressBar(0, 0);
@@ -301,10 +355,9 @@ void MainWindow::changeEvent(QEvent *event)
             _ui->shutdownCB->setToolTip(tr("Shutdown computer when all the current Posts are done (with command: %1)").arg(
                                             _ngPost->_shutdownCmd));
 
-            _ui->serverBox->setTitle(tr("Servers"));
-            _ui->fileBox->setTitle(tr("Files"));
-            _ui->postingBox->setTitle(tr("Parameters"));
-            _ui->logBox->setTitle(tr("Posting Log"));
+            _ui->fileBox->setTitle(QString());
+            _ui->logBox->setTitle(tr("Log"));
+            _retranslateShell();
 
             tabBar->setTabText(0, _ngPost->quickJobName());
             tabBar->setTabToolTip(0, tr("Default %1").arg(_ngPost->quickJobName()));
@@ -315,7 +368,7 @@ void MainWindow::changeEvent(QEvent *event)
             tabBar->setTabText(lastTabIdx, tr("New"));
             tabBar->setTabToolTip(2, QString("Create a new %1").arg(_ngPost->quickJobName()));
 
-            setJobLabel(_ui->postTabWidget->currentIndex());
+            setJobLabel(_jobNumber);
 
             _servers->retranslate();
 
@@ -324,6 +377,7 @@ void MainWindow::changeEvent(QEvent *event)
             _autoPostTab->retranslate();
             for (int i = 2 ; i < _ui->postTabWidget->count() - 1; ++i)
                 _getPostWidget(i)->retranslate();
+            _fixIconButtons();
             break;
 
             // this event is send, if the system, language changes
@@ -554,6 +608,7 @@ PostingWidget *MainWindow::addNewQuickTab(int lastTabIdx, const QFileInfoList &f
     for (const QFileInfo &file : files)
         newPostingWidget->addPath(file.absoluteFilePath(), 0, file.isDir());
 
+    _fixIconButtons();
     return newPostingWidget;
 }
 
@@ -604,7 +659,13 @@ void MainWindow::updateJobTab(QWidget *postWidget, const QColor &color, const QI
 
 void MainWindow::setJobLabel(int jobNumber)
 {
-    _ui->jobLabel->setText(QString("<b><u>Post #%1</u></b>").arg(jobNumber != 1 ? QString::number(jobNumber) : "Auto"));
+    _jobNumber = jobNumber;
+    if (jobNumber < 0)
+        _ui->jobLabel->setText(tr("Ready"));
+    else if (jobNumber <= 1)
+        _ui->jobLabel->setText(_ngPost->quickJobName());
+    else
+        _ui->jobLabel->setText(QString("%1 #%2").arg(_ngPost->quickJobName()).arg(jobNumber));
 }
 
 
@@ -1015,10 +1076,10 @@ void MainWindow::onShutdownToggled(bool checked)
 
 void MainWindow::setPauseIcon(bool pause)
 {
-    if (pause)
-        _ui->pauseButton->setIcon(QIcon(":/icons/pause.png"));
-    else
-        _ui->pauseButton->setIcon(QIcon(":/icons/play.png"));
+    _pauseIcon = pause;
+    QColor color = _ngPost && _ngPost->isDarkTheme() ? QColor("#d6d6d6") : QColor("#3b3b3b");
+    _ui->pauseButton->setIcon(_navIcon(pause ? ":/icons/nav_pause.png" : ":/icons/nav_play.png", color, color));
+    _ui->pauseButton->setToolTip(pause ? tr("Pause the uploads") : tr("Resume the uploads"));
 }
 
 void MainWindow::onPauseClicked()
@@ -1030,4 +1091,579 @@ void MainWindow::onPauseClicked()
         else
             _ngPost->pause();
     }
+}
+
+
+//========================================================================
+// ngPost 2026 layout: side bar on the left, one page per section on the right
+//========================================================================
+#include <QStackedWidget>
+#include <QButtonGroup>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QGridLayout>
+#include <QPainter>
+#include <QMenuBar>
+
+QIcon MainWindow::_navIcon(const QString &path, const QColor &normal, const QColor &checked)
+{
+    QPixmap src(path);
+    auto tint = [&src](const QColor &color) {
+        QPixmap pix(src.size());
+        pix.fill(Qt::transparent);
+        QPainter p(&pix);
+        p.drawPixmap(0, 0, src);
+        p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+        p.fillRect(pix.rect(), color);
+        return pix;
+    };
+    QIcon icon;
+    icon.addPixmap(tint(normal),  QIcon::Normal, QIcon::Off);
+    icon.addPixmap(tint(checked), QIcon::Normal, QIcon::On);
+    icon.addPixmap(tint(checked), QIcon::Active, QIcon::On);
+    return icon;
+}
+
+static QLabel *newLabel(const QString &objectName, QWidget *parent)
+{
+    QLabel *lbl = new QLabel(parent);
+    lbl->setObjectName(objectName);
+    return lbl;
+}
+
+void MainWindow::_buildShell()
+{
+    if (menuBar())
+        menuBar()->hide();
+
+    QWidget *central = new QWidget(this);
+    QHBoxLayout *rootLayout = new QHBoxLayout(central);
+    rootLayout->setContentsMargins(0, 0, 0, 0);
+    rootLayout->setSpacing(0);
+
+    // ---------- side bar ----------
+    QWidget *sideBar = new QWidget(central);
+    sideBar->setObjectName("sideBar");
+    sideBar->setAttribute(Qt::WA_StyledBackground, true);
+    sideBar->setFixedWidth(210);
+    QVBoxLayout *side = new QVBoxLayout(sideBar);
+    side->setContentsMargins(10, 14, 10, 12);
+    side->setSpacing(3);
+
+    QHBoxLayout *brand = new QHBoxLayout();
+    brand->setContentsMargins(6, 0, 0, 14);
+    brand->setSpacing(10);
+    QLabel *logo = new QLabel(sideBar);
+    logo->setPixmap(QIcon(":/icons/ngPost.png").pixmap(30, 30));
+    QVBoxLayout *brandText = new QVBoxLayout();
+    brandText->setSpacing(0);
+    QLabel *appTitle = newLabel("appTitle", sideBar);
+    appTitle->setText("ngPost 2026");
+    _appVersion = newLabel("appVersion", sideBar);
+    brandText->addWidget(appTitle);
+    brandText->addWidget(_appVersion);
+    brand->addWidget(logo);
+    brand->addLayout(brandText);
+    brand->addStretch();
+    side->addLayout(brand);
+
+    _nav = new QButtonGroup(this);
+    _nav->setExclusive(true);
+    for (int i = 0; i < NB_NAV; ++i)
+    {
+        QPushButton *b = new QPushButton(sideBar);
+        b->setObjectName("navButton");
+        b->setCheckable(true);
+        b->setCursor(Qt::PointingHandCursor);
+        b->setIconSize({20, 20});
+        b->setMinimumHeight(38);
+        side->addWidget(b);
+        _nav->addButton(b, i);
+        _navButtons[i] = b;
+    }
+    _navButtons[NAV_QUICK]->setChecked(true);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    connect(_nav, QOverload<int>::of(&QButtonGroup::buttonClicked), this, &MainWindow::onNavClicked);
+#else
+    connect(_nav, &QButtonGroup::idClicked, this, &MainWindow::onNavClicked);
+#endif
+
+    side->addStretch();
+
+    _themeButton = new QPushButton(sideBar);
+    _themeButton->setObjectName("navButton");
+    _themeButton->setCursor(Qt::PointingHandCursor);
+    _themeButton->setIconSize({20, 20});
+    _themeButton->setMinimumHeight(38);
+    connect(_themeButton, &QAbstractButton::clicked, this, &MainWindow::onThemeButtonClicked);
+    side->addWidget(_themeButton);
+
+    _aboutButton = new QPushButton(sideBar);
+    _aboutButton->setObjectName("navButton");
+    _aboutButton->setCursor(Qt::PointingHandCursor);
+    _aboutButton->setIconSize({20, 20});
+    _aboutButton->setMinimumHeight(38);
+    connect(_aboutButton, &QAbstractButton::clicked, this, [this](){ if (_ngPost) _ngPost->onAboutClicked(); });
+    side->addWidget(_aboutButton);
+
+    rootLayout->addWidget(sideBar);
+
+    // ---------- right side: pages + upload bar ----------
+    QWidget *right = new QWidget(central);
+    QVBoxLayout *rightLayout = new QVBoxLayout(right);
+    rightLayout->setContentsMargins(0, 0, 0, 0);
+    rightLayout->setSpacing(0);
+
+    _pages = new QStackedWidget(right);
+    rightLayout->addWidget(_pages, 1);
+
+    // page 0: posts (Quick Posts tabs + Auto Posting + log)
+    QWidget *postsPage = new QWidget(_pages);
+    QVBoxLayout *postsLayout = new QVBoxLayout(postsPage);
+    postsLayout->setContentsMargins(24, 18, 24, 12);
+    postsLayout->setSpacing(10);
+    _postsTitle = newLabel("pageTitle", postsPage);
+    postsLayout->addWidget(_postsTitle);
+    _ui->fileBox->setTitle(QString());
+    _ui->fileBox->setObjectName("plainBox"); // the cards are inside the posts
+    _ui->fileBox->layout()->setContentsMargins(0, 0, 0, 0);
+    _ui->postSplitter->setParent(postsPage);
+    _ui->postSplitter->setOrientation(Qt::Vertical); // the post takes the whole width, the log below
+    _ui->postSplitter->setHandleWidth(10);
+    postsLayout->addWidget(_ui->postSplitter, 1);
+    _pages->addWidget(postsPage);
+
+    // page 1: servers
+    QWidget *serversPage = new QWidget(_pages);
+    QVBoxLayout *serversLayout = new QVBoxLayout(serversPage);
+    serversLayout->setContentsMargins(24, 18, 24, 18);
+    serversLayout->setSpacing(4);
+    _serversTitle    = newLabel("pageTitle", serversPage);
+    _serversSubtitle = newLabel("pageSubtitle", serversPage);
+    serversLayout->addWidget(_serversTitle);
+    serversLayout->addWidget(_serversSubtitle);
+    serversLayout->addSpacing(10);
+    _ui->serverBox->setParent(serversPage);
+    _ui->serverBox->setTitle(QString());
+    _ui->serverBox->setObjectName("plainBox");
+    serversLayout->addWidget(_ui->serverBox, 1);
+    _pages->addWidget(serversPage);
+
+    // page 2: settings (the widgets of the old "Parameters" box, grouped in cards)
+    _pages->addWidget(_buildSettingsPage());
+
+    // page 3: history of the uploads (created in init, it needs NgPost)
+    _pages->addWidget(new QWidget(_pages));
+
+    // upload bar always visible at the bottom
+    _ui->uploadFrame->setParent(right);
+    _ui->uploadFrame->setObjectName("uploadFrame");
+    _ui->uploadFrame->setAttribute(Qt::WA_StyledBackground, true);
+    _ui->uploadFrame->setFrameShape(QFrame::NoFrame);
+    _ui->uploadFrame->layout()->setContentsMargins(24, 8, 24, 8);
+    _ui->uploadFrame->layout()->setSpacing(12);
+    _ui->jobLabel->setObjectName("jobLabel");
+    _ui->jobLabel->setMinimumWidth(110);
+    _ui->pauseButton->setObjectName("iconButton");
+    _ui->pauseButton->setIconSize({16, 16});
+    _ui->pauseButton->setFixedSize(34, 30);
+    _ui->uploadLbl->setObjectName("hint");
+    rightLayout->addWidget(_ui->uploadFrame);
+
+    rootLayout->addWidget(right, 1);
+
+    // the old containers (splitters, Parameters box) are not used anymore
+    _ui->postingBox->hide();
+    _ui->postingBox->setParent(_pages->widget(PAGE_SETTINGS));
+    setCentralWidget(central); // deletes the old central widget (vSplitter, hSplitter...)
+}
+
+QFrame *MainWindow::_card(const QString &key, QGridLayout *&grid)
+{
+    QFrame *card = new QFrame();
+    card->setObjectName("card");
+    card->setAttribute(Qt::WA_StyledBackground, true);
+    QVBoxLayout *v = new QVBoxLayout(card);
+    v->setContentsMargins(18, 14, 18, 16);
+    v->setSpacing(10);
+    QLabel *title = newLabel("cardTitle", card);
+    _cardTitles.insert(key, title);
+    v->addWidget(title);
+    grid = new QGridLayout();
+    grid->setHorizontalSpacing(10);
+    grid->setVerticalSpacing(8);
+    v->addLayout(grid);
+    return card;
+}
+
+QWidget *MainWindow::_buildSettingsPage()
+{
+    QScrollArea *scroll = new QScrollArea();
+    scroll->setWidgetResizable(true);
+    scroll->setFrameShape(QFrame::NoFrame);
+    QWidget *content = new QWidget();
+    content->setObjectName("pageContent");
+    scroll->setWidget(content);
+
+    QVBoxLayout *page = new QVBoxLayout(content);
+    page->setContentsMargins(24, 18, 24, 18);
+    page->setSpacing(4);
+    _settingsTitle    = newLabel("pageTitle", content);
+    _settingsSubtitle = newLabel("pageSubtitle", content);
+    page->addWidget(_settingsTitle);
+    page->addWidget(_settingsSubtitle);
+    page->addSpacing(10);
+
+    QHBoxLayout *columns = new QHBoxLayout();
+    columns->setSpacing(16);
+    QVBoxLayout *left  = new QVBoxLayout();
+    QVBoxLayout *right = new QVBoxLayout();
+    left->setSpacing(16);
+    right->setSpacing(16);
+    columns->addLayout(left, 1);
+    columns->addLayout(right, 1);
+    page->addLayout(columns);
+    page->addStretch();
+
+    QGridLayout *g = nullptr;
+    auto hbox = [](std::initializer_list<QWidget*> widgets, bool stretch = true) {
+        QHBoxLayout *h = new QHBoxLayout();
+        h->setSpacing(8);
+        for (QWidget *w : widgets)
+            h->addWidget(w);
+        if (stretch)
+            h->addStretch();
+        return h;
+    };
+
+    // poster
+    QFrame *poster = _card("poster", g);
+    g->addWidget(_ui->fromLbl, 0, 0);
+    g->addLayout(hbox({_ui->fromEdit, _ui->genPoster}, false), 0, 1);
+    g->addLayout(hbox({_ui->saveFromCB, _ui->uniqueFromCB}), 1, 1);
+    g->setColumnStretch(1, 1);
+    left->addWidget(poster);
+
+    // archives
+    QFrame *archives = _card("archives", g);
+    g->addWidget(_ui->rarPassCB, 0, 0);
+    g->addLayout(hbox({_ui->rarPassEdit, _ui->rarLengthSB, _ui->genPass}, false), 0, 1);
+    g->addWidget(_ui->autoCompressCB, 1, 0, 1, 2);
+    g->setColumnStretch(1, 1);
+    left->addWidget(archives);
+
+    // newsgroups
+    QFrame *groups = _card("groups", g);
+    _ui->groupsLbl->hide();
+    _ui->groupsEdit->setMaximumHeight(110);
+    _ui->groupsEdit->setMinimumHeight(70);
+    g->addWidget(_ui->groupsEdit, 0, 0);
+    left->addWidget(groups);
+    left->addStretch();
+
+    // upload
+    QFrame *upload = _card("upload", g);
+    g->addWidget(_ui->articleSizeLbl, 0, 0);
+    g->addWidget(_ui->articleSizeEdit, 0, 1);
+    g->addWidget(_ui->nbRetryLbl, 1, 0);
+    g->addWidget(_ui->nbRetrySB, 1, 1);
+    g->addWidget(_ui->threadLbl, 2, 0);
+    g->addWidget(_ui->threadSB, 2, 1);
+    g->addWidget(_ui->autoCloseCB, 3, 0, 1, 3);
+    g->addWidget(_ui->shutdownCB, 4, 0, 1, 3);
+    _ui->articleSizeEdit->setMaximumWidth(110);
+    _ui->nbRetrySB->setMinimumWidth(80);
+    _ui->threadSB->setMinimumWidth(80);
+    g->setColumnStretch(2, 1);
+    right->addWidget(upload);
+
+    // nzb
+    QFrame *nzb = _card("nzb", g);
+    g->addWidget(_ui->nzbPathLbl, 0, 0);
+    g->addLayout(hbox({_ui->nzbPathEdit, _ui->nzbPathButton}, false), 0, 1);
+    g->setColumnStretch(1, 1);
+    _ui->nzbPathEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    right->addWidget(nzb);
+
+    // privacy
+    QFrame *privacy = _card("privacy", g);
+    g->addWidget(_ui->obfuscateMsgIdCB, 0, 0);
+    g->addWidget(_ui->obfuscateFileNameCB, 1, 0);
+    right->addWidget(privacy);
+
+    // history of the uploads
+    QFrame *history = _card("history", g);
+    _historyCB = new QCheckBox(history);
+    _historyCB->setObjectName("historyCB");
+    _historyPathEdit = new QLineEdit(history);
+    _historyPathEdit->setObjectName("historyPathEdit");
+    _historyPathEdit->setReadOnly(true);
+    _historyPathButton = new QPushButton(" ... ", history);
+    _historyHint = newLabel("hint", history);
+    _historyHint->setWordWrap(true);
+    g->addWidget(_historyCB, 0, 0, 1, 2);
+    g->addLayout(hbox({_historyPathEdit, _historyPathButton}, false), 1, 0, 1, 2);
+    g->addWidget(_historyHint, 2, 0, 1, 2);
+    g->setColumnStretch(1, 1);
+    left->insertWidget(left->count() - 1, history); // before the stretch of the left column
+
+    // interface
+    QFrame *gui = _card("interface", g);
+    _themeLbl = new QLabel(gui);
+    _themeCB  = new QComboBox(gui);
+    _themeCB->setObjectName("themeCB");
+    _themeCB->addItems({QString(), QString(), QString()});
+    _themeCB->setMinimumWidth(140);
+    _ui->langCB->setMinimumWidth(140);
+    _autoSaveHint = newLabel("hint", gui);
+    _autoSaveHint->setWordWrap(true);
+    g->addWidget(_ui->langLbl, 0, 0);
+    g->addWidget(_ui->langCB, 0, 1);
+    g->addWidget(_themeLbl, 1, 0);
+    g->addWidget(_themeCB, 1, 1);
+    g->addWidget(_autoSaveHint, 2, 0, 1, 3);
+    g->addLayout(hbox({_ui->saveButton}), 3, 0, 1, 3);
+    g->setColumnStretch(2, 1);
+    right->addWidget(gui);
+    right->addStretch();
+
+    return scroll;
+}
+
+void MainWindow::_retranslateShell()
+{
+    if (!_pages)
+        return;
+    // same names as the tabs
+    _navButtons[NAV_QUICK]->setText(_ngPost ? _ngPost->quickJobName() : tr("Quick Post"));
+    _navButtons[NAV_AUTO]->setText(_ngPost ? _ngPost->folderMonitoringName() : tr("Auto Posting"));
+    _navButtons[NAV_SERVERS]->setText(tr("Servers"));
+    _navButtons[NAV_SETTINGS]->setText(tr("Settings"));
+    _aboutButton->setText(tr("About"));
+    _updateThemeButton();
+
+    _postsTitle->setText(_navButtons[NAV_AUTO]->isChecked() ? _navButtons[NAV_AUTO]->text() : _navButtons[NAV_QUICK]->text());
+    _serversTitle->setText(tr("Servers"));
+    _serversSubtitle->setText(tr("The posts are uploaded on all the enabled servers. Test a server before using it."));
+    _settingsTitle->setText(tr("Settings"));
+    _settingsSubtitle->setText(tr("Default parameters of the posts and of the application."));
+
+    _cardTitles["poster"]->setText(tr("Poster"));
+    _cardTitles["archives"]->setText(tr("Archives and password"));
+    _cardTitles["groups"]->setText(tr("Newsgroups"));
+    _cardTitles["upload"]->setText(tr("Upload"));
+    _cardTitles["nzb"]->setText(tr("NZB files"));
+    _cardTitles["privacy"]->setText(tr("Privacy"));
+    _cardTitles["interface"]->setText(tr("Interface"));
+    _cardTitles["history"]->setText(tr("History of the uploads"));
+    _navButtons[NAV_HISTORY]->setText(tr("History"));
+    _historyCB->setText(tr("Save the history of the uploads"));
+    _historyPathButton->setToolTip(tr("Choose the history file"));
+    _historyHint->setText(tr("The history also records the password of each archive in clear text: "
+                             "it stays on this computer, but anyone using it can read the file."));
+    if (_history)
+        _history->retranslate();
+
+    _ui->langLbl->setText(tr("Language"));
+    _ui->nzbPathLbl->setText(tr("Folder"));
+    _themeLbl->setText(tr("Theme"));
+    _themeCB->setItemText(0, tr("Automatic (like Windows)"));
+    _themeCB->setItemText(1, tr("Light"));
+    _themeCB->setItemText(2, tr("Dark"));
+    _autoSaveHint->setText(tr("The settings are saved automatically after each change."));
+    _ui->saveButton->setText(tr("Save now"));
+    _ui->logBox->setTitle(tr("Log"));
+    setJobLabel(_jobNumber);
+}
+
+void MainWindow::_updateThemeButton()
+{
+    if (!_themeButton || !_ngPost)
+        return;
+    QString mode = _ngPost->theme() == "light" ? tr("Light") : _ngPost->theme() == "dark" ? tr("Dark") : tr("Auto");
+    _themeButton->setText(tr("Theme: %1").arg(mode));
+}
+
+void MainWindow::onThemeApplied()
+{
+    if (!_pages || !_ngPost)
+        return;
+    bool dark = _ngPost->isDarkTheme();
+    QColor normal  = dark ? QColor("#d6d6d6") : QColor("#3b3b3b");
+    QColor checked = dark ? QColor("#4cc2ff") : QColor("#0067c0");
+    static const char *icons[NB_NAV] = {":/icons/nav_quick.png", ":/icons/nav_auto.png",
+                                        ":/icons/nav_servers.png", ":/icons/nav_settings.png",
+                                        ":/icons/nav_history.png"};
+    for (int i = 0; i < NB_NAV; ++i)
+        _navButtons[i]->setIcon(_navIcon(icons[i], normal, checked));
+    _themeButton->setIcon(_navIcon(":/icons/nav_theme.png", normal, checked));
+    _adaptIcons();
+    _aboutButton->setIcon(_navIcon(":/icons/nav_about.png", normal, checked));
+    setPauseIcon(_pauseIcon);
+    _updateThemeButton();
+}
+
+void MainWindow::onNavClicked(int id)
+{
+    switch (id)
+    {
+    case NAV_QUICK:
+        _pages->setCurrentIndex(PAGE_POSTS);
+        if (_ui->postTabWidget->currentIndex() == 1)
+            _ui->postTabWidget->setCurrentIndex(0);
+        break;
+    case NAV_AUTO:
+        _pages->setCurrentIndex(PAGE_POSTS);
+        _ui->postTabWidget->setCurrentIndex(1);
+        break;
+    case NAV_SERVERS:
+        _pages->setCurrentIndex(PAGE_SERVERS);
+        break;
+    case NAV_SETTINGS:
+        _pages->setCurrentIndex(PAGE_SETTINGS);
+        break;
+    case NAV_HISTORY:
+        _pages->setCurrentIndex(PAGE_HISTORY);
+        break;
+    }
+    _postsTitle->setText(_navButtons[id == NAV_AUTO ? NAV_AUTO : NAV_QUICK]->text());
+}
+
+void MainWindow::onPostTabChanged(int index)
+{
+    if (_pages->currentIndex() != PAGE_POSTS)
+        return;
+    int nav = index == 1 ? NAV_AUTO : NAV_QUICK;
+    _navButtons[nav]->setChecked(true);
+    _postsTitle->setText(_navButtons[nav]->text());
+}
+
+void MainWindow::onThemeSelected(int index)
+{
+    static const char *themes[3] = {"auto", "light", "dark"};
+    if (index < 0 || index > 2 || !_ngPost)
+        return;
+    _ngPost->setTheme(themes[index]);
+    // the status colours of the existing tabs keep their old colour until their next update
+}
+
+void MainWindow::onThemeButtonClicked()
+{
+    // Auto -> Light -> Dark -> Auto
+    _themeCB->setCurrentIndex((_themeCB->currentIndex() + 1) % 3);
+}
+
+// the black icons of the original ngPost (trash, pause, file...) are lightened on the dark theme
+void MainWindow::_adaptIcons()
+{
+    if (!_ngPost)
+        return;
+    bool dark = _ngPost->isDarkTheme();
+    for (QAbstractButton *b : findChildren<QAbstractButton*>())
+    {
+        if (b->objectName() == "navButton")
+            continue;
+        QVariant orig = b->property("ngOrigIcon");
+        if (!orig.isValid())
+        {
+            if (b->icon().isNull())
+                continue;
+            // keep only the icons that are black/grey (no colour)
+            QImage img = b->icon().pixmap(32, 32).toImage().convertToFormat(QImage::Format_ARGB32);
+            bool mono = true, hasPixel = false;
+            for (int y = 0; y < img.height() && mono; ++y)
+                for (int x = 0; x < img.width(); ++x)
+                {
+                    QColor c = QColor::fromRgba(img.pixel(x, y));
+                    if (c.alpha() < 40)
+                        continue;
+                    hasPixel = true;
+                    if (c.hsvSaturation() > 40 || c.lightness() > 110)
+                    {
+                        mono = false;
+                        break;
+                    }
+                }
+            if (!mono || !hasPixel)
+            {
+                b->setProperty("ngOrigIcon", QIcon());
+                continue;
+            }
+            b->setProperty("ngOrigIcon", b->icon());
+            orig = b->property("ngOrigIcon");
+        }
+        QIcon icon = orig.value<QIcon>();
+        if (icon.isNull())
+            continue; // not a black icon
+        if (!dark)
+            b->setIcon(icon);
+        else
+        {
+            QPixmap pix = icon.pixmap(64, 64);
+            QPainter p(&pix);
+            p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+            p.fillRect(pix.rect(), QColor("#d6d6d6"));
+            p.end();
+            b->setIcon(QIcon(pix));
+        }
+    }
+}
+
+void MainWindow::_fixIconButtons()
+{
+    // the small "..." buttons (choose a file or a folder) become folder icons
+    for (QPushButton *b : findChildren<QPushButton*>())
+    {
+        if (b->text().trimmed() == "...")
+        {
+            b->setText(QString());
+            b->setIcon(QIcon(":/icons/folder.png"));
+            if (b->objectName() != "iconButton")
+            {
+                b->setObjectName("iconButton");
+                b->style()->unpolish(b);
+                b->style()->polish(b);
+            }
+        }
+    }
+    _adaptIcons();
+}
+
+void MainWindow::_updateHistorySettings()
+{
+    QString path = _ngPost->historyFile();
+    if (path.isEmpty() && !_ngPost->_postHistoryFile.isEmpty())
+        path = _ngPost->_postHistoryFile;
+    _historyPathEdit->setText(QDir::toNativeSeparators(path));
+    _historyPathEdit->setEnabled(_ngPost->_historyEnabled);
+    _historyPathButton->setEnabled(_ngPost->_historyEnabled);
+}
+
+void MainWindow::onHistoryToggled(bool checked)
+{
+    _ngPost->_historyEnabled = checked;
+    _updateHistorySettings();
+    if (_history)
+        _history->reload();
+}
+
+void MainWindow::onHistoryPathClicked()
+{
+    QString current = _ngPost->historyFile();
+    QString path = QFileDialog::getSaveFileName(this, tr("History file"), current,
+                                                tr("CSV files (*.csv)"), nullptr,
+                                                QFileDialog::DontConfirmOverwrite); // an existing history is kept
+    if (path.isEmpty())
+        return;
+    _ngPost->_postHistoryFile = path;
+    _updateHistorySettings();
+    if (_history)
+        _history->reload();
+    scheduleAutoSave();
+}
+
+void MainWindow::onHistoryUpdated()
+{
+    if (_history)
+        _history->reload();
 }

@@ -22,6 +22,7 @@
 
 #include <QMainWindow>
 #include <QFileInfoList>
+#include <QMap>
 class QTimer;
 class ServersWidget;
 class NgPost;
@@ -29,6 +30,16 @@ struct NntpServerParams;
 class NntpFile;
 class PostingWidget;
 class AutoPostWidget;
+class QStackedWidget;
+class QButtonGroup;
+class QPushButton;
+class QLabel;
+class QComboBox;
+class QGridLayout;
+class QFrame;
+class QLineEdit;
+class QCheckBox;
+class HistoryWidget;
 
 namespace Ui {
 class MainWindow;
@@ -54,6 +65,32 @@ private:
     bool            _autoSaveQuickTab;  //!< a setting of the default Quick Post tab changed
     bool            _autoSaveAutoTab;   //!< a setting of the Auto Posting tab changed
     static constexpr int sAutoSaveDelayMs = 1000;
+
+    // new layout of ngPost 2026: side bar + pages
+    enum Page {PAGE_POSTS = 0, PAGE_SERVERS, PAGE_SETTINGS, PAGE_HISTORY};
+    enum Nav  {NAV_QUICK = 0, NAV_AUTO, NAV_SERVERS, NAV_SETTINGS, NAV_HISTORY, NB_NAV};
+    QStackedWidget *_pages;
+    QButtonGroup   *_nav;
+    QPushButton    *_navButtons[NB_NAV];
+    HistoryWidget  *_history;
+    int             _jobNumber;   //!< post shown in the bottom bar (-1: none)
+    bool            _pauseIcon;   //!< the pause button shows pause (true) or play
+    QCheckBox      *_historyCB;
+    QLineEdit      *_historyPathEdit;
+    QPushButton    *_historyPathButton;
+    QLabel         *_historyHint;
+    QPushButton    *_themeButton;  //!< side bar: switch Auto / Light / Dark
+    QPushButton    *_aboutButton;
+    QLabel         *_postsTitle;
+    QLabel         *_serversTitle;
+    QLabel         *_serversSubtitle;
+    QLabel         *_settingsTitle;
+    QLabel         *_settingsSubtitle;
+    QLabel         *_appVersion;
+    QComboBox      *_themeCB;
+    QLabel         *_themeLbl;
+    QLabel         *_autoSaveHint;
+    QMap<QString, QLabel*> _cardTitles;
 
 
 
@@ -98,15 +135,19 @@ public:
 
     void setPauseIcon(bool pause);
 
-    static const QColor  sPostingColor;
+    static QColor        sPostingColor;
     static const QString sPostingIcon;
-    static const QColor  sPendingColor;
+    static QColor        sPendingColor;
     static const QString sPendingIcon;
-    static const QColor  sDoneOKColor;
+    static QColor        sDoneOKColor;
     static const QString sDoneOKIcon;
-    static const QColor  sDoneKOColor;
+    static QColor        sDoneKOColor;
     static const QString sDoneKOIcon;
-    static const QColor  sArticlesFailedColor;
+    static QColor        sArticlesFailedColor;
+
+    static void setThemeColors(bool dark); //!< status colours readable on the light or the dark theme
+    void onThemeApplied(); //!< called by NgPost::applyTheme (icons of the side bar...)
+    void onHistoryUpdated(); //!< a post has been added in the history file
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
@@ -125,6 +166,12 @@ public slots:
     void scheduleAutoSave(); //!< to be called after any change of a setting (the save is delayed and grouped)
 
 private slots:
+    void onNavClicked(int id);
+    void onPostTabChanged(int index);
+    void onThemeSelected(int index);
+    void onThemeButtonClicked();
+    void onHistoryToggled(bool checked);
+    void onHistoryPathClicked();
     void onAutoSave();
     void onDiagnosticReport();
 
@@ -163,6 +210,16 @@ private:
     void _watchForAutoSave(QWidget *root, int tab); //!< tab: -1 global settings, 0 Quick Post, 1 Auto Posting
     void _saveConfig(bool quickTab, bool autoTab);
     QString _diagnosticReport() const;
+
+    void _buildShell();          //!< side bar + pages (replaces the splitters of the original window)
+    QWidget *_buildSettingsPage();
+    QFrame *_card(const QString &key, QGridLayout *&grid);
+    void _retranslateShell();
+    void _fixIconButtons();
+    void _adaptIcons();
+    void _updateThemeButton();
+    void _updateHistorySettings();
+    static QIcon _navIcon(const QString &path, const QColor &normal, const QColor &checked);
 
     void _initServerBox();
     void _initPostingBox();

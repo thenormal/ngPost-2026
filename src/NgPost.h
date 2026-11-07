@@ -189,7 +189,10 @@ private:
     PostingJob         *_packingJob;
 
     QString     _historyFieldSeparator;
-    QString     _postHistoryFile;
+    QString     _postHistoryFile;      //!< POST_HISTORY of the config (explicit file)
+    bool        _historyEnabled;       //!< history of the uploads (on by default, key "history" in the config)
+    bool        _historyKeyInConfig;   //!< false the first time: the user is informed that the history is on
+    QString     _configPath;           //!< config file in use (the default history file is created next to it)
     QList<QDir> _autoDirs;
 
     FoldersMonitorForNewFiles *_folderMonitor;
@@ -206,6 +209,8 @@ private:
     QStringList   _packAutoKeywords;
 
     QString       _lang;
+    QString       _theme;     //!< interface theme: auto (follows Windows), light or dark
+    bool          _darkTheme; //!< theme currently applied
     QMap<QString, QTranslator*> _translators;
 
     QNetworkAccessManager _netMgr;
@@ -324,7 +329,17 @@ public:
     bool checkSupportSSL();
 #ifdef __USE_HMI__
     int startHMI() override;
-    void applyTheme(); //!< light theme (Fusion + :/theme/light.qss), disabled with the env variable NGPOST_NO_THEME
+    void applyTheme(); //!< light or dark theme (Fusion + :/theme/theme.qss), disabled with the env variable NGPOST_NO_THEME
+    void setTheme(const QString &theme); //!< auto, light or dark (applied immediately)
+    inline const QString &theme() const { return _theme; }
+    inline bool isDarkTheme() const { return _darkTheme; }
+    static bool systemUsesDarkTheme();
+#endif
+public:
+    QString historyFile() const;  //!< history file used (explicit POST_HISTORY or ngPost_history.csv next to the config), empty if off
+    inline QString historyFieldSeparator() const { return _historyFieldSeparator; }
+    static QStringList historyHeader();
+#ifdef __USE_HMI__
 #endif
 
     inline int errCode() const;

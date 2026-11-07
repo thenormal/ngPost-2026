@@ -20,6 +20,7 @@
 #include "PostingWidget.h"
 #include "ui_PostingWidget.h"
 #include "MainWindow.h"
+#include <QCoreApplication>
 #include "AboutNgPost.h"
 #include "NgPost.h"
 #include "PostingJob.h"
@@ -43,15 +44,21 @@ PostingWidget::PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber) :
     _jobNumber(jobNumber),
     _postingJob(nullptr),
     _state(STATE::IDLE),
-    _postingFinished(false)
+    _postingFinished(false),
+    _filesTitle(nullptr), _releaseInfo(nullptr), _nzbTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
+    _advancedCard(nullptr), _advancedToggle(nullptr)
 {
     _ui->setupUi(this);
+    _buildLayout();
 
     connect(_ui->postButton, &QAbstractButton::clicked, this, &PostingWidget::onPostFiles);
     connect(_ui->nzbPassCB,  &QAbstractButton::toggled, this, &PostingWidget::onNzbPassToggled);
     connect(_ui->genPass,    &QAbstractButton::clicked, this, &PostingWidget::onGenNzbPassword);
 
-    _ui->filesList->setSignature(QString("<pre>%1</pre>").arg(_ngPost->escapeXML(_ngPost->asciiArt())));
+    _ui->filesList->setEmptyState(tr("Drag files or folders here, or choose them with the buttons below."),
+                                  tr("Select Files"), tr("Select Folder"));
+    connect(_ui->filesList, &SignedListWidget::emptyAction1, this, &PostingWidget::onSelectFilesClicked);
+    connect(_ui->filesList, &SignedListWidget::emptyAction2, this, &PostingWidget::onSelectFolderClicked);
     connect(_ui->filesList, &SignedListWidget::rightClick, this, &PostingWidget::onSelectFilesClicked);
 }
 
@@ -536,6 +543,9 @@ void PostingWidget::udatePostingParams()
 void PostingWidget::retranslate()
 {
     _ui->retranslateUi(this);
+    _retranslateLayout();
+    _ui->filesList->setEmptyState(tr("Drag files or folders here, or choose them with the buttons below."),
+                                  tr("Select Files"), tr("Select Folder"));
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
     _ui->redundancySB->setToolTip(tr("Using PAR2_ARGS from config file: %1").arg(_ngPost->_par2Args));
     _ui->filesList->setToolTip(QString("%1<ul><li>%2</li><li>%3</li><li>%4</li></ul>%5").arg(
@@ -625,4 +635,196 @@ void PostingWidget::setPosting()
     _hmi->updateJobTab(this, _hmi->sPostingColor, QIcon(_hmi->sPostingIcon), _postingJob->nzbName());
     _ui->postButton->setText(tr("Stop Posting"));
     _state = STATE::POSTING;
+}
+
+
+//========================================================================
+// ngPost 2026 layout: file list, then the NZB and Archive cards,
+// advanced options (folders, rar, volumes) hidden by default, Post button
+//========================================================================
+#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QFrame>
+#include <QCheckBox>
+#include <QLabel>
+
+bool PostingWidget::sShowAdvanced = false;
+
+static QFrame *newCard(QLabel *&title, QGridLayout *&grid)
+{
+    QFrame *card = new QFrame();
+    card->setObjectName("card");
+    card->setAttribute(Qt::WA_StyledBackground, true);
+    QVBoxLayout *v = new QVBoxLayout(card);
+    v->setContentsMargins(16, 12, 16, 14);
+    v->setSpacing(10);
+    title = new QLabel(card);
+    title->setObjectName("cardTitle");
+    v->addWidget(title);
+    grid = new QGridLayout();
+    grid->setHorizontalSpacing(10);
+    grid->setVerticalSpacing(8);
+    v->addLayout(grid);
+    return card;
+}
+
+static QHBoxLayout *row(std::initializer_list<QWidget*> widgets, bool stretch = false)
+{
+    QHBoxLayout *h = new QHBoxLayout();
+    h->setSpacing(8);
+    for (QWidget *w : widgets)
+        h->addWidget(w);
+    if (stretch)
+        h->addStretch();
+    return h;
+}
+
+void PostingWidget::_buildLayout()
+{
+    QWidget *page = new QWidget(this);
+    QVBoxLayout *root = new QVBoxLayout(page);
+    root->setContentsMargins(2, 12, 2, 2);
+    root->setSpacing(12);
+
+    // files: title + small tool bar, then the list (with its empty screen)
+    QHBoxLayout *head = new QHBoxLayout();
+    head->setSpacing(8);
+    _filesTitle = new QLabel(page);
+    _filesTitle->setObjectName("cardTitle");
+    head->addWidget(_filesTitle);
+    head->addStretch();
+    head->addWidget(_ui->selectFilesButton);
+    head->addWidget(_ui->selectFolderButton);
+    head->addWidget(_ui->clearFilesButton);
+    root->addLayout(head);
+    root->addWidget(_ui->filesList, 1);
+
+    // reminder: everything in the list is one release
+    _releaseInfo = new QLabel(page);
+    _releaseInfo->setObjectName("infoBanner");
+    _releaseInfo->setWordWrap(true);
+    _releaseInfo->setTextFormat(Qt::RichText);
+    _releaseInfo->hide();
+    root->addWidget(_releaseInfo);
+    connect(_ui->filesList->model(), &QAbstractItemModel::rowsInserted, this, &PostingWidget::_updateReleaseInfo);
+    connect(_ui->filesList->model(), &QAbstractItemModel::rowsRemoved,  this, &PostingWidget::_updateReleaseInfo);
+    connect(_ui->filesList->model(), &QAbstractItemModel::modelReset,   this, &PostingWidget::_updateReleaseInfo);
+
+    // NZB and Archive cards side by side
+    QHBoxLayout *cards = new QHBoxLayout();
+    cards->setSpacing(12);
+    QGridLayout *g = nullptr;
+
+    QFrame *nzb = newCard(_nzbTitle, g);
+    g->addWidget(_ui->nzbFileLbl, 0, 0);
+    g->addLayout(row({_ui->nzbFileEdit, _ui->nzbFileButton}), 0, 1);
+    g->addWidget(_ui->nzbPassCB, 1, 0);
+    g->addLayout(row({_ui->nzbPassEdit, _ui->passLengthSB, _ui->genPass}), 1, 1);
+    g->setColumnStretch(1, 1);
+    _ui->nzbFileEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    _ui->nzbPassEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    cards->addWidget(nzb, 1);
+
+    QFrame *archive = newCard(_archiveTitle, g);
+    g->addWidget(_ui->compressCB, 0, 0);
+    g->addLayout(row({_ui->compressNameEdit, _ui->nameLengthSB, _ui->genCompressName}), 0, 1);
+    g->addWidget(_ui->par2CB, 1, 0);
+    g->addLayout(row({_ui->redundancyLbl, _ui->redundancySB, _ui->keepRarCB}, true), 1, 1);
+    g->setColumnStretch(1, 1);
+    _ui->compressNameEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    cards->addWidget(archive, 1);
+    root->addLayout(cards);
+
+    // advanced options
+    _advancedCard = newCard(_advancedTitle, g);
+    g->addWidget(_ui->compressPathLbl, 0, 0);
+    g->addLayout(row({_ui->compressPathEdit, _ui->compressPathButton}), 0, 1);
+    g->addWidget(_ui->rarLbl, 1, 0);
+    g->addLayout(row({_ui->rarEdit, _ui->rarPathButton}), 1, 1);
+    g->addWidget(_ui->rarSizeLbl, 2, 0);
+    g->addLayout(row({_ui->rarSizeEdit, _ui->rarMaxCB}, true), 2, 1);
+    g->setColumnStretch(1, 1);
+    _ui->compressPathEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    _ui->rarEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    _ui->rarSizeEdit->setMaximumWidth(100);
+    root->addWidget(_advancedCard);
+
+    // bottom: advanced toggle on the left, Post button on the right
+    QHBoxLayout *bottom = new QHBoxLayout();
+    _advancedToggle = new QPushButton(page);
+    _advancedToggle->setObjectName("linkButton");
+    _advancedToggle->setCursor(Qt::PointingHandCursor);
+    connect(_advancedToggle, &QAbstractButton::clicked, this, [this](){ _showAdvanced(!sShowAdvanced); });
+    bottom->addWidget(_advancedToggle);
+    bottom->addStretch();
+    _ui->postButton->setObjectName("accentButton");
+    _ui->postButton->setIcon(QIcon());
+    _ui->postButton->setMinimumSize(170, 38);
+    bottom->addWidget(_ui->postButton);
+    root->addLayout(bottom);
+
+    _ui->aboutButton->hide(); // About is in the side bar
+
+    // the .ui limited the width of some labels and check boxes (they were on one long line)
+    for (QWidget *w : page->findChildren<QWidget*>())
+        if (qobject_cast<QLabel*>(w) || qobject_cast<QCheckBox*>(w))
+            w->setMaximumWidth(QWIDGETSIZE_MAX);
+
+    // the .ui limited the width of some labels and check boxes (they were on one long line)
+    for (QWidget *w : page->findChildren<QWidget*>())
+        if (qobject_cast<QLabel*>(w) || qobject_cast<QCheckBox*>(w))
+            w->setMaximumWidth(QWIDGETSIZE_MAX);
+
+    delete layout(); // the old layout of the .ui (the widgets have been moved in the new one)
+    QVBoxLayout *outer = new QVBoxLayout(this);
+    outer->setContentsMargins(0, 0, 0, 0);
+    outer->addWidget(page);
+
+    _showAdvanced(sShowAdvanced);
+    _retranslateLayout();
+}
+
+void PostingWidget::_showAdvanced(bool show)
+{
+    sShowAdvanced = show;
+    _advancedCard->setVisible(show);
+    _retranslateLayout();
+}
+
+void PostingWidget::_updateReleaseInfo()
+{
+    if (!_releaseInfo)
+        return;
+    _releaseInfo->setVisible(_ui->filesList->count() > 1);
+}
+
+void PostingWidget::_retranslateLayout()
+{
+    if (!_filesTitle)
+        return;
+    _releaseInfo->setText(tr("<b>One release:</b> all the files and folders of this list are posted together, "
+                             "with a single NZB file and, if Compress is on, a single archive. "
+                             "To post separate releases, use one tab per release (<i>%1</i>) "
+                             "or the <i>%2</i> tab, which makes one post for each file or folder.").arg(
+                              QCoreApplication::translate("MainWindow", "New"), _ngPost->folderMonitoringName()));
+    _updateReleaseInfo();
+    _filesTitle->setText(tr("Files to post"));
+    _nzbTitle->setText(tr("NZB"));
+    _archiveTitle->setText(tr("Archive"));
+    _advancedTitle->setText(tr("Advanced options"));
+    _advancedToggle->setText(sShowAdvanced ? tr("▾ Hide advanced options") : tr("▸ Advanced options (temporary folder, rar / 7z, volumes)"));
+
+    _ui->nzbFileLbl->setText(tr("File"));
+    _ui->nzbPassCB->setText(tr("Password"));
+    _ui->compressCB->setText(tr("Compress"));
+    _ui->par2CB->setText(tr("par2"));
+    _ui->redundancyLbl->setText(tr("redundancy (%)"));
+    _ui->keepRarCB->setText(tr("keep the archives"));
+    _ui->compressPathLbl->setText(tr("Temporary folder"));
+    _ui->rarLbl->setText(tr("rar / 7z program"));
+    _ui->rarSizeLbl->setText(tr("Volume size (MB)"));
+    _ui->rarMaxCB->setText(tr("limit the number of volumes"));
+    _ui->clearFilesButton->setText(tr("Remove All"));
+    _ui->postButton->setText(isPosting() ? _ui->postButton->text() : tr("Post Files"));
 }
