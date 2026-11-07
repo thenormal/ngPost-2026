@@ -87,7 +87,9 @@ jobs:
         shell: pwsh
         run: |
           $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
-          $out = & "$PWD\dist\ngPost.exe" -v 2>&1 | Out-String
+          # minimal config (the sample ngPost.conf has Linux paths and would stop ngPost before printing the version)
+          Set-Content -Path smoke.conf -Value "lang = EN`nnzbPath = $env:RUNNER_TEMP"
+          $out = & "$PWD\dist\ngPost.exe" -c smoke.conf -v 2>&1 | Out-String
           Write-Host $out
           if ($out -notmatch 'SSL support: yes' -or $out -notmatch 'system version: OpenSSL 1\.1\.1') { throw "OpenSSL is not loaded" }
           exit 0
