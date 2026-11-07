@@ -100,7 +100,8 @@ qint64 Yenc::encode(const char data[], qint64 dataSize, uchar encbuffer[], quint
 
         case '\t' :
         case ' ' :
-            if(!column || column - 1 == maxwidth)
+            // escape a space/tab at the start AND at the end of a line (a trailing one could be stripped by servers)
+            if(!column || column == maxwidth - 1)
             {
                 ++column;
                 ++encSize;
