@@ -8,7 +8,9 @@
 它是 [mbruel/ngPost](https://github.com/mbruel/ngPost)（v4.16，GPL v3 许可证）的分支（fork）。原始程序的全部功劳归于其作者 Matthieu Bruel。<br/>
 
 ### 下载
-适用于 Windows 的即用型软件包（无需安装）在 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面：`ngPostDeluxe-v1.0-win64.zip`（Windows 64 位）和 `ngPostDeluxe-v1.0-win32.zip`（Windows 32 位）。将文件夹解压到任意位置，运行 `ngPostDeluxe.exe` 即可。要压缩帖子，还需要 [7-Zip](https://www.7-zip.org/) 或 WinRAR（在设置中填写其路径）。
+**安装程序**：在 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面下载 `ngPostDeluxe-v1.0-win64-setup.exe`（Windows 64 位）或 `ngPostDeluxe-v1.0-win32-setup.exe`（Windows 32 位），按提示操作即可。已内置 [7-Zip](https://www.7-zip.org/)，无需另外安装。您的设置和历史记录保存在 `%APPDATA%\ngPost Deluxe`，更新和卸载后仍会保留。<br/>
+由于安装程序没有数字签名，Windows 可能会显示“Windows 已保护你的电脑”：点击**更多信息**，然后点击**仍要运行**。<br/>
+**便携版**：`ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`，无需安装：将文件夹解压到任意位置，运行 `ngPostDeluxe.exe`（设置保存在程序旁边的 `ngPost.conf` 中）。
 
 ### 截图
 | Quick Post（浅色主题） | 历史记录 |
@@ -28,7 +30,7 @@
 -   **意大利语界面**：图形界面/命令行现在也已翻译为意大利语（此前已有中文、荷兰语、英语、法语、德语、葡萄牙语和西班牙语）
 -   **新的 README**：为本分支重写，提供 8 种语言（英语、法语、德语、意大利语、西班牙语、荷兰语、葡萄牙语、中文）
 -   **ngPost Deluxe v1.0**：新名称和新版本（Windows 程序现在名为 `ngPostDeluxe.exe`；配置文件不变），重新设计的“关于”窗口，原来的捐赠按钮已替换为本分支的 **Ko-fi** 按钮（在“关于”窗口和设置中）
--   **64 位和 32 位** Windows 软件包，在 GitHub 上自动构建并发布在 Releases 中（`ngPostDeluxe.exe`）
+-   **Windows 安装程序**（64 位和 32 位，**内置 7-Zip**）和便携 ZIP 软件包，在 GitHub 上自动构建并发布在 Releases 中（`ngPostDeluxe.exe`）
 -   **Windows 上压缩更快**：现在会随时读取 7-Zip / rar 的输出（115 MB 的帖子以前要等 200 秒，现在 1 秒）
 -   **全新的服务器区域**：服务器列表带状态指示点和启用/禁用复选框，详情表单（密码可按需显示），以及检查登录的 **测试连接** 按钮。发布过程中修改服务器不会再导致 ngPost 崩溃
 -   **自动保存**：每次修改设置都会自动保存（之前的文件保留为 `ngPost.conf.bak`）
