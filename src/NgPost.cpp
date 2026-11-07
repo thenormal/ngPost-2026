@@ -429,6 +429,7 @@ NgPost::~NgPost()
     qDeleteAll(_pendingJobs);
 
     qDeleteAll(_nntpServers);
+    qDeleteAll(_removedServers);
 
     if (_urlNzbUpload)
         delete _urlNzbUpload;

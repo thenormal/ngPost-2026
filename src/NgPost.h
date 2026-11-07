@@ -131,6 +131,7 @@ private:
     int                   _nbFiles;  //!< number of files to post in this iteration
 
     QList<NntpServerParams*> _nntpServers; //!< the servers parameters
+    QList<NntpServerParams*> _removedServers; //!< servers removed from the GUI: kept until the end (connections may still use them)
 
     bool                 _obfuscateArticles;  //!< shall we obfuscate each Article (subject + from)
     bool                 _obfuscateFileName;  //!< for single file or folder, rename it with a random name prior to compress it

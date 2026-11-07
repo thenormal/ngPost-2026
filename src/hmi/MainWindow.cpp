@@ -21,6 +21,7 @@
 #include "ui_MainWindow.h"
 #include "PostingWidget.h"
 #include "AutoPostWidget.h"
+#include "ServersWidget.h"
 #include "NgPost.h"
 #include "nntp/NntpServerParams.h"
 #include "nntp/NntpArticle.h"
@@ -48,18 +49,6 @@ const QString MainWindow::sDoneKOIcon   = ":/icons/ko.png";
 const QColor  MainWindow::sArticlesFailedColor  = Qt::darkYellow;
 
 
-const QList<const char *> MainWindow::sServerListHeaders = {
-    QT_TRANSLATE_NOOP("MainWindow", "on"),
-    QT_TRANSLATE_NOOP("MainWindow", "Host (name or IP)"),
-    QT_TRANSLATE_NOOP("MainWindow", "Port"),
-    QT_TRANSLATE_NOOP("MainWindow", "SSL"),
-    QT_TRANSLATE_NOOP("MainWindow", "Connections"),
-    QT_TRANSLATE_NOOP("MainWindow", "Username"),
-    QT_TRANSLATE_NOOP("MainWindow", "Password"),
-    "" // for the delete button
-};
-const QVector<int> MainWindow::sServerListSizes   = {30, 200, 50, 30, 100, 150, 150, sDeleteColumnWidth};
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     _ui(new Ui::MainWindow),
@@ -67,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _state(STATE::IDLE),
     _quickJobTab(nullptr),
     _autoPostTab(nullptr),
+    _servers(nullptr),
     _autoSaveTimer(new QTimer(this)),
     _autoSaveReady(false),
     _autoSaveQuickTab(false),
@@ -162,7 +152,6 @@ void MainWindow::init(NgPost *ngPost)
     _autoPostTab->init();
 
     // autosave: watch the global settings, the servers, the default Quick Post and the Auto Posting tabs
-    _watchForAutoSave(_ui->serverBox, -1);
     _watchForAutoSave(_ui->postingBox, -1);
     _watchForAutoSave(_quickJobTab, 0);
     _watchForAutoSave(_autoPostTab, 1);
@@ -291,7 +280,6 @@ void MainWindow::changeEvent(QEvent *event)
 {
     if(event)
     {
-        QStringList serverTableHeader;
         QTabBar *tabBar = _ui->postTabWidget->tabBar();
         int lastTabIdx = tabBar->count() - 1;
         switch(event->type()) {
@@ -321,9 +309,7 @@ void MainWindow::changeEvent(QEvent *event)
 
             setJobLabel(_ui->postTabWidget->currentIndex());
 
-            for (const char *header : sServerListHeaders)
-                serverTableHeader << tr(header);
-            _ui->serversTable->setHorizontalHeaderLabels(serverTableHeader);
+            _servers->retranslate();
 
 
             _quickJobTab->retranslate();
@@ -341,27 +327,6 @@ void MainWindow::changeEvent(QEvent *event)
 }
 
 
-
-#include "CheckBoxCenterWidget.h"
-void MainWindow::onAddServer()
-{
-    _addServer(nullptr);
-}
-
-void MainWindow::onDelServer()
-{
-    QObject *delButton = sender();
-    int row = _serverRow(delButton);
-    if (row < _ui->serversTable->rowCount())
-        _ui->serversTable->removeRow(row);
-
-    NntpServerParams *serverParam = static_cast<NntpServerParams*>(delButton->property("server").value<void*>());
-    if (serverParam)
-    {
-        _ngPost->removeNntpServer(serverParam);
-        delete serverParam;
-    }
-}
 
 void MainWindow::onObfucateToggled(bool checked)
 {
@@ -422,21 +387,13 @@ void MainWindow::onSetProgressBarRange(int nbArticles)
 
 void MainWindow::_initServerBox()
 {
-    _ui->serversTable->verticalHeader()->hide();
-    _ui->serversTable->setColumnCount(sServerListHeaders.size());
-
-    int width = 2, col = 0;
-    for (int size : sServerListSizes)
-    {
-        _ui->serversTable->setColumnWidth(col++, size);
-        width += size;
-    }
-//    _ui->serversTable->setMaximumWidth(width);
-
-    connect(_ui->addServerButton,   &QAbstractButton::clicked, this, &MainWindow::onAddServer);
-
+    _servers = new ServersWidget(_ui->serverBox);
+    _ui->serverBox->layout()->addWidget(_servers);
+    QList<NntpServerParams*> servers;
     for (NntpServerParams *srv : _ngPost->_nntpServers)
-        _addServer(srv);
+        servers << srv;
+    _servers->setServers(servers);
+    connect(_servers, &ServersWidget::changed, this, &MainWindow::scheduleAutoSave);
 }
 
 
@@ -492,39 +449,21 @@ void MainWindow::_initPostingBox()
 
 void MainWindow::updateServers()
 {
-    qDeleteAll(_ngPost->_nntpServers);
-    _ngPost->_nntpServers.clear();
-
-    int nbRows = _ui->serversTable->rowCount();
-    for (int row = 0 ; row < nbRows; ++row)
+    // The NntpServerParams are updated in place: the connections of an ongoing post keep a reference on them,
+    // so they must never be deleted while ngPost is running (the removed ones are kept in _removedServers)
+    const QVector<NntpServerParams> servers = _servers->servers();
+    QList<NntpServerParams*> &current = _ngPost->_nntpServers;
+    int idx = 0;
+    for (const NntpServerParams &srv : servers)
     {
-        int col = 0;
-        bool isEnabled =  static_cast<CheckBoxCenterWidget*>(_ui->serversTable->cellWidget(row, col++))->isChecked();
-
-        QLineEdit *hostEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-        if (hostEdit->text().isEmpty())
-            continue;
-
-        QLineEdit *portEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-        CheckBoxCenterWidget *sslCb = static_cast<CheckBoxCenterWidget*>(_ui->serversTable->cellWidget(row, col++));
-        QLineEdit *nbConsEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-        QLineEdit *userEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-        QLineEdit *passEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-
-        NntpServerParams *srvParams = new NntpServerParams(hostEdit->text(), portEdit->text().toUShort());
-        srvParams->useSSL = sslCb->isChecked();
-        srvParams->nbCons = nbConsEdit->text().toInt();
-        srvParams->enabled = isEnabled;
-        QString user = userEdit->text();
-        if (!user.isEmpty())
-        {
-            srvParams->auth = true;
-            srvParams->user = user.toStdString();
-            srvParams->pass = passEdit->text().toStdString();
-        }
-
-        _ngPost->_nntpServers << srvParams;
+        if (idx < current.size())
+            *current[idx] = srv;
+        else
+            current << new NntpServerParams(srv);
+        ++idx;
     }
+    while (current.size() > idx)
+        _ngPost->_removedServers << current.takeLast();
 }
 
 void MainWindow::updateParams()
@@ -657,72 +596,6 @@ void MainWindow::setJobLabel(int jobNumber)
     _ui->jobLabel->setText(QString("<b><u>Post #%1</u></b>").arg(jobNumber != 1 ? QString::number(jobNumber) : "Auto"));
 }
 
-
-void MainWindow::_addServer(NntpServerParams *serverParam)
-{
-    int nbRows = _ui->serversTable->rowCount(), col = 0;
-    _ui->serversTable->setRowCount(nbRows+1);
-
-    _ui->serversTable->setCellWidget(nbRows, col++,
-                                     new CheckBoxCenterWidget(_ui->serversTable,
-                                                              serverParam ? serverParam->enabled : true));
-
-    QLineEdit *hostEdit = new QLineEdit(_ui->serversTable);
-    if (serverParam)
-        hostEdit->setText(serverParam->host);
-    hostEdit->setFrame(false);
-    _ui->serversTable->setCellWidget(nbRows, col++, hostEdit);
-
-    QLineEdit *portEdit = new QLineEdit(_ui->serversTable);
-    portEdit->setFrame(false);
-    portEdit->setValidator(new QIntValidator(1, 99999, portEdit));
-    portEdit->setText(QString::number(serverParam ? serverParam->port : sDefaultServerPort));
-    portEdit->setAlignment(Qt::AlignCenter);
-    _ui->serversTable->setCellWidget(nbRows, col++, portEdit);
-
-    _ui->serversTable->setCellWidget(nbRows, col++,
-                                     new CheckBoxCenterWidget(_ui->serversTable,
-                                                              serverParam ? serverParam->useSSL : sDefaultServerSSL));
-
-    QLineEdit *nbConsEdit = new QLineEdit(_ui->serversTable);
-    nbConsEdit->setFrame(false);
-    nbConsEdit->setValidator(new QIntValidator(1, 99999, nbConsEdit));
-    nbConsEdit->setText(QString::number(serverParam ? serverParam->nbCons : sDefaultConnections));
-    nbConsEdit->setAlignment(Qt::AlignCenter);
-    _ui->serversTable->setCellWidget(nbRows, col++, nbConsEdit);
-
-
-    QLineEdit *userEdit = new QLineEdit(_ui->serversTable);
-    if (serverParam)
-        userEdit->setText(serverParam->user.c_str());
-    userEdit->setFrame(false);
-    _ui->serversTable->setCellWidget(nbRows, col++, userEdit);
-
-    QLineEdit *passEdit = new QLineEdit(_ui->serversTable);
-    passEdit->setEchoMode(QLineEdit::EchoMode::PasswordEchoOnEdit);
-    if (serverParam)
-        passEdit->setText(serverParam->pass.c_str());
-    passEdit->setFrame(false);
-    _ui->serversTable->setCellWidget(nbRows, col++, passEdit);
-
-    QPushButton *delButton = new QPushButton(_ui->serversTable);
-    delButton->setProperty("server", QVariant::fromValue(static_cast<void*>(serverParam)));
-    delButton->setIcon(QIcon(":/icons/clear.png"));
-    delButton->setMaximumWidth(sDeleteColumnWidth);
-    connect(delButton, &QAbstractButton::clicked, this, &MainWindow::onDelServer);
-    _ui->serversTable->setCellWidget(nbRows, col++, delButton);
-}
-
-int MainWindow::_serverRow(QObject *delButton)
-{
-    int nbRows = _ui->serversTable->rowCount(), delCol =_ui->serversTable->columnCount()-1;
-    for (int row = 0 ; row < nbRows; ++row)
-    {
-        if (_ui->serversTable->cellWidget(row, delCol) == delButton)
-            return row;
-    }
-    return nbRows;
-}
 
 PostingWidget *MainWindow::_getPostWidget(int tabIndex) const
 {

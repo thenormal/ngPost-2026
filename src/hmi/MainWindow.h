@@ -23,6 +23,7 @@
 #include <QMainWindow>
 #include <QFileInfoList>
 class QTimer;
+class ServersWidget;
 class NgPost;
 struct NntpServerParams;
 class NntpFile;
@@ -53,13 +54,7 @@ private:
     bool            _autoSaveAutoTab;   //!< a setting of the Auto Posting tab changed
     static constexpr int sAutoSaveDelayMs = 1000;
 
-    static const bool sDefaultServerSSL   = true;
-    static const int  sDefaultConnections = 5;
-    static const int  sDefaultServerPort  = 563;
-    static const int  sDeleteColumnWidth  = 30;
-
-    static const QList<const char *> sServerListHeaders;
-    static const QVector<int> sServerListSizes;
+    ServersWidget  *_servers; //!< server section (list + details)
 
 
 
@@ -131,8 +126,6 @@ public slots:
 
 private slots:
     void onAutoSave();
-    void onAddServer();
-    void onDelServer();
 
     void onObfucateToggled(bool checked);
 
@@ -172,8 +165,6 @@ private:
     void _initServerBox();
     void _initPostingBox();
 
-    void _addServer(NntpServerParams *serverParam);
-    int  _serverRow(QObject *delButton);
     PostingWidget *_getPostWidget(int tabIndex) const;
     int _getPostWidgetIndex(PostingWidget *postWidget) const;
 
