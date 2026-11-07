@@ -555,6 +555,17 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="removeAllButton">
+       <property name="text">
+        <string>Remove All</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resources/resources.qrc">
+         <normaloff>:/icons/clear.png</normaloff>:/icons/clear.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="closeTabsButton">
        <property name="text">
         <string>Close finished Tabs</string>

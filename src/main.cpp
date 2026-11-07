@@ -66,7 +66,18 @@ int main(int argc, char *argv[])
     if (app->useHMI())
     {
 #if defined( Q_OS_WIN )
-        ::ShowWindow( ::GetConsoleWindow(), SW_HIDE ); //hide console window
+        // Hide the console window when it was created only for us (double click on the exe).
+        // On Windows 11 the default terminal (Windows Terminal) ignores ShowWindow(SW_HIDE),
+        // so we detach from the console: when no other process uses it, it closes by itself.
+        // If ngPost is launched from an existing terminal, the console is shared and we leave it.
+        {
+            DWORD procs[4];
+            if (::GetConsoleProcessList(procs, 4) <= 1)
+            {
+                ::ShowWindow( ::GetConsoleWindow(), SW_HIDE );
+                ::FreeConsole();
+            }
+        }
 #endif
         app->checkSupportSSL();
         exitCode = app->startHMI();

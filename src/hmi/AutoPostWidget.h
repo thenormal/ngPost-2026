@@ -68,6 +68,7 @@ public slots:
 
 private slots:
     void onRemoveCompleted();
+    void onRemoveAll();
     void onSelectFilesClicked();
     void onGenQuickPosts();
     void onCompressPathClicked();

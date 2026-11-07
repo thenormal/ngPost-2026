@@ -88,6 +88,7 @@ void AutoPostWidget::init()
     connect(_ui->postButton,   &QAbstractButton::clicked, this,    &AutoPostWidget::onGenQuickPosts);
     connect(_ui->aboutButton,  &QAbstractButton::clicked, _ngPost, &NgPost::onAboutClicked);
     connect(_ui->removeCompletedButton, &QAbstractButton::clicked, this, &AutoPostWidget::onRemoveCompleted);
+    connect(_ui->removeAllButton,       &QAbstractButton::clicked, this, &AutoPostWidget::onRemoveAll);
     connect(_ui->closeTabsButton,       &QAbstractButton::clicked, _hmi, &MainWindow::onCloseAllFinishedQuickTabs);
 
     connect(_ui->monitorButton, &QAbstractButton::clicked, this, &AutoPostWidget::onMonitoringClicked);
@@ -471,6 +472,29 @@ void AutoPostWidget::onRemoveCompleted()
     }
 }
 
+void AutoPostWidget::onRemoveAll()
+{
+    // while monitoring, the first item is the "Monitoring <folder>" line: we keep it
+    int first = _isMonitoring ? 1 : 0;
+    if (_ui->filesList->count() <= first)
+        return;
+
+    if (QMessageBox::question(this, tr("Remove All"),
+                              tr("Remove all the files and folders from the list?\n"
+                                 "The posts already started and the files on disk are not touched."))
+            != QMessageBox::Yes)
+        return;
+
+    if (first == 0)
+        _ui->filesList->clear2();
+    else
+    {
+        for (int i = _ui->filesList->count() - 1; i >= first; --i)
+            delete _ui->filesList->takeItem(i);
+        _currentPostIdx = 1;
+    }
+}
+
 bool AutoPostWidget::deleteFilesOncePosted() const { return _ui->delFilesCB->isChecked(); }
 
 void AutoPostWidget::retranslate()
@@ -479,6 +503,7 @@ void AutoPostWidget::retranslate()
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
     _ui->redundancySB->setToolTip(tr("Using PAR2_ARGS from config file: %1").arg(_ngPost->_par2Args));
     _ui->removeCompletedButton->setToolTip(tr("Remove from the list the files/folders that have been uploaded without error"));
+    _ui->removeAllButton->setToolTip(tr("Empty the whole list (the posts already started and the files on disk are not touched)"));
     _ui->closeTabsButton->setToolTip(tr("Close the Quick Post tabs whose upload is finished"));
     _ui->filesList->setToolTip(QString("%1<br/><br/>%2<ul><li>%3</li><li>%4</li><li>%5</li></ul>%6").arg(
                                    tr("You can use the <b>Monitor Mode</b>")).arg(
