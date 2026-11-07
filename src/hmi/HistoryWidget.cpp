@@ -199,6 +199,27 @@ double HistoryWidget::parseSpeed(const QString &str)
     return parseSize(str); // same format followed by "/s"
 }
 
+// the date format of the history changed over the versions:
+// old ngPost lines use "dd/MM/yyyy hh:mm", the recent ones "yyyy/MM/dd hh:mm:ss"
+static QDateTime parseDate(const QString &str)
+{
+    static const QStringList formats = {
+        "yyyy/MM/dd hh:mm:ss", "yyyy/MM/dd hh:mm",
+        "dd/MM/yyyy hh:mm:ss", "dd/MM/yyyy hh:mm",
+        "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd hh:mm",
+        "dd-MM-yyyy hh:mm:ss", "dd-MM-yyyy hh:mm",
+        "dd.MM.yyyy hh:mm:ss", "dd.MM.yyyy hh:mm",
+        "MM/dd/yyyy hh:mm:ss", "MM/dd/yyyy hh:mm"
+    };
+    for (const QString &fmt : formats)
+    {
+        QDateTime date = QDateTime::fromString(str, fmt);
+        if (date.isValid())
+            return date;
+    }
+    return QDateTime::fromString(str, Qt::ISODate);
+}
+
 void HistoryWidget::reload()
 {
     _entries.clear();
@@ -221,7 +242,7 @@ void HistoryWidget::reload()
             if (line.trimmed().isEmpty())
                 continue;
             QStringList f = line.split(sep);
-            QDateTime date = QDateTime::fromString(f.value(0).trimmed(), "yyyy/MM/dd hh:mm:ss");
+            QDateTime date = parseDate(f.value(0).trimmed());
             if (!date.isValid())
                 continue; // header line
             Entry e;
