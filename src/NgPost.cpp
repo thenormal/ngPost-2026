@@ -34,6 +34,8 @@
 #ifdef __USE_HMI__
   #include <QApplication>
   #include <QMessageBox>
+  #include <QPalette>
+  #include <QFile>
 #else
   #include <QCoreApplication>
 #endif
@@ -480,8 +482,41 @@ void NgPost::updateGroups(const QString &groups)
 
 
 #ifdef __USE_HMI__
+void NgPost::applyTheme()
+{
+    // set the environment variable NGPOST_NO_THEME to get the native look of the system back
+    if (qEnvironmentVariableIsSet("NGPOST_NO_THEME"))
+        return;
+
+    // Fusion gives the same, predictable base on every OS (the native styles ignore most of the style sheet)
+    QApplication::setStyle("Fusion");
+
+    QPalette pal;
+    pal.setColor(QPalette::Window,          QColor("#f3f3f3"));
+    pal.setColor(QPalette::WindowText,      QColor("#1b1b1b"));
+    pal.setColor(QPalette::Base,            QColor("#ffffff"));
+    pal.setColor(QPalette::AlternateBase,   QColor("#f6f6f6"));
+    pal.setColor(QPalette::Text,            QColor("#1b1b1b"));
+    pal.setColor(QPalette::Button,          QColor("#fdfdfd"));
+    pal.setColor(QPalette::ButtonText,      QColor("#1b1b1b"));
+    pal.setColor(QPalette::Highlight,       QColor("#0067c0"));
+    pal.setColor(QPalette::HighlightedText, QColor("#ffffff"));
+    pal.setColor(QPalette::ToolTipBase,     QColor("#ffffff"));
+    pal.setColor(QPalette::ToolTipText,     QColor("#1b1b1b"));
+    pal.setColor(QPalette::Disabled, QPalette::WindowText, QColor("#a0a0a0"));
+    pal.setColor(QPalette::Disabled, QPalette::Text,       QColor("#a0a0a0"));
+    pal.setColor(QPalette::Disabled, QPalette::ButtonText, QColor("#a0a0a0"));
+    QApplication::setPalette(pal);
+
+    QFile qss(":/theme/light.qss");
+    if (qss.open(QIODevice::ReadOnly | QIODevice::Text))
+        qApp->setStyleSheet(QString::fromUtf8(qss.readAll()));
+}
+
 int NgPost::startHMI()
 {
+    applyTheme();
+
     QString err = parseDefaultConfig();
     if (!err.isEmpty())
         _error(err);
