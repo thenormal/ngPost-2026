@@ -48,9 +48,23 @@ jobs:
           New-Item -ItemType Directory dist/platforms, dist/imageformats | Out-Null
           Copy-Item "$qtRoot\plugins\platforms\qwindows.dll" dist/platforms/
           foreach ($n in 'qjpeg','qgif','qico') { Copy-Item "$qtRoot\plugins\imageformats\$n.dll" dist/imageformats/ }
-          # OpenSSL 1.1 DLLs needed by Qt 5 for ssl connections (taken from the repository)
-          Expand-Archive release/libs/libs_win7_64bit.zip -DestinationPath openssl_tmp
-          Copy-Item openssl_tmp/libs/libssl-1_1-x64.dll, openssl_tmp/libs/libcrypto-1_1-x64.dll dist/
+          # OpenSSL 1.1.1 DLLs needed by Qt 5 for ssl connections (Qt 5.15 does not support OpenSSL 3).
+          # Latest 1.1.1 (1.1.1w) from the FireDaemon OpenSSL builds; the old 2019 DLLs of the repository are only a fallback.
+          $sslOk = $false
+          try {
+            Invoke-WebRequest -Uri 'https://download.firedaemon.com/FireDaemon-OpenSSL/openssl-1.1.1w.zip' -OutFile openssl.zip
+            Write-Host "openssl.zip SHA256: $((Get-FileHash openssl.zip -Algorithm SHA256).Hash)"
+            Expand-Archive openssl.zip -DestinationPath openssl_new
+            $ssl    = Get-ChildItem -Path openssl_new -Recurse -Filter libssl-1_1-x64.dll    | Select-Object -First 1
+            $crypto = Get-ChildItem -Path openssl_new -Recurse -Filter libcrypto-1_1-x64.dll | Select-Object -First 1
+            if ($ssl -and $crypto) { Copy-Item $ssl.FullName, $crypto.FullName dist/; $sslOk = $true }
+          } catch { Write-Warning "OpenSSL 1.1.1w download failed: $_" }
+          if (-not $sslOk) {
+            Write-Warning "using the OpenSSL DLLs of the repository"
+            Expand-Archive release/libs/libs_win7_64bit.zip -DestinationPath openssl_tmp
+            Copy-Item openssl_tmp/libs/libssl-1_1-x64.dll, openssl_tmp/libs/libcrypto-1_1-x64.dll dist/
+          }
+          (Get-Item dist/libssl-1_1-x64.dll).VersionInfo | Format-List ProductVersion, FileVersion
           # ParPar (par2 generator), used automatically when parpar.exe is next to ngPost.exe
           7z x release/libs/parpar-v0.4.6-win64.7z -oparpar_tmp
           Copy-Item (Get-ChildItem -Path parpar_tmp -Recurse -Filter parpar.exe | Select-Object -First 1).FullName dist/
@@ -68,6 +82,17 @@ jobs:
           # 0xC0000135 = a DLL is missing; any other exit code only reflects the sample config (Linux paths)
           if ($LASTEXITCODE -eq -1073741515 -or $LASTEXITCODE -eq -1073741701) { throw "missing DLL (exit code $LASTEXITCODE)" }
           exit 0   # otherwise the step would fail with the exit code of ngPost.exe (the sample config is for Linux)
+
+      - name: Smoke test 3 - SSL support (OpenSSL DLLs loaded by Qt)
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+          # minimal config (the sample ngPost.conf has Linux paths and would stop ngPost before printing the version)
+          Set-Content -Path smoke.conf -Value "lang = EN`nnzbPath = $env:RUNNER_TEMP"
+          $out = & "$PWD\dist\ngPost.exe" -c smoke.conf -v 2>&1 | Out-String
+          Write-Host $out
+          if ($out -notmatch 'SSL support: yes' -or $out -notmatch 'system version: OpenSSL 1\.1\.1') { throw "OpenSSL is not loaded" }
+          exit 0
 
       - name: Smoke test 2 - GUI (must stay open for 8 seconds)
         shell: pwsh

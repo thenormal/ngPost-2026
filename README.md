@@ -17,9 +17,15 @@ It is a fork of [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licenc
 -   **Modern light theme**: the GUI has a clean look inspired by Windows 11 (Fusion style + a style sheet). Set the environment variable `NGPOST_NO_THEME` to get the native look back
 -   **Italian interface**: the GUI/CMD is now also translated in Italian (it was already available in Chinese, Dutch, English, French, German, Portuguese and Spanish)
 -   **New README**: rewritten for this fork and available in 8 languages (English, French, German, Italian, Spanish, Dutch, Portuguese, Chinese)
+-   **ngPost 2026 v5.0 beta**: new name and version, redesigned About window, the donation buttons have been removed (to support the original author, see the end of this page)
+-   **New Servers section**: list of the servers with a status dot and an on/off box, details form (password shown on demand) and a **Test connection** button that checks the login. Editing the servers while posting can no longer crash ngPost
+-   **Autosave**: every change of the settings is saved automatically (the previous file is kept as `ngPost.conf.bak`)
+-   **Auto Posting tab**: new buttons **Remove completed**, **Remove All** and **Close finished Tabs**
+-   **Archive password off the command line**: 7-Zip receives it on its standard input and rar through the `RAR` environment variable, so it is no longer visible in the list of processes
+-   **Diagnostics**: ngPost records the duration and speed of each phase (compression, par2, upload), the errors and the freezes, and the **Diagnostic report** button saves a report to analyse a problem. Passwords, usernames and file names are masked, nothing is sent anywhere
+-   **Windows**: the console window closes by itself when ngPost is started with a double click; the package ships OpenSSL 1.1.1w (latest version supported by Qt 5)
 
-This fork doesn't publish binaries yet: build it from the sources (see below).<br/>
-**Windows users**: for the moment there is no ready-to-use installer for this fork, the program has to be compiled (for example with Qt Creator). The installers of the original project don't contain the changes above and still use the old par2cmdline.<br/>
+There are no official releases of this fork yet. A ready-to-run **Windows 64bit** package is built automatically by GitHub Actions at each change (tab *Actions* > run *Build Windows (x64)* > *Artifacts*, a GitHub account is needed). On the other systems, build it from the sources (see below).<br/>
 
 ### Main features
 -   **Command line and GUI Usenet poster** for binaries, developed in **C++11/Qt5**, designed to be as fast as possible

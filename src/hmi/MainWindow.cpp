@@ -21,6 +21,7 @@
 #include "ui_MainWindow.h"
 #include "PostingWidget.h"
 #include "AutoPostWidget.h"
+#include "ServersWidget.h"
 #include "NgPost.h"
 #include "nntp/NntpServerParams.h"
 #include "nntp/NntpArticle.h"
@@ -30,6 +31,19 @@
 #include <QLabel>
 #include <QScreen>
 #include <QMessageBox>
+#include <QTimer>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QSpinBox>
+#include <QComboBox>
+#include <QFileDialog>
+#include <QStorageInfo>
+#include <QDateTime>
+#include <QSysInfo>
+#include <QThread>
+#include <QSaveFile>
+#include "utils/Diagnostics.h"
+#include "PostingJob.h"
 
 
 const QColor  MainWindow::sPostingColor = QColor(255,162, 0); // gold (#FFA200)
@@ -43,26 +57,22 @@ const QString MainWindow::sDoneKOIcon   = ":/icons/ko.png";
 const QColor  MainWindow::sArticlesFailedColor  = Qt::darkYellow;
 
 
-const QList<const char *> MainWindow::sServerListHeaders = {
-    QT_TRANSLATE_NOOP("MainWindow", "on"),
-    QT_TRANSLATE_NOOP("MainWindow", "Host (name or IP)"),
-    QT_TRANSLATE_NOOP("MainWindow", "Port"),
-    QT_TRANSLATE_NOOP("MainWindow", "SSL"),
-    QT_TRANSLATE_NOOP("MainWindow", "Connections"),
-    QT_TRANSLATE_NOOP("MainWindow", "Username"),
-    QT_TRANSLATE_NOOP("MainWindow", "Password"),
-    "" // for the delete button
-};
-const QVector<int> MainWindow::sServerListSizes   = {30, 200, 50, 30, 100, 150, 150, sDeleteColumnWidth};
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     _ui(new Ui::MainWindow),
     _ngPost(nullptr),
     _state(STATE::IDLE),
     _quickJobTab(nullptr),
-    _autoPostTab(nullptr)
+    _autoPostTab(nullptr),
+    _servers(nullptr),
+    _autoSaveTimer(new QTimer(this)),
+    _autoSaveReady(false),
+    _autoSaveQuickTab(false),
+    _autoSaveAutoTab(false)
 {
+    _autoSaveTimer->setSingleShot(true);
+    _autoSaveTimer->setInterval(sAutoSaveDelayMs);
+    connect(_autoSaveTimer, &QTimer::timeout, this, &MainWindow::onAutoSave);
     setAcceptDrops(true);
 
     _ui->setupUi(this);
@@ -148,6 +158,12 @@ void MainWindow::init(NgPost *ngPost)
     _initPostingBox();
     _quickJobTab->init();
     _autoPostTab->init();
+
+    // autosave: watch the global settings, the servers, the default Quick Post and the Auto Posting tabs
+    _watchForAutoSave(_ui->postingBox, -1);
+    _watchForAutoSave(_quickJobTab, 0);
+    _watchForAutoSave(_autoPostTab, 1);
+    QTimer::singleShot(0, this, [this](){ _autoSaveReady = true; }); // after the initialisation of the widgets
 
     _ui->goCmdButton->hide();
 //    connect(_ui->goCmdButton, &QAbstractButton::clicked, _ngPost, &NgPost::onGoCMD, Qt::QueuedConnection);
@@ -243,6 +259,11 @@ void MainWindow::dropEvent(QDropEvent *e)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    if (_autoSaveTimer->isActive()) // a change not saved yet
+    {
+        _autoSaveTimer->stop();
+        onAutoSave();
+    }
     if (_ngPost->hasPostingJobs())
     {
         int res = QMessageBox::question(this,
@@ -267,7 +288,6 @@ void MainWindow::changeEvent(QEvent *event)
 {
     if(event)
     {
-        QStringList serverTableHeader;
         QTabBar *tabBar = _ui->postTabWidget->tabBar();
         int lastTabIdx = tabBar->count() - 1;
         switch(event->type()) {
@@ -297,9 +317,7 @@ void MainWindow::changeEvent(QEvent *event)
 
             setJobLabel(_ui->postTabWidget->currentIndex());
 
-            for (const char *header : sServerListHeaders)
-                serverTableHeader << tr(header);
-            _ui->serversTable->setHorizontalHeaderLabels(serverTableHeader);
+            _servers->retranslate();
 
 
             _quickJobTab->retranslate();
@@ -317,27 +335,6 @@ void MainWindow::changeEvent(QEvent *event)
 }
 
 
-
-#include "CheckBoxCenterWidget.h"
-void MainWindow::onAddServer()
-{
-    _addServer(nullptr);
-}
-
-void MainWindow::onDelServer()
-{
-    QObject *delButton = sender();
-    int row = _serverRow(delButton);
-    if (row < _ui->serversTable->rowCount())
-        _ui->serversTable->removeRow(row);
-
-    NntpServerParams *serverParam = static_cast<NntpServerParams*>(delButton->property("server").value<void*>());
-    if (serverParam)
-    {
-        _ngPost->removeNntpServer(serverParam);
-        delete serverParam;
-    }
-}
 
 void MainWindow::onObfucateToggled(bool checked)
 {
@@ -398,21 +395,13 @@ void MainWindow::onSetProgressBarRange(int nbArticles)
 
 void MainWindow::_initServerBox()
 {
-    _ui->serversTable->verticalHeader()->hide();
-    _ui->serversTable->setColumnCount(sServerListHeaders.size());
-
-    int width = 2, col = 0;
-    for (int size : sServerListSizes)
-    {
-        _ui->serversTable->setColumnWidth(col++, size);
-        width += size;
-    }
-//    _ui->serversTable->setMaximumWidth(width);
-
-    connect(_ui->addServerButton,   &QAbstractButton::clicked, this, &MainWindow::onAddServer);
-
+    _servers = new ServersWidget(_ui->serverBox);
+    _ui->serverBox->layout()->addWidget(_servers);
+    QList<NntpServerParams*> servers;
     for (NntpServerParams *srv : _ngPost->_nntpServers)
-        _addServer(srv);
+        servers << srv;
+    _servers->setServers(servers);
+    connect(_servers, &ServersWidget::changed, this, &MainWindow::scheduleAutoSave);
 }
 
 
@@ -420,6 +409,9 @@ void MainWindow::_initPostingBox()
 {
     connect(_ui->shutdownCB,        &QAbstractButton::toggled, this, &MainWindow::onShutdownToggled);
     connect(_ui->saveButton,        &QAbstractButton::clicked, this, &MainWindow::onSaveConfig);
+    connect(_ui->diagReportButton,  &QAbstractButton::clicked, this, &MainWindow::onDiagnosticReport);
+    _ui->diagReportButton->setToolTip(tr("Save a report of what ngPost did (durations, speeds, errors, anomalies) "
+                                         "to analyse a problem. Passwords, usernames and file names are masked."));
 
     connect(_ui->genPoster,         &QAbstractButton::clicked, this, &MainWindow::onGenPoster);
     connect(_ui->obfuscateMsgIdCB,  &QAbstractButton::toggled, this, &MainWindow::onObfucateToggled);
@@ -468,39 +460,21 @@ void MainWindow::_initPostingBox()
 
 void MainWindow::updateServers()
 {
-    qDeleteAll(_ngPost->_nntpServers);
-    _ngPost->_nntpServers.clear();
-
-    int nbRows = _ui->serversTable->rowCount();
-    for (int row = 0 ; row < nbRows; ++row)
+    // The NntpServerParams are updated in place: the connections of an ongoing post keep a reference on them,
+    // so they must never be deleted while ngPost is running (the removed ones are kept in _removedServers)
+    const QVector<NntpServerParams> servers = _servers->servers();
+    QList<NntpServerParams*> &current = _ngPost->_nntpServers;
+    int idx = 0;
+    for (const NntpServerParams &srv : servers)
     {
-        int col = 0;
-        bool isEnabled =  static_cast<CheckBoxCenterWidget*>(_ui->serversTable->cellWidget(row, col++))->isChecked();
-
-        QLineEdit *hostEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-        if (hostEdit->text().isEmpty())
-            continue;
-
-        QLineEdit *portEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-        CheckBoxCenterWidget *sslCb = static_cast<CheckBoxCenterWidget*>(_ui->serversTable->cellWidget(row, col++));
-        QLineEdit *nbConsEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-        QLineEdit *userEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-        QLineEdit *passEdit = static_cast<QLineEdit*>(_ui->serversTable->cellWidget(row, col++));
-
-        NntpServerParams *srvParams = new NntpServerParams(hostEdit->text(), portEdit->text().toUShort());
-        srvParams->useSSL = sslCb->isChecked();
-        srvParams->nbCons = nbConsEdit->text().toInt();
-        srvParams->enabled = isEnabled;
-        QString user = userEdit->text();
-        if (!user.isEmpty())
-        {
-            srvParams->auth = true;
-            srvParams->user = user.toStdString();
-            srvParams->pass = passEdit->text().toStdString();
-        }
-
-        _ngPost->_nntpServers << srvParams;
+        if (idx < current.size())
+            *current[idx] = srv;
+        else
+            current << new NntpServerParams(srv);
+        ++idx;
     }
+    while (current.size() > idx)
+        _ngPost->_removedServers << current.takeLast();
 }
 
 void MainWindow::updateParams()
@@ -634,72 +608,6 @@ void MainWindow::setJobLabel(int jobNumber)
 }
 
 
-void MainWindow::_addServer(NntpServerParams *serverParam)
-{
-    int nbRows = _ui->serversTable->rowCount(), col = 0;
-    _ui->serversTable->setRowCount(nbRows+1);
-
-    _ui->serversTable->setCellWidget(nbRows, col++,
-                                     new CheckBoxCenterWidget(_ui->serversTable,
-                                                              serverParam ? serverParam->enabled : true));
-
-    QLineEdit *hostEdit = new QLineEdit(_ui->serversTable);
-    if (serverParam)
-        hostEdit->setText(serverParam->host);
-    hostEdit->setFrame(false);
-    _ui->serversTable->setCellWidget(nbRows, col++, hostEdit);
-
-    QLineEdit *portEdit = new QLineEdit(_ui->serversTable);
-    portEdit->setFrame(false);
-    portEdit->setValidator(new QIntValidator(1, 99999, portEdit));
-    portEdit->setText(QString::number(serverParam ? serverParam->port : sDefaultServerPort));
-    portEdit->setAlignment(Qt::AlignCenter);
-    _ui->serversTable->setCellWidget(nbRows, col++, portEdit);
-
-    _ui->serversTable->setCellWidget(nbRows, col++,
-                                     new CheckBoxCenterWidget(_ui->serversTable,
-                                                              serverParam ? serverParam->useSSL : sDefaultServerSSL));
-
-    QLineEdit *nbConsEdit = new QLineEdit(_ui->serversTable);
-    nbConsEdit->setFrame(false);
-    nbConsEdit->setValidator(new QIntValidator(1, 99999, nbConsEdit));
-    nbConsEdit->setText(QString::number(serverParam ? serverParam->nbCons : sDefaultConnections));
-    nbConsEdit->setAlignment(Qt::AlignCenter);
-    _ui->serversTable->setCellWidget(nbRows, col++, nbConsEdit);
-
-
-    QLineEdit *userEdit = new QLineEdit(_ui->serversTable);
-    if (serverParam)
-        userEdit->setText(serverParam->user.c_str());
-    userEdit->setFrame(false);
-    _ui->serversTable->setCellWidget(nbRows, col++, userEdit);
-
-    QLineEdit *passEdit = new QLineEdit(_ui->serversTable);
-    passEdit->setEchoMode(QLineEdit::EchoMode::PasswordEchoOnEdit);
-    if (serverParam)
-        passEdit->setText(serverParam->pass.c_str());
-    passEdit->setFrame(false);
-    _ui->serversTable->setCellWidget(nbRows, col++, passEdit);
-
-    QPushButton *delButton = new QPushButton(_ui->serversTable);
-    delButton->setProperty("server", QVariant::fromValue(static_cast<void*>(serverParam)));
-    delButton->setIcon(QIcon(":/icons/clear.png"));
-    delButton->setMaximumWidth(sDeleteColumnWidth);
-    connect(delButton, &QAbstractButton::clicked, this, &MainWindow::onDelServer);
-    _ui->serversTable->setCellWidget(nbRows, col++, delButton);
-}
-
-int MainWindow::_serverRow(QObject *delButton)
-{
-    int nbRows = _ui->serversTable->rowCount(), delCol =_ui->serversTable->columnCount()-1;
-    for (int row = 0 ; row < nbRows; ++row)
-    {
-        if (_ui->serversTable->cellWidget(row, delCol) == delButton)
-            return row;
-    }
-    return nbRows;
-}
-
 PostingWidget *MainWindow::_getPostWidget(int tabIndex) const
 {
     if(tabIndex > 1 && tabIndex < _ui->postTabWidget->count() - 1)
@@ -791,8 +699,213 @@ void MainWindow::onDebugValue(int value)
 }
 
 
+void MainWindow::scheduleAutoSave()
+{
+    if (_autoSaveReady)
+        _autoSaveTimer->start(); // restarted at each change: we save 1 sec after the last one
+}
+
+void MainWindow::onAutoSave()
+{
+    _saveConfig(_autoSaveQuickTab, _autoSaveAutoTab);
+    _autoSaveQuickTab = false;
+    _autoSaveAutoTab  = false;
+
+    // small feedback on the save button
+    _ui->saveButton->setText(tr("saved"));
+    QTimer::singleShot(1500, this, [this](){ _ui->saveButton->setText(tr("save")); });
+}
+
+void MainWindow::_saveConfig(bool quickTab, bool autoTab)
+{
+    updateServers();
+    updateParams();
+    if (quickTab)
+        _quickJobTab->udatePostingParams();
+    if (autoTab)
+        _autoPostTab->udatePostingParams();
+    _ngPost->saveConfig(true);
+}
+
+void MainWindow::onDiagnosticReport()
+{
+    QString defaultPath = QString("%1/ngPost_report_%2.txt").arg(
+                QDir::homePath(), QDateTime::currentDateTime().toString("yyyyMMdd_hhmm"));
+    QString path = QFileDialog::getSaveFileName(this, tr("Save the diagnostic report"), defaultPath,
+                                                tr("Text files (*.txt)"));
+    if (path.isEmpty())
+        return;
+
+    QSaveFile file(path);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        file.write(_diagnosticReport().toUtf8());
+        if (file.commit())
+        {
+            QMessageBox::information(this, tr("Diagnostic report"),
+                                     tr("The report has been saved:\n%1\n\nPasswords, usernames and file names are masked.").arg(
+                                         QDir::toNativeSeparators(path)));
+            return;
+        }
+    }
+    QMessageBox::critical(this, tr("Diagnostic report"), tr("Couldn't write the file %1").arg(QDir::toNativeSeparators(path)));
+}
+
+QString MainWindow::_diagnosticReport() const
+{
+    Diagnostics &diag = Diagnostics::instance();
+    // make sure the credentials of the servers are masked
+    for (const NntpServerParams *srv : _ngPost->_nntpServers)
+    {
+        diag.addSecret(QString::fromStdString(srv->pass), "<server password>");
+        diag.addSecret(QString::fromStdString(srv->user), "<server user>");
+    }
+    diag.addSecret(_ngPost->_rarPassFixed, "<fixed archive password>");
+
+    QString r;
+    QTextStream out(&r);
+    auto title = [&out](const QString &t){ out << "\n==== " << t << " ====\n"; };
+    auto yesNo = [](bool b){ return b ? "yes" : "no"; };
+
+    out << "ngPost diagnostic report\n"
+        << "generated: " << QDateTime::currentDateTime().toString(Qt::ISODate) << "\n"
+        << "(passwords, usernames, file names and the home folder are masked)\n";
+
+    title("System");
+    out << "program:   " << _ngPost->appName() << " v" << NgPost::versionLabel() << "\n"
+        << "OS:        " << QSysInfo::prettyProductName() << " (kernel " << QSysInfo::kernelVersion()
+        << ", " << QSysInfo::currentCpuArchitecture() << ")\n"
+        << "CPU cores: " << QThread::idealThreadCount() << "\n"
+        << "Qt:        " << qVersion() << "\n"
+        << "SSL:       " << PostingJob::sslSupportInfo() << "\n"
+        << "log file:  " << diag.mask(diag.logFilePath()) << "\n";
+
+    title("Settings");
+    out << "compression: " << yesNo(_ngPost->_doCompress) << ", par2: " << yesNo(_ngPost->_doPar2)
+        << ", random name: " << yesNo(_ngPost->_genName) << ", random password: " << yesNo(_ngPost->_genPass)
+        << ", keep archives: " << yesNo(_ngPost->_keepRar) << "\n"
+        << "RAR_PATH:    " << diag.mask(_ngPost->_rarPath) << "\n"
+        << "RAR_EXTRA:   " << (_ngPost->_rarArgs.isEmpty() ? "(default)" : diag.mask(_ngPost->_rarArgs)) << "\n"
+        << "RAR_SIZE:    " << _ngPost->_rarSize << " MB, RAR_MAX: " << _ngPost->_rarMax
+        << " (limit used: " << yesNo(_ngPost->_useRarMax) << ")\n"
+        << "PAR2_PATH:   " << diag.mask(_ngPost->_par2Path) << (_ngPost->useParPar() ? " (ParPar)" : "") << "\n"
+        << "PAR2_ARGS:   " << (_ngPost->_par2Args.isEmpty() ? "(default)" : diag.mask(_ngPost->_par2Args))
+        << ", PAR2_PCT: " << _ngPost->_par2Pct << "%\n"
+        << "threads:     " << _ngPost->_nbThreads << ", article size: " << NgPost::articleSize()
+        << ", socket timeout: " << _ngPost->_socketTimeOut / 1000 << " s\n"
+        << "obfuscation: articles " << yesNo(_ngPost->_obfuscateArticles)
+        << ", file names " << yesNo(_ngPost->_obfuscateFileName) << "\n"
+        << "prepare packing: " << yesNo(_ngPost->_preparePacking) << "\n";
+
+    title("Servers");
+    int nbCons = 0;
+    for (const NntpServerParams *srv : _ngPost->_nntpServers)
+    {
+        out << "- " << srv->host << ":" << srv->port << (srv->useSSL ? " SSL" : "") << ", "
+            << srv->nbCons << " connections, " << (srv->enabled ? "enabled" : "disabled")
+            << ", auth: " << yesNo(!srv->user.empty()) << "\n";
+        if (srv->enabled)
+            nbCons += srv->nbCons;
+    }
+    out << "total connections: " << nbCons << "\n";
+
+    title("Folders and disks");
+    auto folder = [&](const QString &name, const QString &path){
+        out << name << ": " << (path.isEmpty() ? "(not set)" : diag.mask(path)) << "\n";
+        if (path.isEmpty())
+            return;
+        QFileInfo fi(path);
+        QStorageInfo storage(fi.exists() ? path : fi.absolutePath());
+        out << "    exists: " << yesNo(fi.exists()) << ", writable: " << yesNo(fi.isWritable());
+        if (storage.isValid())
+            out << ", free: " << Diagnostics::humanSize(storage.bytesAvailable()) << " / "
+                << Diagnostics::humanSize(storage.bytesTotal()) << ", file system: " << storage.fileSystemType();
+        out << "\n";
+        QString lower = QDir::fromNativeSeparators(path).toLower();
+        if (lower.contains("onedrive") || lower.contains("dropbox") || lower.contains("google drive"))
+            out << "    WARNING: synced folder (every file written is uploaded by the sync software)\n";
+        else if (lower.endsWith("/desktop") || lower.contains("/desktop/"))
+            out << "    note: Desktop folder, it may be synced by OneDrive on Windows 11\n";
+        if (lower.startsWith("//"))
+            out << "    note: network folder\n";
+    };
+    folder("TMP_DIR", _ngPost->_tmpPath);
+    folder("nzbPath", _ngPost->_nzbPath);
+
+    title("Anomalies (this session)");
+    QStringList anomalies = diag.anomalies();
+    if (anomalies.isEmpty())
+        out << "none\n";
+    for (const QString &a : anomalies)
+        out << "- " << a << "\n";
+
+    QStringList events = diag.events();
+    QStringList errors = events.filter("[ERROR]");
+    title(QString("Errors (this session): %1").arg(errors.size()));
+    for (int i = qMax(0, errors.size() - 30); i < errors.size(); ++i)
+        out << errors.at(i) << "\n";
+
+    title("Events (this session)");
+    const int maxEvents = 600;
+    if (events.size() > maxEvents)
+        out << "(" << events.size() - maxEvents << " older events not shown)\n";
+    for (int i = qMax(0, events.size() - maxEvents); i < events.size(); ++i)
+        out << events.at(i) << "\n";
+
+    bool closedProperly = true;
+    QString previous = diag.previousSessionLog(&closedProperly);
+    title("Previous session");
+    if (previous.isEmpty())
+        out << "(none)\n";
+    else
+    {
+        if (!closedProperly)
+            out << "WARNING: the previous session did not end properly (crash or killed)\n";
+        QStringList lines = previous.split('\n');
+        const int maxLines = 300;
+        if (lines.size() > maxLines)
+            out << "(" << lines.size() - maxLines << " older lines not shown)\n";
+        for (int i = qMax(0, lines.size() - maxLines); i < lines.size(); ++i)
+            out << lines.at(i) << "\n";
+    }
+    out.flush();
+    return r;
+}
+
+void MainWindow::_watchForAutoSave(QWidget *root, int tab)
+{
+    // only the signals emitted by a user action (not when the code fills the widgets)
+    // the fields that only concern one post (nzb name, archive name and password of a post) are not watched
+    static const QStringList perPostFields = {"nzbFileEdit", "nzbPassCB", "nzbPassEdit", "compressNameEdit",
+                                              "debugBox", "debugSB"};
+    auto changed = [this, tab]() {
+        if (tab == 0)
+            _autoSaveQuickTab = true;
+        else if (tab == 1)
+            _autoSaveAutoTab = true;
+        scheduleAutoSave();
+    };
+    for (QLineEdit *w : root->findChildren<QLineEdit*>())
+    {
+        if (perPostFields.contains(w->objectName()) || qobject_cast<QAbstractSpinBox*>(w->parent()))
+            continue;
+        connect(w, &QLineEdit::textEdited, this, changed);
+        connect(w, &QLineEdit::editingFinished, this, changed); // also after a selection with a "..." button
+    }
+    for (QCheckBox *w : root->findChildren<QCheckBox*>())
+        if (!perPostFields.contains(w->objectName()))
+            connect(w, &QAbstractButton::toggled, this, changed);
+    for (QSpinBox *w : root->findChildren<QSpinBox*>())
+        if (!perPostFields.contains(w->objectName()))
+            connect(w, QOverload<int>::of(&QSpinBox::valueChanged), this, changed);
+    for (QComboBox *w : root->findChildren<QComboBox*>())
+        if (!perPostFields.contains(w->objectName()))
+            connect(w, QOverload<int>::of(&QComboBox::currentIndexChanged), this, changed);
+}
+
 void MainWindow::onSaveConfig()
 {
+    _autoSaveTimer->stop();
     updateServers();
     updateParams();
     int currentTabIdx = _ui->postTabWidget->currentIndex();

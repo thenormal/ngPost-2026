@@ -21,6 +21,7 @@
 #include "NgPost.h"
 #include "NntpConnection.h"
 #include "nntp/NntpServerParams.h"
+#include "utils/Diagnostics.h"
 #include "nntp/NntpFile.h"
 #include "nntp/NntpArticle.h"
 #ifdef __USE_HMI__
@@ -309,6 +310,8 @@ qDebug() << "[MB_TRACE][Issue#82][PostingJob::onStartPosting] job: " << this
 void PostingJob::_postFiles()
 {    
     _postStarted = true;
+    _diagRegisterPost();
+    Diagnostics::instance().event("UPLOAD", QString("start: %1 file(s) (nzb: %2)").arg(_files.size()).arg(_nzbFilePath));
 
 #ifdef __USE_HMI__
     if (_postWidget) // in case we were in Pending mode
@@ -873,6 +876,12 @@ void PostingJob::_printStats() const
             QTime::fromMSecsSinceStartOfDay(duration).toString("hh:mm:ss.zzz")).arg(sec).arg(
                 avgSpeed()).arg(_nntpConnections.size()+_closedConnections.size()).arg(_posters.size()*2);
 
+    Diagnostics::instance().event("UPLOAD", QString("end: %1 in %2 s => %3 | %4 connections | articles: %5 ok, %6 failed / %7").arg(
+                                      size).arg(sec).arg(avgSpeed()).arg(_nntpConnections.size()+_closedConnections.size()).arg(
+                                      _nbArticlesUploaded - _nbArticlesFailed).arg(_nbArticlesFailed).arg(_nbArticlesTotal));
+    if (_nbArticlesFailed > 0)
+        Diagnostics::instance().anomaly(QString("%1 / %2 articles failed to be uploaded").arg(_nbArticlesFailed).arg(_nbArticlesTotal));
+
     if (_nbArticlesFailed > 0)
         msgEnd += tr("%1 / %2 articles FAILED to be uploaded (even with %3 retries)...\n").arg(
                       _nbArticlesFailed).arg(_nbArticlesTotal).arg(NntpArticle::nbMaxTrySending());
@@ -941,16 +950,46 @@ bool PostingJob::startCompressFiles(const QString &cmdRar,
         args.prepend("a");
     if (!_use7z && !args.contains("-idp"))
         args << "-idp";
+    // The archive password is NOT put on the command line anymore (it would be visible in the
+    // process list / Task Manager): 7z reads it on its standard input, rar from the RAR environment variable.
+    // Fallback on the command line only for passwords that those channels can't carry safely
+    // (non ASCII characters for both, double quotes for rar).
+    QByteArray passForStdin;
     if (!pass.isEmpty())
     {
+        bool asciiOnly = true;
+        for (const QChar &c : pass)
+        {
+            if (c.unicode() < 0x20 || c.unicode() > 0x7E)
+            {
+                asciiOnly = false;
+                break;
+            }
+        }
         if (_use7z)
         {
             if (!args.contains("-mhe=on"))
                 args << "-mhe=on";
-            args << QString("-p%1").arg(pass);
+            if (asciiOnly)
+            {
+                args << "-p"; // empty => 7z asks it on stdin (twice on some versions to verify)
+                passForStdin = QString("%1\n%1\n").arg(pass).toLatin1();
+            }
+            else
+                args << QString("-p%1").arg(pass);
         }
         else
-            args << QString("-hp%1").arg(pass);
+        {
+            if (asciiOnly && !pass.contains('"'))
+            {
+                QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+                QString rarEnv = env.value("RAR"); // keep the user's default switches if any
+                env.insert("RAR", QString("%1%2-hp\"%3\"").arg(rarEnv, rarEnv.isEmpty() ? "" : " ", pass));
+                _extProc->setProcessEnvironment(env);
+            }
+            else
+                args << QString("-hp%1").arg(pass);
+        }
     }
     if (volSize > 0 || _useRarMax)
     {
@@ -1053,7 +1092,17 @@ bool PostingJob::startCompressFiles(const QString &cmdRar,
     else
         _log(QString("%1...\n").arg(tr("Compressing files")));
     _limitProcDisplay = false;
+    _diagRegisterPost();
+    Diagnostics::instance().event("COMPRESS", QString("start: %1 %2 | input: %3 in %4 file(s)/folder(s) | tmp: %5").arg(
+                                      cmdRar, args.join(" "), Diagnostics::humanSize(_diagInputSize)).arg(
+                                      _originalFiles.size()).arg(archiveTmpFolder));
+    _diagTimer.start();
     _extProc->start(cmdRar, args);
+    if (!passForStdin.isEmpty())
+    {
+        _extProc->write(passForStdin);
+        _extProc->closeWriteChannel();
+    }
 
 #ifdef __DEBUG__
     _log("[PostingJob::_compressFiles] compression started...");
@@ -1063,8 +1112,43 @@ bool PostingJob::startCompressFiles(const QString &cmdRar,
 }
 
 
+void PostingJob::_diagRegisterPost()
+{
+    if (_diagRegistered)
+        return;
+    _diagRegistered = true;
+    Diagnostics &diag = Diagnostics::instance();
+    _diagInputSize = 0;
+    for (const QFileInfo &fileInfo : _originalFiles)
+    {
+        QString label = diag.nextInputLabel();
+        diag.addSecret(fileInfo.absoluteFilePath(), label);
+        diag.addSecret(QDir::toNativeSeparators(fileInfo.absoluteFilePath()), label);
+        diag.addSecret(fileInfo.fileName(), label);
+        if (fileInfo.completeBaseName().size() >= 5)
+            diag.addSecret(fileInfo.completeBaseName(), label);
+        _diagInputSize += fileInfo.isDir() ? _dirSize(fileInfo.absoluteFilePath()) : fileInfo.size();
+    }
+    diag.addSecret(_nzbName, "<nzb>");
+    diag.addSecret(QFileInfo(_nzbName).completeBaseName(), "<nzb>");
+    diag.addSecret(_rarName, "<archive>");
+    diag.addSecret(_rarPass, "<password>");
+}
+
 void PostingJob::onCompressionFinished(int exitCode)
 {
+    {
+        qint64 ms = _diagTimer.isValid() ? _diagTimer.elapsed() : 0;
+        QString msg = QString("end: exit code %1 | %2 in %3 s => %4").arg(exitCode).arg(
+                    Diagnostics::humanSize(_diagInputSize)).arg(ms / 1000.0, 0, 'f', 1).arg(Diagnostics::speed(_diagInputSize, ms));
+        Diagnostics::instance().event("COMPRESS", msg);
+        if (exitCode != 0)
+            Diagnostics::instance().anomaly(QString("compression failed (exit code %1)").arg(exitCode));
+        else if (_diagInputSize >= 20*1024*1024 && ms > 0 && _diagInputSize * 1000. / ms < 20.*1024*1024)
+            Diagnostics::instance().anomaly(QString("slow compression: %1 for %2 (expected more than 20 MB/s, "
+                                                    "check the temporary folder: synced folder, antivirus, network or slow disk)").arg(
+                                                Diagnostics::speed(_diagInputSize, ms), Diagnostics::humanSize(_diagInputSize)));
+    }
     if (_ngPost->debugMode())
         _log(tr("=> rar exit code: %1\n").arg(exitCode));
     else
@@ -1217,6 +1301,9 @@ bool PostingJob::startGenPar2(const QString &tmpFolder,
     if (!_ngPost->useParPar())
         _limitProcDisplay = true;
     _nbProcDisp = 0;
+    _diagRegisterPost();
+    Diagnostics::instance().event("PAR2", QString("start: %1 %2").arg(_ngPost->_par2Path, args.join(" ")));
+    _diagTimer.start();
     _extProc->start(_ngPost->_par2Path, args);    
 
     return true;
@@ -1224,6 +1311,17 @@ bool PostingJob::startGenPar2(const QString &tmpFolder,
 
 void PostingJob::onGenPar2Finished(int exitCode)
 {
+    {
+        qint64 ms = _diagTimer.isValid() ? _diagTimer.elapsed() : 0;
+        Diagnostics::instance().event("PAR2", QString("end: exit code %1 | %2 in %3 s => %4").arg(exitCode).arg(
+                                          Diagnostics::humanSize(_diagInputSize)).arg(ms / 1000.0, 0, 'f', 1).arg(
+                                          Diagnostics::speed(_diagInputSize, ms)));
+        if (exitCode != 0)
+            Diagnostics::instance().anomaly(QString("par2 generation failed (exit code %1)").arg(exitCode));
+        else if (_diagInputSize >= 20*1024*1024 && ms > 0 && _diagInputSize * 1000. / ms < 10.*1024*1024)
+            Diagnostics::instance().anomaly(QString("slow par2 generation: %1 for %2 (is ParPar used?)").arg(
+                                                Diagnostics::speed(_diagInputSize, ms), Diagnostics::humanSize(_diagInputSize)));
+    }
     if (_ngPost->debugMode())
         _log(tr("=> par2 exit code: %1\n").arg(exitCode));
     else

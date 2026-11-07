@@ -17,9 +17,15 @@
 -   **Tema chiaro moderno**: l'interfaccia grafica ha un aspetto pulito ispirato a Windows 11 (stile Fusion + foglio di stile). Imposta la variabile d'ambiente `NGPOST_NO_THEME` per riavere l'aspetto nativo
 -   **Interfaccia in italiano**: la GUI/CMD è ora tradotta anche in italiano (era già disponibile in cinese, olandese, inglese, francese, tedesco, portoghese e spagnolo)
 -   **Nuovo README**: riscritto per questo fork e disponibile in 8 lingue (inglese, francese, tedesco, italiano, spagnolo, olandese, portoghese, cinese)
+-   **ngPost 2026 v5.0 beta**: nuovo nome e nuova versione, finestra About ridisegnata, rimossi i pulsanti per le donazioni (per sostenere l'autore originale, vedi la fine di questa pagina)
+-   **Nuova sezione Server**: elenco dei server con pallino di stato e casella attivo/disattivo, scheda di dettaglio (password visibile a richiesta) e pulsante **Prova connessione** che verifica l'accesso. Modificare i server durante un upload non può più mandare in crash ngPost
+-   **Salvataggio automatico**: ogni modifica delle impostazioni viene salvata da sola (il file precedente resta come `ngPost.conf.bak`)
+-   **Scheda Auto Posting**: nuovi pulsanti **Rimuovi completati**, **Rimuovi tutto** e **Chiudi le schede terminate**
+-   **Password dell'archivio fuori dalla riga di comando**: 7-Zip la riceve sullo standard input e rar tramite la variabile d'ambiente `RAR`, quindi non è più visibile nell'elenco dei processi
+-   **Diagnostica**: ngPost registra durata e velocità di ogni fase (compressione, par2, upload), gli errori e i blocchi, e il pulsante **Report diagnostico** salva un report per analizzare un problema. Password, nomi utente e nomi dei file vengono mascherati, nulla viene inviato
+-   **Windows**: la finestra della console si chiude da sola quando ngPost viene avviato con un doppio clic; il pacchetto include OpenSSL 1.1.1w (ultima versione supportata da Qt 5)
 
-Questo fork non pubblica ancora binari: compilalo dal codice sorgente (vedi sotto).<br/>
-**Utenti Windows**: per il momento non esiste un installer pronto all'uso per questo fork, il programma va compilato (ad esempio con Qt Creator). Gli installer del progetto originale non contengono le modifiche qui sopra e usano ancora il vecchio par2cmdline.<br/>
+Non ci sono ancora release ufficiali di questo fork. Un pacchetto **Windows 64bit** pronto all'uso viene compilato automaticamente da GitHub Actions a ogni modifica (scheda *Actions* > esecuzione *Build Windows (x64)* > *Artifacts*, serve un account GitHub). Sugli altri sistemi va compilato dai sorgenti (vedi sotto).<br/>
 
 ### Funzioni principali
 -   **Poster Usenet da riga di comando e con una bella interfaccia grafica** per file binari, sviluppato in **C++11/Qt5**

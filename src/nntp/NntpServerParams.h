@@ -53,6 +53,8 @@ struct NntpServerParams{
 
     NntpServerParams(const NntpServerParams& o) = default;
     NntpServerParams(NntpServerParams&& aParams) = default;
+    NntpServerParams& operator=(const NntpServerParams& o) = default;
+    NntpServerParams& operator=(NntpServerParams&& o) = default;
 
     inline QString str() const;
 };

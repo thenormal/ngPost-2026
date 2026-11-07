@@ -17,9 +17,15 @@ Het is een fork van [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, li
 -   **Modern licht thema**: de GUI heeft een schoon uiterlijk geïnspireerd op Windows 11 (Fusion-stijl + stylesheet). Stel de omgevingsvariabele `NGPOST_NO_THEME` in om het native uiterlijk terug te krijgen
 -   **Italiaanse interface**: de GUI/CMD is nu ook in het Italiaans vertaald (al beschikbaar in het Chinees, Nederlands, Engels, Frans, Duits, Portugees en Spaans)
 -   **Nieuwe README**: herschreven voor deze fork en beschikbaar in 8 talen (Engels, Frans, Duits, Italiaans, Spaans, Nederlands, Portugees, Chinees)
+-   **ngPost 2026 v5.0 bèta**: nieuwe naam en versie, vernieuwd Over-venster, de donatieknoppen zijn verwijderd (om de oorspronkelijke auteur te steunen, zie het einde van deze pagina)
+-   **Nieuwe sectie Servers**: lijst van de servers met een statuslampje en een aan/uit-vakje, detailformulier (wachtwoord op verzoek zichtbaar) en een knop **Verbinding testen** die de aanmelding controleert. Servers wijzigen tijdens het posten kan ngPost niet meer laten crashen
+-   **Automatisch opslaan**: elke wijziging van de instellingen wordt automatisch opgeslagen (het vorige bestand blijft bewaard als `ngPost.conf.bak`)
+-   **Tabblad Auto Posting**: nieuwe knoppen **Voltooide verwijderen**, **Alles verwijderen** en **Voltooide tabbladen sluiten**
+-   **Archiefwachtwoord niet meer op de opdrachtregel**: 7-Zip krijgt het via de standaardinvoer en rar via de omgevingsvariabele `RAR`, zodat het niet meer zichtbaar is in de proceslijst
+-   **Diagnose**: ngPost registreert de duur en snelheid van elke fase (compressie, par2, upload), de fouten en het vastlopen, en de knop **Diagnoserapport** slaat een rapport op om een probleem te analyseren. Wachtwoorden, gebruikersnamen en bestandsnamen worden gemaskeerd, er wordt niets verstuurd
+-   **Windows**: het consolevenster sluit vanzelf wanneer ngPost met een dubbelklik wordt gestart; het pakket bevat OpenSSL 1.1.1w (nieuwste versie die Qt 5 ondersteunt)
 
-Deze fork publiceert nog geen binaire bestanden: compileer hem vanuit de broncode (zie hieronder).<br/>
-**Windows-gebruikers**: voorlopig is er geen kant-en-klaar installatieprogramma voor deze fork, het programma moet worden gecompileerd (bijvoorbeeld met Qt Creator). De installatieprogramma's van het oorspronkelijke project bevatten de bovenstaande wijzigingen niet en gebruiken nog de oude par2cmdline.<br/>
+Er zijn nog geen officiële releases van deze fork. Een kant-en-klaar **Windows 64bit**-pakket wordt bij elke wijziging automatisch gebouwd door GitHub Actions (tabblad *Actions* > run *Build Windows (x64)* > *Artifacts*, een GitHub-account is nodig). Op andere systemen bouw je het vanaf de broncode (zie hieronder).<br/>
 
 ### Belangrijkste functies
 -   **Usenet-poster voor de opdrachtregel en met een mooie GUI** voor binaire bestanden, ontwikkeld in **C++11/Qt5**

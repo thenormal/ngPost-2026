@@ -18,6 +18,10 @@
 //========================================================================
 
 #include "NgPost.h"
+#include "PostingJob.h"
+#include "utils/Diagnostics.h"
+#include <QSysInfo>
+#include <QThread>
 #include <csignal>
 #include <iostream>
 #include <QCoreApplication>
@@ -59,6 +63,14 @@ int main(int argc, char *argv[])
 
     //    qDebug() << "argc: " << argc;
     app = new NgPost(argc, argv);
+
+    // built-in diagnostics (cf "Diagnostic report" in the GUI)
+    Diagnostics::instance().start(QString("%1 v%2 | %3 (%4, %5) | %6 cores | Qt %7 | %8 | %9 mode").arg(
+                                      app->appName(), NgPost::versionLabel(), QSysInfo::prettyProductName(),
+                                      QSysInfo::kernelVersion(), QSysInfo::currentCpuArchitecture()).arg(
+                                      QThread::idealThreadCount()).arg(qVersion(), PostingJob::sslSupportInfo(),
+                                                                         argc > 1 ? "command line" : "GUI"));
+
     app->checkForNewVersion();
 
     int exitCode = 0;
@@ -66,9 +78,21 @@ int main(int argc, char *argv[])
     if (app->useHMI())
     {
 #if defined( Q_OS_WIN )
-        ::ShowWindow( ::GetConsoleWindow(), SW_HIDE ); //hide console window
+        // Hide the console window when it was created only for us (double click on the exe).
+        // On Windows 11 the default terminal (Windows Terminal) ignores ShowWindow(SW_HIDE),
+        // so we detach from the console: when no other process uses it, it closes by itself.
+        // If ngPost is launched from an existing terminal, the console is shared and we leave it.
+        {
+            DWORD procs[4];
+            if (::GetConsoleProcessList(procs, 4) <= 1)
+            {
+                ::ShowWindow( ::GetConsoleWindow(), SW_HIDE );
+                ::FreeConsole();
+            }
+        }
 #endif
         app->checkSupportSSL();
+        Diagnostics::instance().startFreezeWatchdog();
         exitCode = app->startHMI();
     }
     else if (app->parseCommandLine(argc, argv))
@@ -99,6 +123,8 @@ int main(int argc, char *argv[])
     if (app->errCode() != 0)
         exitCode = app->errCode();
 
+    Diagnostics::instance().event("SESSION", QString("exit code %1").arg(exitCode));
+    Diagnostics::instance().stop();
     delete app;
     return exitCode;
 }

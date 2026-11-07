@@ -20,6 +20,7 @@ SOURCES += \
     hmi/CheckBoxCenterWidget.cpp \
     hmi/PostingWidget.cpp \
     hmi/SignedListWidget.cpp \
+    hmi/ServersWidget.cpp \
     hmi/MainWindow.cpp
 
 HEADERS += \
@@ -28,6 +29,7 @@ HEADERS += \
     hmi/CheckBoxCenterWidget.h \
     hmi/PostingWidget.h \
     hmi/SignedListWidget.h \
+    hmi/ServersWidget.h \
     hmi/MainWindow.h
 
 FORMS += \

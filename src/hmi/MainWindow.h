@@ -22,6 +22,8 @@
 
 #include <QMainWindow>
 #include <QFileInfoList>
+class QTimer;
+class ServersWidget;
 class NgPost;
 struct NntpServerParams;
 class NntpFile;
@@ -44,14 +46,15 @@ private:
     STATE           _state;
     PostingWidget  *_quickJobTab;
     AutoPostWidget *_autoPostTab;
+    ServersWidget  *_servers; //!< server section (list + details)
 
-    static const bool sDefaultServerSSL   = true;
-    static const int  sDefaultConnections = 5;
-    static const int  sDefaultServerPort  = 563;
-    static const int  sDeleteColumnWidth  = 30;
+    // autosave: the settings are saved automatically shortly after each change made by the user
+    QTimer         *_autoSaveTimer;
+    bool            _autoSaveReady;     //!< false during the initialisation (the widgets are filled by the code)
+    bool            _autoSaveQuickTab;  //!< a setting of the default Quick Post tab changed
+    bool            _autoSaveAutoTab;   //!< a setting of the Auto Posting tab changed
+    static constexpr int sAutoSaveDelayMs = 1000;
 
-    static const QList<const char *> sServerListHeaders;
-    static const QVector<int> sServerListSizes;
 
 
 
@@ -118,9 +121,12 @@ public slots:
     void onCloseAllFinishedQuickTabs();
 
 
+public slots:
+    void scheduleAutoSave(); //!< to be called after any change of a setting (the save is delayed and grouped)
+
 private slots:
-    void onAddServer();
-    void onDelServer();
+    void onAutoSave();
+    void onDiagnosticReport();
 
     void onObfucateToggled(bool checked);
 
@@ -154,11 +160,13 @@ private slots:
     void onPauseClicked();
 
 private:
+    void _watchForAutoSave(QWidget *root, int tab); //!< tab: -1 global settings, 0 Quick Post, 1 Auto Posting
+    void _saveConfig(bool quickTab, bool autoTab);
+    QString _diagnosticReport() const;
+
     void _initServerBox();
     void _initPostingBox();
 
-    void _addServer(NntpServerParams *serverParam);
-    int  _serverRow(QObject *delButton);
     PostingWidget *_getPostWidget(int tabIndex) const;
     int _getPostWidgetIndex(PostingWidget *postWidget) const;
 
