@@ -51,7 +51,10 @@ PostingWidget::PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber) :
     connect(_ui->nzbPassCB,  &QAbstractButton::toggled, this, &PostingWidget::onNzbPassToggled);
     connect(_ui->genPass,    &QAbstractButton::clicked, this, &PostingWidget::onGenNzbPassword);
 
-    _ui->filesList->setSignature(QString("<pre>%1</pre>").arg(_ngPost->escapeXML(_ngPost->asciiArt())));
+    _ui->filesList->setEmptyState(tr("Drag files or folders here, or choose them with the buttons below."),
+                                  tr("Select Files"), tr("Select Folder"));
+    connect(_ui->filesList, &SignedListWidget::emptyAction1, this, &PostingWidget::onSelectFilesClicked);
+    connect(_ui->filesList, &SignedListWidget::emptyAction2, this, &PostingWidget::onSelectFolderClicked);
     connect(_ui->filesList, &SignedListWidget::rightClick, this, &PostingWidget::onSelectFilesClicked);
 }
 
@@ -536,6 +539,8 @@ void PostingWidget::udatePostingParams()
 void PostingWidget::retranslate()
 {
     _ui->retranslateUi(this);
+    _ui->filesList->setEmptyState(tr("Drag files or folders here, or choose them with the buttons below."),
+                                  tr("Select Files"), tr("Select Folder"));
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
     _ui->redundancySB->setToolTip(tr("Using PAR2_ARGS from config file: %1").arg(_ngPost->_par2Args));
     _ui->filesList->setToolTip(QString("%1<ul><li>%2</li><li>%3</li><li>%4</li></ul>%5").arg(

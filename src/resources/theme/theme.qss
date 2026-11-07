@@ -61,6 +61,14 @@ QLabel#pageTitle {
     font-weight: 600;
     color: @text@;
 }
+QLabel#emptyTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: @text@;
+}
+QWidget#emptyState {
+    background: transparent;
+}
 QLabel#pageSubtitle, QLabel#hint {
     color: @subtext@;
 }

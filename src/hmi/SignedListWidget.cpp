@@ -19,30 +19,90 @@
 
 #include "SignedListWidget.h"
 #include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 #include <QResizeEvent>
+#include <QIcon>
 
 SignedListWidget::SignedListWidget(QWidget *parent) :
     QListWidget(parent),
-    _asciiLbl(new QLabel(this)),
+    _emptyState(new QWidget(viewport())),
+    _emptyLogo(new QLabel(_emptyState)),
+    _emptyTitle(new QLabel("ngPost 2026", _emptyState)),
+    _emptyHint(new QLabel(_emptyState)),
+    _emptyButton1(new QPushButton(_emptyState)),
+    _emptyButton2(new QPushButton(_emptyState)),
     _fileIcon(":/icons/file.png"),
     _folderIcon(":/icons/folder.png")
 {
-//    installEventFilter(this);
+    _emptyState->setObjectName("emptyState");
+    _emptyLogo->setPixmap(QIcon(":/icons/ngPost.png").pixmap(72, 72));
+    _emptyLogo->setAlignment(Qt::AlignCenter);
+    _emptyTitle->setObjectName("emptyTitle");
+    _emptyTitle->setAlignment(Qt::AlignCenter);
+    _emptyHint->setObjectName("hint");
+    _emptyHint->setAlignment(Qt::AlignCenter);
+    _emptyHint->setWordWrap(true);
+    for (QLabel *lbl : {_emptyLogo, _emptyTitle, _emptyHint})
+        lbl->setAttribute(Qt::WA_TransparentForMouseEvents); // a right click still opens the file selection
+    _emptyButton1->setObjectName("accentButton");
+    _emptyButton1->setCursor(Qt::PointingHandCursor);
+    _emptyButton2->setCursor(Qt::PointingHandCursor);
+
+    QVBoxLayout *layout = new QVBoxLayout(_emptyState);
+    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setSpacing(6);
+    layout->addWidget(_emptyLogo);
+    layout->addSpacing(4);
+    layout->addWidget(_emptyTitle);
+    layout->addWidget(_emptyHint);
+    layout->addSpacing(10);
+    QHBoxLayout *buttons = new QHBoxLayout();
+    buttons->setSpacing(10);
+    buttons->addStretch();
+    buttons->addWidget(_emptyButton1);
+    buttons->addWidget(_emptyButton2);
+    buttons->addStretch();
+    layout->addLayout(buttons);
+
+    connect(_emptyButton1, &QAbstractButton::clicked, this, &SignedListWidget::emptyAction1);
+    connect(_emptyButton2, &QAbstractButton::clicked, this, &SignedListWidget::emptyAction2);
+
+    // the empty screen follows the content of the list, whatever the way items are added or removed
+    connect(model(), &QAbstractItemModel::rowsInserted, this, &SignedListWidget::_updateEmptyState);
+    connect(model(), &QAbstractItemModel::rowsRemoved,  this, &SignedListWidget::_updateEmptyState);
+    connect(model(), &QAbstractItemModel::modelReset,   this, &SignedListWidget::_updateEmptyState);
 }
 
-
-void SignedListWidget::setSignature(const QString &str)
+void SignedListWidget::setEmptyState(const QString &hint, const QString &button1, const QString &button2)
 {
-    _asciiLbl->setText(str);
-    _sizeAscii = _asciiLbl->sizeHint();
+    _emptyHint->setText(hint);
+    _emptyButton1->setText(button1);
+    _emptyButton2->setText(button2);
+    _emptyButton2->setVisible(!button2.isEmpty());
+    _placeEmptyState();
+    _updateEmptyState();
+}
+
+void SignedListWidget::_updateEmptyState()
+{
+    _emptyState->setVisible(count() == 0);
+}
+
+void SignedListWidget::_placeEmptyState()
+{
+    QSize area = viewport()->size();
+    int width  = qMin(area.width() - 20, 460);
+    int height = qMin(area.height(), _emptyState->layout()->heightForWidth(width) > 0 ?
+                                         _emptyState->layout()->heightForWidth(width) :
+                                         _emptyState->sizeHint().height());
+    _emptyState->setGeometry((area.width() - width) / 2, qMax(0, (area.height() - height) / 2), width, height);
 }
 
 void SignedListWidget::addPath(const QString &path, bool isDir)
 {
     QListWidgetItem *item = new QListWidgetItem(isDir ? _folderIcon : _fileIcon, path);
     addItem(item);
-    if (_asciiLbl->isVisible())
-        _asciiLbl->hide();
 }
 
 bool SignedListWidget::addPathIfNotInList(const QString &path, int lastIndexToCheck, bool isDir)
@@ -57,24 +117,17 @@ bool SignedListWidget::addPathIfNotInList(const QString &path, int lastIndexToCh
     return true;
 }
 
-//#include <QDebug>
 void SignedListWidget::removeItemWidget2(QListWidgetItem *item)
 {
-//    qDebug() << "[removeItemWidget2] count: " << count();
-    if (count() == 1)
-    {
-        removeItemWidget(item);
-        _asciiLbl->show();
+    bool last = count() == 1;
+    removeItemWidget(item);
+    if (last)
         emit empty();
-    }
-    else
-        removeItemWidget(item);
 }
 
 void SignedListWidget::clear2()
 {
     clear();
-    _asciiLbl->show();
 }
 
 void SignedListWidget::onDeleteSelectedItems()
@@ -88,14 +141,9 @@ void SignedListWidget::onDeleteSelectedItems()
 
 void SignedListWidget::resizeEvent(QResizeEvent *e)
 {
-    QListView::resizeEvent(e);
-    QSize listSize = e->size();
-    _asciiLbl->setGeometry(listSize.width() - _sizeAscii.width(),
-                           listSize.height() - _sizeAscii.height(),
-                           _sizeAscii.width(),
-                           _sizeAscii.height());
+    QListWidget::resizeEvent(e);
+    _placeEmptyState();
 }
-
 void SignedListWidget::mousePressEvent(QMouseEvent *e)
 {
     QListWidget::mousePressEvent(e);

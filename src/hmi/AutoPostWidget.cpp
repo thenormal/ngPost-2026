@@ -38,7 +38,16 @@ AutoPostWidget::AutoPostWidget(NgPost *ngPost, MainWindow *hmi) :
     _currentPostIdx(1)
 {
     _ui->setupUi(this);
-    _ui->filesList->setSignature(QString("<pre>%1</pre>").arg(_ngPost->escapeXML(_ngPost->asciiArt())));
+    _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose the folder to scan: each file or folder becomes a post."),
+                                  tr("Select Files"), tr("Choose a folder to scan"));
+    connect(_ui->filesList, &SignedListWidget::emptyAction1, this, &AutoPostWidget::onSelectFilesClicked);
+    connect(_ui->filesList, &SignedListWidget::emptyAction2, this, [this](){
+        // choose the folder then scan it directly
+        QString before = _ui->autoDirEdit->text();
+        onSelectAutoDirClicked();
+        if (!_ui->autoDirEdit->text().isEmpty() && _ui->autoDirEdit->text() != before)
+            onScanAutoDirClicked();
+    });
     connect(_ui->filesList, &SignedListWidget::rightClick, this, &AutoPostWidget::onSelectFilesClicked);
 }
 
@@ -500,6 +509,8 @@ bool AutoPostWidget::deleteFilesOncePosted() const { return _ui->delFilesCB->isC
 void AutoPostWidget::retranslate()
 {
     _ui->retranslateUi(this);
+    _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose the folder to scan: each file or folder becomes a post."),
+                                  tr("Select Files"), tr("Choose a folder to scan"));
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
     _ui->redundancySB->setToolTip(tr("Using PAR2_ARGS from config file: %1").arg(_ngPost->_par2Args));
     _ui->removeCompletedButton->setToolTip(tr("Remove from the list the files/folders that have been uploaded without error"));
