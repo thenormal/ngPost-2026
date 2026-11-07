@@ -283,7 +283,7 @@ NgPost::NgPost(int &argc, char *argv[]):
     _inputDir(),
     _activeJob(nullptr), _pendingJobs(), _packingJob(nullptr),
     _historyFieldSeparator(sDefaultFieldSeparator),
-    _postHistoryFile(),
+    _postHistoryFile(), _historyEnabled(true), _historyKeyInConfig(false), _configPath(),
     _autoDirs(),
     _folderMonitor(nullptr), _monitorThread(nullptr),
     _delAuto(false),
@@ -1080,16 +1080,21 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
                                                   job->nbArticlesFailed());
 #endif
 
-        if (_activeJob->hasPostFinished() && !_postHistoryFile.isEmpty())
+        QString historyPath = historyFile();
+        if (_activeJob->hasPostFinished() && !historyPath.isEmpty())
         {
-            QFile hist(_postHistoryFile);
+            QFile hist(historyPath);
+            bool newFile = !hist.exists() || hist.size() == 0;
             if (hist.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
             {
                 QTextStream stream(&hist);
+                if (newFile)
+                    stream << historyHeader().join(_historyFieldSeparator) << "\n";
+                qint64 sec = _activeJob->jobDurationMs() / 1000;
                 stream << QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss")
                        << _historyFieldSeparator << _activeJob->nzbName()
                        << _historyFieldSeparator << _activeJob->postSize()
-                       << _historyFieldSeparator << _activeJob->avgSpeed();
+                       << _historyFieldSeparator << _activeJob->avgSpeed().trimmed();
                 if (_activeJob->hasCompressed())
                     stream << _historyFieldSeparator << _activeJob->rarName()
                            << _historyFieldSeparator << _activeJob->rarPass();
@@ -1098,9 +1103,22 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
 
                 stream << _historyFieldSeparator << _activeJob->groups()
                        << _historyFieldSeparator << _activeJob->from()
+                       // columns added by ngPost 2026 (at the end so the old lines stay valid)
+                       << _historyFieldSeparator << (_activeJob->nbArticlesFailed() == 0 ?
+                                                         QString("OK") :
+                                                         QString("ERRORS (%1)").arg(_activeJob->nbArticlesFailed()))
+                       << _historyFieldSeparator << _activeJob->nbOriginalFiles()
+                       << _historyFieldSeparator << QString("%1:%2:%3").arg(sec / 3600, 2, 10, QChar('0'))
+                                                                     .arg((sec / 60) % 60, 2, 10, QChar('0'))
+                                                                     .arg(sec % 60, 2, 10, QChar('0'))
+                       << _historyFieldSeparator << QDir::toNativeSeparators(_activeJob->nzbFilePath())
                        << "\n" << MB_FLUSH;
                 hist.close();
             }
+#ifdef __USE_HMI__
+            if (_hmi)
+                _hmi->onHistoryUpdated();
+#endif
         }
 
 #ifdef __USE_HMI__
@@ -2018,6 +2036,7 @@ QString NgPost::_parseConfig(const QString &configPath)
 {
     QString err;
     QFileInfo fileInfo(configPath);
+    _configPath = fileInfo.absoluteFilePath();
     if (!fileInfo.exists() || !fileInfo.isFile() || !fileInfo.isReadable())
         err = tr("The config file '%1' is not readable...").arg(configPath);
 
@@ -2249,6 +2268,13 @@ QString NgPost::_parseConfig(const QString &configPath)
 
                     else if (opt == sOptionNames[Opt::LANG])
                         changeLanguage(val.toLower());
+
+                    else if (opt == "history")
+                    {
+                        val = val.toLower();
+                        _historyEnabled = !(val == "off" || val == "false" || val == "0" || val == "no");
+                        _historyKeyInConfig = true;
+                    }
 
                     else if (opt == "theme")
                     {
@@ -2504,25 +2530,6 @@ QString NgPost::_parseConfig(const QString &configPath)
         file.close();
     }
 
-    if (err.isEmpty() && !_postHistoryFile.isEmpty())
-    {
-        QFile file(_postHistoryFile);
-        if (!file.exists() && file.open(QIODevice::WriteOnly|QIODevice::Text))
-        {
-            QTextStream stream(&file);
-            stream << tr("date")
-                   << _historyFieldSeparator << tr("nzb name")
-                   << _historyFieldSeparator << tr("size")
-                   << _historyFieldSeparator << tr("avg. speed")
-                   << _historyFieldSeparator << tr("archive name")
-                   << _historyFieldSeparator << tr("archive pass")
-                   << _historyFieldSeparator << tr("groups")
-                   << _historyFieldSeparator << tr("from") << "\n";
-
-            file.close();
-        }
-    }
-
     return err;
 }
 
@@ -2675,6 +2682,9 @@ void NgPost::saveConfig(bool quiet)
 #else
     QString conf = QString("%1/%2").arg(getenv("HOME")).arg(sDefaultConfig);
 #endif
+    if (_configPath.isEmpty())
+        _configPath = QFileInfo(conf).absoluteFilePath();
+    _historyKeyInConfig = true; // the key "history" is written below
 
     // the whole file is rewritten: keep a copy of the previous one, once per session (ngPost.conf.bak)
     static bool backupDone = false;
@@ -2763,6 +2773,10 @@ void NgPost::saveConfig(bool quiet)
                << tr("## Default folder to open to select files from the HMI") << "\n"
                << "inputDir = " << _inputDir << "\n"
                << "\n"
+               << tr("## History of the uploads (shown in the History page): ON or OFF") << "\n"
+               << tr("## the file contains the archive passwords in clear text: keep it private") << "\n"
+               << "history = " << (_historyEnabled ? "ON" : "OFF") << "\n"
+               << tr("## by default the history is saved in ngPost_history.csv next to this file") << "\n"
                << tr("## History posting file") << "\n"
                << tr("## each succesful post will append a line with the date, the file name, the archive name, the password...") << "\n"
                << (_postHistoryFile.isEmpty()  ? "#" : "") <<"POST_HISTORY = "
@@ -3010,3 +3024,21 @@ const QString NgPost::sNgPostASCII = QString("\
           \\//_____/                    \\/\n\
 ");
 
+
+
+QStringList NgPost::historyHeader()
+{
+    return {tr("date"), tr("nzb name"), tr("size"), tr("avg. speed"), tr("archive name"), tr("archive pass"),
+            tr("groups"), tr("from"), tr("status"), tr("files"), tr("duration"), tr("nzb file")};
+}
+
+QString NgPost::historyFile() const
+{
+    if (!_historyEnabled)
+        return QString();
+    if (!_postHistoryFile.isEmpty())
+        return _postHistoryFile;
+    if (_configPath.isEmpty())
+        return QString();
+    return QFileInfo(_configPath).absoluteDir().absoluteFilePath("ngPost_history.csv");
+}

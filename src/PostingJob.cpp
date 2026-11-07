@@ -85,6 +85,7 @@ PostingJob::PostingJob(NgPost *ngPost,
     _obfuscateArticles(obfuscateArticles), _obfuscateFileName(obfuscateFileName),
     _delFilesAfterPost(delFilesAfterPost ? 0x1 : 0x0),
     _originalFiles(!postWidget || delFilesAfterPost  || obfuscateFileName ? files : QFileInfoList()),
+    _nbInputFiles(files.size()),
     _secureDiskAccess(), _posters(),
     _overwriteNzb(overwriteNzb),
     _grpList(grpList), _from(from),
@@ -227,6 +228,8 @@ void PostingJob::onImmediateSpeedComputation()
 void PostingJob::onStartPosting(bool isActiveJob)
 {
     _isActiveJob = isActiveJob;
+    if (!_jobTimer.isValid())
+        _jobTimer.start();
 #ifdef __DEBUG__
 qDebug() << "[MB_TRACE][Issue#82][PostingJob::onStartPosting] job: " << this
          << ", file: " << nzbName() << " (isActive: " << isActiveJob << ")";

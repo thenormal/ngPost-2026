@@ -22,6 +22,7 @@
 #include "PostingWidget.h"
 #include "AutoPostWidget.h"
 #include "ServersWidget.h"
+#include "HistoryWidget.h"
 #include "NgPost.h"
 #include "nntp/NntpServerParams.h"
 #include "nntp/NntpArticle.h"
@@ -79,7 +80,8 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveReady(false),
     _autoSaveQuickTab(false),
     _autoSaveAutoTab(false),
-    _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr},
+    _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr},
+    _history(nullptr), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr),
     _themeButton(nullptr), _aboutButton(nullptr),
     _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
     _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
@@ -183,6 +185,32 @@ void MainWindow::init(NgPost *ngPost)
     QTimer::singleShot(0, this, [this](){ _autoSaveReady = true; }); // after the initialisation of the widgets
 
     _ui->goCmdButton->hide();
+
+    // history page
+    _history = new HistoryWidget(_ngPost, _pages);
+    QWidget *placeholder = _pages->widget(PAGE_HISTORY);
+    _pages->insertWidget(PAGE_HISTORY, _history);
+    _pages->removeWidget(placeholder);
+    placeholder->deleteLater();
+    _historyCB->setChecked(_ngPost->_historyEnabled);
+    _updateHistorySettings();
+    connect(_historyCB,         &QAbstractButton::toggled, this, &MainWindow::onHistoryToggled);
+    connect(_historyPathButton, &QAbstractButton::clicked, this, &MainWindow::onHistoryPathClicked);
+    if (_ngPost->_historyEnabled && !_ngPost->_historyKeyInConfig)
+    {
+        // first start with the history: tell the user once (the key "history" is then saved in the config)
+        QTimer::singleShot(600, this, [this](){
+            QMessageBox::information(this, tr("History of the uploads"),
+                tr("ngPost 2026 now keeps the history of your uploads (History page).\n\n"
+                   "Be careful: the history file also records the password of each archive in clear text, "
+                   "so you can always open your releases again. It stays on this computer and is never sent "
+                   "anywhere, but anyone using this computer can read it.\n\n"
+                   "File: %1\n\nYou can turn the history off in the Settings.").arg(
+                    QDir::toNativeSeparators(_ngPost->historyFile())));
+            _ngPost->_historyKeyInConfig = true;
+            scheduleAutoSave();
+        });
+    }
 
     _themeCB->setCurrentIndex(_ngPost->theme() == "light" ? 1 : _ngPost->theme() == "dark" ? 2 : 0);
     connect(_themeCB, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onThemeSelected);
@@ -1135,7 +1163,7 @@ void MainWindow::_buildShell()
 
     _nav = new QButtonGroup(this);
     _nav->setExclusive(true);
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < NB_NAV; ++i)
     {
         QPushButton *b = new QPushButton(sideBar);
         b->setObjectName("navButton");
@@ -1217,6 +1245,9 @@ void MainWindow::_buildShell()
 
     // page 2: settings (the widgets of the old "Parameters" box, grouped in cards)
     _pages->addWidget(_buildSettingsPage());
+
+    // page 3: history of the uploads (created in init, it needs NgPost)
+    _pages->addWidget(new QWidget(_pages));
 
     // upload bar always visible at the bottom
     _ui->uploadFrame->setParent(right);
@@ -1347,6 +1378,22 @@ QWidget *MainWindow::_buildSettingsPage()
     g->addWidget(_ui->obfuscateFileNameCB, 1, 0);
     right->addWidget(privacy);
 
+    // history of the uploads
+    QFrame *history = _card("history", g);
+    _historyCB = new QCheckBox(history);
+    _historyCB->setObjectName("historyCB");
+    _historyPathEdit = new QLineEdit(history);
+    _historyPathEdit->setObjectName("historyPathEdit");
+    _historyPathEdit->setReadOnly(true);
+    _historyPathButton = new QPushButton(" ... ", history);
+    _historyHint = newLabel("hint", history);
+    _historyHint->setWordWrap(true);
+    g->addWidget(_historyCB, 0, 0, 1, 2);
+    g->addLayout(hbox({_historyPathEdit, _historyPathButton}, false), 1, 0, 1, 2);
+    g->addWidget(_historyHint, 2, 0, 1, 2);
+    g->setColumnStretch(1, 1);
+    left->insertWidget(left->count() - 1, history); // before the stretch of the left column
+
     // interface
     QFrame *gui = _card("interface", g);
     _themeLbl = new QLabel(gui);
@@ -1394,6 +1441,14 @@ void MainWindow::_retranslateShell()
     _cardTitles["nzb"]->setText(tr("NZB files"));
     _cardTitles["privacy"]->setText(tr("Privacy"));
     _cardTitles["interface"]->setText(tr("Interface"));
+    _cardTitles["history"]->setText(tr("History of the uploads"));
+    _navButtons[NAV_HISTORY]->setText(tr("History"));
+    _historyCB->setText(tr("Save the history of the uploads"));
+    _historyPathButton->setToolTip(tr("Choose the history file"));
+    _historyHint->setText(tr("The history also records the password of each archive in clear text: "
+                             "it stays on this computer, but anyone using it can read the file."));
+    if (_history)
+        _history->retranslate();
 
     _ui->langLbl->setText(tr("Language"));
     _ui->nzbPathLbl->setText(tr("Folder"));
@@ -1420,9 +1475,10 @@ void MainWindow::onThemeApplied()
     bool dark = _ngPost->isDarkTheme();
     QColor normal  = dark ? QColor("#d6d6d6") : QColor("#3b3b3b");
     QColor checked = dark ? QColor("#4cc2ff") : QColor("#0067c0");
-    static const char *icons[4] = {":/icons/nav_quick.png", ":/icons/nav_auto.png",
-                                   ":/icons/nav_servers.png", ":/icons/nav_settings.png"};
-    for (int i = 0; i < 4; ++i)
+    static const char *icons[NB_NAV] = {":/icons/nav_quick.png", ":/icons/nav_auto.png",
+                                        ":/icons/nav_servers.png", ":/icons/nav_settings.png",
+                                        ":/icons/nav_history.png"};
+    for (int i = 0; i < NB_NAV; ++i)
         _navButtons[i]->setIcon(_navIcon(icons[i], normal, checked));
     _themeButton->setIcon(_navIcon(":/icons/nav_theme.png", normal, checked));
     _adaptIcons();
@@ -1448,6 +1504,9 @@ void MainWindow::onNavClicked(int id)
         break;
     case NAV_SETTINGS:
         _pages->setCurrentIndex(PAGE_SETTINGS);
+        break;
+    case NAV_HISTORY:
+        _pages->setCurrentIndex(PAGE_HISTORY);
         break;
     }
     _postsTitle->setText(id == NAV_AUTO ? tr("Auto Posting") : tr("Quick Post"));
@@ -1551,4 +1610,43 @@ void MainWindow::_fixIconButtons()
         }
     }
     _adaptIcons();
+}
+
+void MainWindow::_updateHistorySettings()
+{
+    QString path = _ngPost->historyFile();
+    if (path.isEmpty() && !_ngPost->_postHistoryFile.isEmpty())
+        path = _ngPost->_postHistoryFile;
+    _historyPathEdit->setText(QDir::toNativeSeparators(path));
+    _historyPathEdit->setEnabled(_ngPost->_historyEnabled);
+    _historyPathButton->setEnabled(_ngPost->_historyEnabled);
+}
+
+void MainWindow::onHistoryToggled(bool checked)
+{
+    _ngPost->_historyEnabled = checked;
+    _updateHistorySettings();
+    if (_history)
+        _history->reload();
+}
+
+void MainWindow::onHistoryPathClicked()
+{
+    QString current = _ngPost->historyFile();
+    QString path = QFileDialog::getSaveFileName(this, tr("History file"), current,
+                                                tr("CSV files (*.csv)"), nullptr,
+                                                QFileDialog::DontConfirmOverwrite); // an existing history is kept
+    if (path.isEmpty())
+        return;
+    _ngPost->_postHistoryFile = path;
+    _updateHistorySettings();
+    if (_history)
+        _history->reload();
+    scheduleAutoSave();
+}
+
+void MainWindow::onHistoryUpdated()
+{
+    if (_history)
+        _history->reload();
 }

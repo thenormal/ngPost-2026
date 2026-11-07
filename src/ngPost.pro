@@ -21,6 +21,7 @@ SOURCES += \
     hmi/PostingWidget.cpp \
     hmi/SignedListWidget.cpp \
     hmi/ServersWidget.cpp \
+    hmi/HistoryWidget.cpp \
     hmi/MainWindow.cpp
 
 HEADERS += \
@@ -30,6 +31,7 @@ HEADERS += \
     hmi/PostingWidget.h \
     hmi/SignedListWidget.h \
     hmi/ServersWidget.h \
+    hmi/HistoryWidget.h \
     hmi/MainWindow.h
 
 FORMS += \

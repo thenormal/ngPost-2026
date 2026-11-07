@@ -37,6 +37,9 @@ class QLabel;
 class QComboBox;
 class QGridLayout;
 class QFrame;
+class QLineEdit;
+class QCheckBox;
+class HistoryWidget;
 
 namespace Ui {
 class MainWindow;
@@ -64,11 +67,16 @@ private:
     static constexpr int sAutoSaveDelayMs = 1000;
 
     // new layout of ngPost 2026: side bar + pages
-    enum Page {PAGE_POSTS = 0, PAGE_SERVERS, PAGE_SETTINGS};
-    enum Nav  {NAV_QUICK = 0, NAV_AUTO, NAV_SERVERS, NAV_SETTINGS};
+    enum Page {PAGE_POSTS = 0, PAGE_SERVERS, PAGE_SETTINGS, PAGE_HISTORY};
+    enum Nav  {NAV_QUICK = 0, NAV_AUTO, NAV_SERVERS, NAV_SETTINGS, NAV_HISTORY, NB_NAV};
     QStackedWidget *_pages;
     QButtonGroup   *_nav;
-    QPushButton    *_navButtons[4];
+    QPushButton    *_navButtons[NB_NAV];
+    HistoryWidget  *_history;
+    QCheckBox      *_historyCB;
+    QLineEdit      *_historyPathEdit;
+    QPushButton    *_historyPathButton;
+    QLabel         *_historyHint;
     QPushButton    *_themeButton;  //!< side bar: switch Auto / Light / Dark
     QPushButton    *_aboutButton;
     QLabel         *_postsTitle;
@@ -137,6 +145,7 @@ public:
 
     static void setThemeColors(bool dark); //!< status colours readable on the light or the dark theme
     void onThemeApplied(); //!< called by NgPost::applyTheme (icons of the side bar...)
+    void onHistoryUpdated(); //!< a post has been added in the history file
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
@@ -159,6 +168,8 @@ private slots:
     void onPostTabChanged(int index);
     void onThemeSelected(int index);
     void onThemeButtonClicked();
+    void onHistoryToggled(bool checked);
+    void onHistoryPathClicked();
     void onAutoSave();
     void onDiagnosticReport();
 
@@ -205,6 +216,7 @@ private:
     void _fixIconButtons();
     void _adaptIcons();
     void _updateThemeButton();
+    void _updateHistorySettings();
     static QIcon _navIcon(const QString &path, const QColor &normal, const QColor &checked);
 
     void _initServerBox();
