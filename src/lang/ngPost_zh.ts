@@ -10,8 +10,8 @@
     </message>
     <message>
         <location filename="../hmi/AboutNgPost.ui" line="68"/>
-        <source>ngPost 2026</source>
-        <translation>ngPost 2026</translation>
+        <source>ngPost Deluxe</source>
+        <translation>ngPost Deluxe</translation>
     </message>
     <message>
         <location filename="../hmi/AboutNgPost.ui" line="78"/>
@@ -34,32 +34,42 @@
         <translation>版权</translation>
     </message>
     <message>
-        <location filename="../hmi/AboutNgPost.cpp" line="38"/>
+        <location filename="../hmi/AboutNgPost.cpp" line="42"/>
         <source>Version %1</source>
         <translation>版本 %1</translation>
     </message>
     <message>
-        <location filename="../hmi/AboutNgPost.cpp" line="40"/>
+        <location filename="../hmi/AboutNgPost.cpp" line="44"/>
         <source>A fast and safe Usenet poster with a graphical and a command line interface: it compresses (RAR / 7z), generates the par2 and posts your files, folders or whole monitored directories, then writes the nzb.</source>
         <translation>一款快速、安全的 Usenet 发布工具，提供图形界面和命令行：可压缩（RAR / 7z）、生成 par2，并发布您的文件、文件夹或受监控的目录，最后写出 nzb。</translation>
     </message>
     <message>
-        <location filename="../hmi/AboutNgPost.cpp" line="47"/>
+        <location filename="../hmi/AboutNgPost.cpp" line="51"/>
         <source>Project page</source>
         <translation>项目主页</translation>
     </message>
     <message>
-        <location filename="../hmi/AboutNgPost.cpp" line="47"/>
+        <location filename="../hmi/AboutNgPost.cpp" line="51"/>
         <source>Original project</source>
         <translation>原始项目</translation>
     </message>
     <message>
-        <location filename="../hmi/AboutNgPost.cpp" line="50"/>
+        <location filename="../hmi/AboutNgPost.cpp" line="54"/>
+        <source>Support on Ko-fi</source>
+        <translation>在 Ko-fi 上支持</translation>
+    </message>
+    <message>
+        <location filename="../hmi/AboutNgPost.cpp" line="66"/>
+        <source>Based on ngPost by %1</source>
+        <translation>基于 %1 的 ngPost</translation>
+    </message>
+    <message>
+        <location filename="../hmi/AboutNgPost.cpp" line="67"/>
         <source>Released under the GPL v3 licence.</source>
         <translation>基于 GPL v3 许可证发布。</translation>
     </message>
     <message>
-        <location filename="../hmi/AboutNgPost.cpp" line="51"/>
+        <location filename="../hmi/AboutNgPost.cpp" line="68"/>
         <source>Fork maintained by %1</source>
         <translation>分支由 %1 维护</translation>
     </message>
@@ -1133,20 +1143,20 @@ Each finished post will appear here.</source>
     </message>
     <message>
         <location filename="../hmi/MainWindow.cpp" line="203"/>
-        <location filename="../hmi/MainWindow.cpp" line="1458"/>
+        <location filename="../hmi/MainWindow.cpp" line="1472"/>
         <source>History of the uploads</source>
         <translation>上传历史记录</translation>
     </message>
     <message>
         <location filename="../hmi/MainWindow.cpp" line="204"/>
-        <source>ngPost 2026 now keeps the history of your uploads (History page).
+        <source>ngPost Deluxe now keeps the history of your uploads (History page).
 
 Be careful: the history file also records the password of each archive in clear text, so you can always open your releases again. It stays on this computer and is never sent anywhere, but anyone using this computer can read it.
 
 File: %1
 
 You can turn the history off in the Settings.</source>
-        <translation>ngPost 2026 现在会保存你的上传历史（历史记录页面）。
+        <translation>ngPost Deluxe 现在会保存你的上传历史（历史记录页面）。
 
 注意：历史记录文件还会以明文保存每个压缩包的密码，以便你随时重新打开你的发布。它保存在这台电脑上，绝不会被发送，但任何使用这台电脑的人都可以读取它。
 
@@ -1184,7 +1194,7 @@ Are you sure you want to quit?</source>
     </message>
     <message>
         <location filename="../hmi/MainWindow.cpp" line="359"/>
-        <location filename="../hmi/MainWindow.cpp" line="1475"/>
+        <location filename="../hmi/MainWindow.cpp" line="1493"/>
         <source>Log</source>
         <translation>日志</translation>
     </message>
@@ -1199,13 +1209,13 @@ Are you sure you want to quit?</source>
         <translation>继续上传</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1439"/>
+        <location filename="../hmi/MainWindow.cpp" line="1453"/>
         <source>Auto Posting</source>
         <translation>Auto Posting</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1440"/>
-        <location filename="../hmi/MainWindow.cpp" line="1446"/>
+        <location filename="../hmi/MainWindow.cpp" line="1454"/>
+        <location filename="../hmi/MainWindow.cpp" line="1460"/>
         <source>Servers</source>
         <translation>服务器</translation>
     </message>
@@ -1231,7 +1241,7 @@ Are you sure you want to quit?</source>
         <translation>就绪</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1438"/>
+        <location filename="../hmi/MainWindow.cpp" line="1452"/>
         <source>Quick Post</source>
         <translation>Quick Post</translation>
     </message>
@@ -1300,140 +1310,155 @@ Passwords, usernames and file names are masked.</source>
         <translation>您确定要关闭计算机吗?</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1441"/>
-        <location filename="../hmi/MainWindow.cpp" line="1448"/>
+        <location filename="../hmi/MainWindow.cpp" line="1455"/>
+        <location filename="../hmi/MainWindow.cpp" line="1462"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1442"/>
+        <location filename="../hmi/MainWindow.cpp" line="1456"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1447"/>
+        <location filename="../hmi/MainWindow.cpp" line="1461"/>
         <source>The posts are uploaded on all the enabled servers. Test a server before using it.</source>
         <translation>帖子会上传到所有已启用的服务器。使用服务器前请先测试。</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1449"/>
+        <location filename="../hmi/MainWindow.cpp" line="1463"/>
         <source>Default parameters of the posts and of the application.</source>
         <translation>帖子和应用程序的默认参数。</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1451"/>
+        <location filename="../hmi/MainWindow.cpp" line="1465"/>
         <source>Poster</source>
         <translation>发布者</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1452"/>
+        <location filename="../hmi/MainWindow.cpp" line="1466"/>
         <source>Archives and password</source>
         <translation>压缩包和密码</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1453"/>
+        <location filename="../hmi/MainWindow.cpp" line="1467"/>
         <source>Newsgroups</source>
         <translation>新闻组</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1454"/>
+        <location filename="../hmi/MainWindow.cpp" line="1468"/>
         <source>Upload</source>
         <translation>上传</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1455"/>
+        <location filename="../hmi/MainWindow.cpp" line="1469"/>
         <source>NZB files</source>
         <translation>NZB 文件</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1456"/>
+        <location filename="../hmi/MainWindow.cpp" line="1470"/>
         <source>Privacy</source>
         <translation>隐私</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1457"/>
+        <location filename="../hmi/MainWindow.cpp" line="1471"/>
         <source>Interface</source>
         <translation>界面</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1459"/>
+        <location filename="../hmi/MainWindow.cpp" line="1473"/>
+        <source>Support the project</source>
+        <translation>支持本项目</translation>
+    </message>
+    <message>
+        <location filename="../hmi/MainWindow.cpp" line="1474"/>
+        <source>%1 is free. If it is useful to you, you can support its development with a donation on Ko-fi.</source>
+        <translation>%1 是免费的。如果它对你有用，你可以在 Ko-fi 上捐赠以支持它的开发。</translation>
+    </message>
+    <message>
+        <location filename="../hmi/MainWindow.cpp" line="1475"/>
+        <source>Support on Ko-fi</source>
+        <translation>在 Ko-fi 上支持</translation>
+    </message>
+    <message>
+        <location filename="../hmi/MainWindow.cpp" line="1477"/>
         <source>History</source>
         <translation>历史记录</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1460"/>
+        <location filename="../hmi/MainWindow.cpp" line="1478"/>
         <source>Save the history of the uploads</source>
         <translation>保存上传历史记录</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1461"/>
+        <location filename="../hmi/MainWindow.cpp" line="1479"/>
         <source>Choose the history file</source>
         <translation>选择历史记录文件</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1462"/>
+        <location filename="../hmi/MainWindow.cpp" line="1480"/>
         <source>The history also records the password of each archive in clear text: it stays on this computer, but anyone using it can read the file.</source>
         <translation>历史记录还会以明文保存每个压缩包的密码：它保存在这台电脑上，但任何使用这台电脑的人都可以读取该文件。</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1467"/>
+        <location filename="../hmi/MainWindow.cpp" line="1485"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1468"/>
+        <location filename="../hmi/MainWindow.cpp" line="1486"/>
         <source>Folder</source>
         <translation>文件夹</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1469"/>
+        <location filename="../hmi/MainWindow.cpp" line="1487"/>
         <source>Theme</source>
         <translation>主题</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1470"/>
+        <location filename="../hmi/MainWindow.cpp" line="1488"/>
         <source>Automatic (like Windows)</source>
         <translation>自动（跟随 Windows）</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1471"/>
-        <location filename="../hmi/MainWindow.cpp" line="1483"/>
+        <location filename="../hmi/MainWindow.cpp" line="1489"/>
+        <location filename="../hmi/MainWindow.cpp" line="1501"/>
         <source>Light</source>
         <translation>浅色</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1472"/>
-        <location filename="../hmi/MainWindow.cpp" line="1483"/>
+        <location filename="../hmi/MainWindow.cpp" line="1490"/>
+        <location filename="../hmi/MainWindow.cpp" line="1501"/>
         <source>Dark</source>
         <translation>深色</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1473"/>
+        <location filename="../hmi/MainWindow.cpp" line="1491"/>
         <source>The settings are saved automatically after each change.</source>
         <translation>每次更改后设置都会自动保存。</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1474"/>
+        <location filename="../hmi/MainWindow.cpp" line="1492"/>
         <source>Save now</source>
         <translation>立即保存</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1483"/>
+        <location filename="../hmi/MainWindow.cpp" line="1501"/>
         <source>Auto</source>
         <translation>自动</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1484"/>
+        <location filename="../hmi/MainWindow.cpp" line="1502"/>
         <source>Theme: %1</source>
         <translation>主题：%1</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1653"/>
+        <location filename="../hmi/MainWindow.cpp" line="1671"/>
         <source>History file</source>
         <translation>历史记录文件</translation>
     </message>
     <message>
-        <location filename="../hmi/MainWindow.cpp" line="1654"/>
+        <location filename="../hmi/MainWindow.cpp" line="1672"/>
         <source>CSV files (*.csv)</source>
         <translation>CSV 文件 (*.csv)</translation>
     </message>
@@ -1441,308 +1466,308 @@ Passwords, usernames and file names are masked.</source>
 <context>
     <name>NgPost</name>
     <message>
-        <location filename="../NgPost.cpp" line="69"/>
+        <location filename="../NgPost.cpp" line="70"/>
         <source>Auto Posting</source>
         <translation>自动发布</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="70"/>
+        <location filename="../NgPost.cpp" line="71"/>
         <source>Quick Post</source>
         <translation>快速发布</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="171"/>
+        <location filename="../NgPost.cpp" line="172"/>
         <source>Help: display syntax</source>
         <translation>帮助：显示语法</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="172"/>
+        <location filename="../NgPost.cpp" line="173"/>
         <source>app version</source>
         <translation>程序版本</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="173"/>
+        <location filename="../NgPost.cpp" line="174"/>
         <source>use configuration file (if not provided, we try to load $HOME/.ngPost)</source>
         <translation>使用配置文件（如果没有提供，请尝试载入$HOME/.ngPost）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="174"/>
+        <location filename="../NgPost.cpp" line="175"/>
         <source>display cmd progressbar: NONE (default), BAR or FILES</source>
         <translation>显示命令行进度条: 无（默认），进度条或文件名</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="175"/>
+        <location filename="../NgPost.cpp" line="176"/>
         <source>display extra information</source>
         <translation>显示更多信息</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="176"/>
+        <location filename="../NgPost.cpp" line="177"/>
         <source>display full debug information</source>
         <translation>显示完整的调试信息</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="177"/>
+        <location filename="../NgPost.cpp" line="178"/>
         <source>application language</source>
         <translation>程序语言</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="179"/>
+        <location filename="../NgPost.cpp" line="180"/>
         <source>check nzb file (if articles are available on Usenet) cf https://github.com/mbruel/nzbCheck</source>
         <translation>检查nzb文件(是否文章已经在Usenet上) 参见 https://github.com/mbruel/nzbCheck</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="180"/>
+        <location filename="../NgPost.cpp" line="181"/>
         <source>quiet mode (no output on stdout)</source>
         <translation>安静模式（标准输出中不会显示输出）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="183"/>
+        <location filename="../NgPost.cpp" line="184"/>
         <source>parse directory and post every file/folder separately. You must use --compress, should add --gen_par2, --gen_name and --gen_pass</source>
         <translation>解析目录并分别发布每个文件/文件夹。您必须使用--compress，可以添加参数--gen_par2, --gen_name and --gen_pass</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="184"/>
+        <location filename="../NgPost.cpp" line="185"/>
         <source>monitor directory and post every new file/folder. You must use --compress, should add --gen_par2, --gen_name and --gen_pass</source>
         <translation>监视目录并发布每个新文件/文件夹。您必须使用--compress,可以添加参数--gen_par2, --gen_name and --gen_pass</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="185"/>
+        <location filename="../NgPost.cpp" line="186"/>
         <source>delete file/folder once posted. You must use --auto or --monitor with this option.</source>
         <translation>发布后删除文件/文件夹。在使用此选项时您必须使用--auto 或者 --monitor。</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="188"/>
+        <location filename="../NgPost.cpp" line="189"/>
         <source>input file to upload (single file or directory), you can use it multiple times</source>
         <translation>导入要上传的文件（单个文件或目录），可以多次导入</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="189"/>
+        <location filename="../NgPost.cpp" line="190"/>
         <source>output file path (nzb)</source>
         <translation>输出文件路径（nzb）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="192"/>
+        <location filename="../NgPost.cpp" line="193"/>
         <source>obfuscate the subjects of the articles (CAREFUL you won&apos;t find your post if you lose the nzb file)</source>
         <translation>混淆文章的主题（注意！没有nzb文件您将无法找到您发布的文件）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="193"/>
+        <location filename="../NgPost.cpp" line="194"/>
         <source>newsgroups where to post the files (coma separated without space)</source>
         <translation>将文件发布到哪些新闻组（使用逗号分隔，请不要使用空格）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="194"/>
+        <location filename="../NgPost.cpp" line="195"/>
         <source>extra meta data in header (typically &quot;password=qwerty42&quot;)</source>
         <translation>标头中的额外元数据（例如&quot;password=qwerty42&quot;）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="195"/>
+        <location filename="../NgPost.cpp" line="196"/>
         <source>poster email (random one if not provided)</source>
         <translation>发布者邮件地址（如果没有提供特定的邮件地址程序将生成一个随机的邮件地址）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="196"/>
+        <location filename="../NgPost.cpp" line="197"/>
         <source>article size (default one: %1)</source>
         <translation>文章大小（默认值: %1）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="197"/>
+        <location filename="../NgPost.cpp" line="198"/>
         <source>msg id signature, after the @ (default one: %1)</source>
         <translation>在@符号后的msg id签名（默认值:%1）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="198"/>
+        <location filename="../NgPost.cpp" line="199"/>
         <source>number of time we retry to an Article that failed (default: %1)</source>
         <translation>文章发布失败时重试次数（默认值:%1）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="199"/>
+        <location filename="../NgPost.cpp" line="200"/>
         <source>number of Threads (the connections will be distributed amongs them)</source>
         <translation>线程数（连接数将在其中分配）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="200"/>
+        <location filename="../NgPost.cpp" line="201"/>
         <source>generate a new random email for each Post (--auto or --monitor)</source>
         <translation>为每次发布生成一个新的随机电子邮件（配合--auto或--monitor使用）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="204"/>
+        <location filename="../NgPost.cpp" line="205"/>
         <source>temporary folder where the compressed files and par2 will be stored</source>
         <translation>将存储压缩文件和par2文件的临时文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="205"/>
+        <location filename="../NgPost.cpp" line="206"/>
         <source>RAR absolute file path (external application)</source>
         <translation>RAR绝对文件路径（外部应用程序）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="206"/>
+        <location filename="../NgPost.cpp" line="207"/>
         <source>size in MB of the RAR volumes (0 by default meaning NO split)</source>
         <translation>RAR卷的大小（以MB为单位）（参数0默认为不分割）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="207"/>
+        <location filename="../NgPost.cpp" line="208"/>
         <source>maximum number of archive volumes</source>
         <translation>压缩卷的最大数量</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="208"/>
+        <location filename="../NgPost.cpp" line="209"/>
         <source>par2 redundancy percentage (0 by default meaning NO par2 generation)</source>
         <translation>par2冗余百分比（参数0为不生成par2文件）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="209"/>
+        <location filename="../NgPost.cpp" line="210"/>
         <source>par2 absolute file path (in case of self compilation of ngPost)</source>
         <translation>par2绝对文件路径（ngPost自我定义的路径）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="212"/>
+        <location filename="../NgPost.cpp" line="213"/>
         <source>compress inputs using RAR or 7z</source>
         <translation>使用RAR或者7z压缩导入的文件/文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="213"/>
+        <location filename="../NgPost.cpp" line="214"/>
         <source>generate par2 (to be used with --compress)</source>
         <translation>生成par2文件（配合参数--compress使用）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="214"/>
+        <location filename="../NgPost.cpp" line="215"/>
         <source>provide the RAR file name (to be used with --compress)</source>
         <translation>提供RAR文件名（配合参数--compress使用）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="215"/>
+        <location filename="../NgPost.cpp" line="216"/>
         <source>provide the RAR password (to be used with --compress)</source>
         <translation>提供RAR密码（配合参数--compress使用）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="216"/>
+        <location filename="../NgPost.cpp" line="217"/>
         <source>generate random RAR name (to be used with --compress)</source>
         <translation>生成随机RAR文件名（配合参数--compress使用）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="217"/>
+        <location filename="../NgPost.cpp" line="218"/>
         <source>generate random RAR password (to be used with --compress)</source>
         <translation>生成随机RAR密码（配合参数--compress使用）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="218"/>
+        <location filename="../NgPost.cpp" line="219"/>
         <source>length of the random RAR name (to be used with --gen_name), default: %1</source>
         <translation>随机RAR文件名长度（配合参数--gen_name使用），默认值: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="219"/>
+        <location filename="../NgPost.cpp" line="220"/>
         <source>length of the random RAR password (to be used with --gen_pass), default: %1</source>
         <translation>随机RAR密码长度（配合参数--gen_pass使用），默认值: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="220"/>
-        <location filename="../NgPost.cpp" line="2924"/>
+        <location filename="../NgPost.cpp" line="221"/>
+        <location filename="../NgPost.cpp" line="2925"/>
         <source>Remove root (parent) folder when compressing Folders using RAR</source>
         <translation>使用RAR压缩文件夹时删除根（父）文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="223"/>
+        <location filename="../NgPost.cpp" line="224"/>
         <source>NNTP server following the format (&lt;user&gt;:&lt;pass&gt;@@@)?&lt;host&gt;:&lt;port&gt;:&lt;nbCons&gt;:(no)?ssl</source>
         <translation>NNTP服务器遵循的格式 (&lt;user&gt;:&lt;pass&gt;@@@)?&lt;host&gt;:&lt;port&gt;:&lt;nbCons&gt;:(no)?ssl</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="225"/>
+        <location filename="../NgPost.cpp" line="226"/>
         <source>NNTP server hostname (or IP)</source>
         <translation>NNTP服务器主机名（或者IP地址）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="226"/>
+        <location filename="../NgPost.cpp" line="227"/>
         <source>NNTP server port</source>
         <translation>NNTP服务器端口</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="227"/>
+        <location filename="../NgPost.cpp" line="228"/>
         <source>use SSL</source>
         <translation>使用SSL</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="228"/>
+        <location filename="../NgPost.cpp" line="229"/>
         <source>NNTP server username</source>
         <translation>NNTP服务器用户名</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="229"/>
+        <location filename="../NgPost.cpp" line="230"/>
         <source>NNTP server password</source>
         <translation>NNTP服务器密码</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="230"/>
+        <location filename="../NgPost.cpp" line="231"/>
         <source>number of NNTP connections</source>
         <translation>NNTP连接数</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="687"/>
+        <location filename="../NgPost.cpp" line="688"/>
         <source>MONITOR_IGNORE_DIR ON =&gt; Ignoring new incoming folder %1</source>
         <translation>设置MONITOR_IGNORE_DIR为ON意味着忽略新导入的文件夹%1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="700"/>
+        <location filename="../NgPost.cpp" line="701"/>
         <source>MONITOR_EXTENSIONS ON =&gt; Ignoring new incoming file %1</source>
         <translation>设置MONITOR_EXTENSIONS为ON意味着忽略新导入的文件%1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="713"/>
+        <location filename="../NgPost.cpp" line="714"/>
         <source>Processing new incoming file: %1</source>
         <translation>正在处理新导入的文件: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="734"/>
+        <location filename="../NgPost.cpp" line="735"/>
         <source>error loading translator %1</source>
         <translation>载入语言文件时发生错误%1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="746"/>
+        <location filename="../NgPost.cpp" line="747"/>
         <source>ERROR: couldn&apos;t find translator for lang %1</source>
         <translation>错误: 无法找到语言文件%1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="976"/>
+        <location filename="../NgPost.cpp" line="977"/>
         <source>&lt;center&gt;&lt;h3&gt;New version available on GitHUB&lt;/h3&gt;&lt;/center&gt;</source>
         <translation>&lt;center&gt;&lt;h3&gt;在GitHUB上找到新版本&lt;/h3&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="977"/>
+        <location filename="../NgPost.cpp" line="978"/>
         <source>&lt;br/&gt;The last release is now &lt;b&gt;v%1&lt;/b&gt;</source>
         <translation>&lt;br/&gt;最新版本为&lt;b&gt;v%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="980"/>
+        <location filename="../NgPost.cpp" line="981"/>
         <source>New version available</source>
         <translation>找到新版本</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1202"/>
+        <location filename="../NgPost.cpp" line="1203"/>
         <source> =&gt; closing application</source>
         <translation> =&gt;关闭程序</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1211"/>
+        <location filename="../NgPost.cpp" line="1212"/>
         <source>packing job finished unexpectedly...</source>
         <translation>完成打包任务时发生意外...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1265"/>
+        <location filename="../NgPost.cpp" line="1266"/>
         <source>Network access changed: %1</source>
         <translation>网络访问已更改: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1360"/>
+        <location filename="../NgPost.cpp" line="1361"/>
         <source>Cancelling monitoring job: %1</source>
         <translation>正在取消监视任务: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1370"/>
+        <location filename="../NgPost.cpp" line="1371"/>
         <source>Stopping monitoring job: %1</source>
         <translation>正在停止监视任务: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1410"/>
+        <location filename="../NgPost.cpp" line="1411"/>
         <source>Error syntax: %1
 To list the available options use: %2 --help
 </source>
@@ -1751,1024 +1776,1024 @@ To list the available options use: %2 --help
 </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1515"/>
+        <location filename="../NgPost.cpp" line="1516"/>
         <source>Error syntax: you should provide at least one input file or directory using the option -i, --auto or --monitor</source>
         <translation>错误语法：您应该使用命令选项 -i, --auto 或 --monitor 提供至少一个输入文件或目录</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1523"/>
+        <location filename="../NgPost.cpp" line="1524"/>
         <source>Error syntax: --del option is only available with --auto or --monitor</source>
         <translation>错误语法：--del 选项只能配合 --auto 或者 --monitor 来使用</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1558"/>
+        <location filename="../NgPost.cpp" line="1559"/>
         <source>Error syntax: --auto only uses folders as argument...</source>
         <translation>错误语法：--auto 只能用作文件夹参数...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1590"/>
+        <location filename="../NgPost.cpp" line="1591"/>
         <source>Error syntax: --monitor only uses folders as argument...</source>
         <translation>错误语法：--monitor 只能用作文件夹参数...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1596"/>
+        <location filename="../NgPost.cpp" line="1597"/>
         <source>start monitoring: </source>
         <translation>开始监视： </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1610"/>
+        <location filename="../NgPost.cpp" line="1611"/>
         <source>Do article obfuscation (the subject of each Article will be a UUID)
 </source>
         <translation>进行文章混淆处理（每个文章的主题将会是UUID）
 </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1467"/>
+        <location filename="../NgPost.cpp" line="1468"/>
         <source>Extra logs are ON
 </source>
         <translation>已打开额外日志
 </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="211"/>
+        <location filename="../NgPost.cpp" line="212"/>
         <source>Pack posts using config PACK definition with a subset of (COMPRESS, GEN_NAME, GEN_PASS, GEN_PAR2)</source>
         <translation>您可以配置PACK命令定义的子命令(COMPRESS, GEN_NAME, GEN_PASS, GEN_PAR2)来打包发帖</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="775"/>
+        <location filename="../NgPost.cpp" line="776"/>
         <source>SSL issue on your system...</source>
         <translation>你的系统存在 SSL 问题……</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="839"/>
+        <location filename="../NgPost.cpp" line="840"/>
         <source>NZB Post cmd: %1 started: %2</source>
         <translation>NZB 后处理命令：%1 已启动：%2</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="843"/>
+        <location filename="../NgPost.cpp" line="844"/>
         <source>Couldn&apos;t start the NZB Post cmd: %1</source>
         <translation>无法启动 NZB 后处理命令：%1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="978"/>
-        <source>&lt;br/&gt;&lt;br/&gt;You can download it from the &lt;a href=&apos;https://github.com/thenormal/ngPost-2026/releases&apos;&gt;release directory&lt;/a&gt;</source>
-        <translation>&lt;br/&gt;&lt;br/&gt;您可以从&lt;a href=&apos;https://github.com/thenormal/ngPost-2026/releases&apos;&gt;发布目录&lt;/a&gt;下载</translation>
+        <location filename="../NgPost.cpp" line="979"/>
+        <source>&lt;br/&gt;&lt;br/&gt;You can download it from the &lt;a href=&apos;https://github.com/thenormal/ngPost-Deluxe/releases&apos;&gt;release directory&lt;/a&gt;</source>
+        <translation>&lt;br/&gt;&lt;br/&gt;您可以从&lt;a href=&apos;https://github.com/thenormal/ngPost-Deluxe/releases&apos;&gt;发布目录&lt;/a&gt;下载</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1062"/>
+        <location filename="../NgPost.cpp" line="1063"/>
         <source>no packing needed for next pending job %1</source>
         <translation>待处理任务无需打包 %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1153"/>
+        <location filename="../NgPost.cpp" line="1154"/>
         <source>start non packing job...</source>
         <translation>开始非打包任务...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1218"/>
+        <location filename="../NgPost.cpp" line="1219"/>
         <source>Cancelled pending job?</source>
         <translation>取消待处理的任务?</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1472"/>
+        <location filename="../NgPost.cpp" line="1473"/>
         <source>Full debug logs are ON
 </source>
         <translation>已打开完整调试日志
 </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1549"/>
+        <location filename="../NgPost.cpp" line="1550"/>
         <source>Error syntax: --auto only works with --compress or --gen_par2 or --pack with at least the keywords COMPRESS or GEN_PAR2 in PACK config</source>
         <translation>错误的语法: --auto 仅与 --compress 或 --gen_par2 或 --pack 配合使用且在打包配置文件中至少与以下关键词 COMPRESS 或 GEN_PAR2搭配使用</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1569"/>
+        <location filename="../NgPost.cpp" line="1570"/>
         <source>Error: you can only --auto without compression on folders that DON&apos;T have any subfolders.
 That&apos;s not the case for &apos;%1&apos; which contains folders: %2</source>
         <translation>错误: 您仅可以在没有子文件夹的且没有使用压缩功能的目录下使用 --auto.\n这并不适用于此文件夹 &apos;%1&apos; 因为此文件夹包含: %2</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1581"/>
+        <location filename="../NgPost.cpp" line="1582"/>
         <source>Error syntax: --monitor only works with --compress or with --gen_par2 ONLY IF MONITOR_IGNORE_DIR is enabled in config (--pack can be used)</source>
         <translation>错误的语法: --monitor 仅与 --compress 或与 --gen_par2 搭配使用且仅当 MONITOR_IGNORE_DIR 在配置文件中启用时 (此情况下可以使用 --pack 命令)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1622"/>
+        <location filename="../NgPost.cpp" line="1623"/>
         <source>You should give an integer for the number of threads (option -t)</source>
         <translation>您应该为线程数提供一个整数（参数-t）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1657"/>
-        <location filename="../NgPost.cpp" line="2263"/>
+        <location filename="../NgPost.cpp" line="1658"/>
+        <location filename="../NgPost.cpp" line="2264"/>
         <source>Generate new random poster for each post</source>
         <translation>为每个帖子生成新的随机发布者</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1674"/>
+        <location filename="../NgPost.cpp" line="1675"/>
         <source>You should give an integer for the article size (option -a)</source>
         <translation>您应该为文章大小指定一个整数（参数-a）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1688"/>
+        <location filename="../NgPost.cpp" line="1689"/>
         <source>You should give an unisgned integer for the number of retry for posting an Article (option -r)</source>
         <translation>您应为发布文章的重试次数提供一个无符号整数（参数-r）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1740"/>
+        <location filename="../NgPost.cpp" line="1741"/>
         <source>Error: can&apos;t generate par2 if the redundancy percentage is null or PAR2_ARGS is not provided...
 Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <translation>错误: 如果冗余数值为空或者没有提供参数PAR2_ARGS将无法生成par2文件...
 请在配置文件中使用--par2_pct或者设置参数PAR2_PCT 或 PAR2_ARGS.</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1801"/>
+        <location filename="../NgPost.cpp" line="1802"/>
         <source>Syntax error on server details for %1, the format should be: %2</source>
         <translation>服务器详细信息 %1 有语法错误，格式应为：%2</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1835"/>
+        <location filename="../NgPost.cpp" line="1836"/>
         <source>You should give an integer for the port (option -P)</source>
         <translation>端口号码应为整数（参数-P）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1859"/>
+        <location filename="../NgPost.cpp" line="1860"/>
         <source>You should give an integer for the number of connections (option -n)</source>
         <translation>连接数应为整数（参数-n）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1875"/>
-        <location filename="../NgPost.cpp" line="1912"/>
+        <location filename="../NgPost.cpp" line="1876"/>
+        <location filename="../NgPost.cpp" line="1913"/>
         <source>Error: the input file &apos;%1&apos; is not readable...</source>
         <translation>错误: 无法读取导入的文件“%1”...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1888"/>
+        <location filename="../NgPost.cpp" line="1889"/>
         <source>+ File to %2: %1</source>
         <translation>+ 文件到 %2: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1888"/>
+        <location filename="../NgPost.cpp" line="1889"/>
         <source>compress</source>
         <translation>压缩</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1888"/>
+        <location filename="../NgPost.cpp" line="1889"/>
         <source>post</source>
         <translation>帖子</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1895"/>
+        <location filename="../NgPost.cpp" line="1896"/>
         <source>+ Adding folder to Compress: %1</source>
         <translation>+ 压缩添加的文件夹: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1908"/>
+        <location filename="../NgPost.cpp" line="1909"/>
         <source>+ subFile to post: %1</source>
         <translation>+ 发布子文件: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1920"/>
+        <location filename="../NgPost.cpp" line="1921"/>
         <source>Error: the input folder &apos;%1&apos; has no files... (no recursivity without --compress)</source>
         <translation>错误：输入文件夹 &apos;%1&apos; 中没有文件...（没有使用--compressor的情况下不是递归的)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="1959"/>
+        <location filename="../NgPost.cpp" line="1960"/>
         <source>Nothing to do...</source>
         <translation>没有任务...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2041"/>
+        <location filename="../NgPost.cpp" line="2042"/>
         <source>The config file &apos;%1&apos; is not readable...</source>
         <translation>无法读取配置文件“%1”...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2086"/>
+        <location filename="../NgPost.cpp" line="2087"/>
         <source>the nzbPath &apos;%1&apos; is not writable...
 </source>
         <translation>无法写入nzb保存路径“%1”...
 </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2097"/>
+        <location filename="../NgPost.cpp" line="2098"/>
         <source>Unsupported protocol for NZB_UPLOAD_URL (%1). You can only use: %2
 </source>
         <translation>NZB_UPLOAD_URL (%1)使用了不支持的协议。 您只可以使用%2
 </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2178"/>
+        <location filename="../NgPost.cpp" line="2179"/>
         <source>ngPost starts logging: %1</source>
         <translation>ngPost 开始记录: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2184"/>
+        <location filename="../NgPost.cpp" line="2185"/>
         <source>Error opening log file: &apos;%1&apos;</source>
         <translation>打开记录文件时发生错误: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2208"/>
+        <location filename="../NgPost.cpp" line="2209"/>
         <source>Group Policy: one group per Post</source>
         <translation>新闻组策略：每个帖子一个新闻组</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2214"/>
+        <location filename="../NgPost.cpp" line="2215"/>
         <source>Group Policy: one group per File</source>
         <translation>新闻组策略：每个文件一个新闻组</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2305"/>
+        <location filename="../NgPost.cpp" line="2306"/>
         <source>Error parsing Proxy Socks5 parameters. The syntax should be: %1</source>
         <translation>解析Proxy Socks5参数时出错. 语法应为: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2320"/>
+        <location filename="../NgPost.cpp" line="2321"/>
         <source>the post history &apos;%1&apos; can&apos;t be a directory...
 </source>
         <translation>发布历史“%1”不可设置为目录...
 </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2326"/>
-        <location filename="../NgPost.cpp" line="2329"/>
+        <location filename="../NgPost.cpp" line="2327"/>
+        <location filename="../NgPost.cpp" line="2330"/>
         <source>the post history file &apos;%1&apos; is not writable...
 </source>
         <translation>无法写入发布历史文件“%1”...
 </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2344"/>
+        <location filename="../NgPost.cpp" line="2345"/>
         <source>should be a directory!...</source>
         <translation>应该是一个目录!...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2346"/>
+        <location filename="../NgPost.cpp" line="2347"/>
         <source>should be writable!...</source>
         <translation>应该是可写入的!...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2351"/>
+        <location filename="../NgPost.cpp" line="2352"/>
         <source>Using RAM Storage %1, root: %2, type: %3, size: %4, available: %5</source>
         <translation>使用RAM存储 %1, 根目录: %2, 类型: %3, 大小: %4, 可用: %5</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2365"/>
+        <location filename="../NgPost.cpp" line="2366"/>
         <source>should be a ratio between %1 and %2</source>
         <translation>应该是一个比率介于 %1 与 %2 之间</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2403"/>
+        <location filename="../NgPost.cpp" line="2404"/>
         <source>obsolete keyword AUTO_COMPRESS, you should use PACK instead, please click SAVE to update your conf and then go check it.</source>
         <translation>废弃的关键词 AUTO_COMPRESS, 您应当使用 PACK 命令, 请点击保存来更新您的配置文件, 更新后请再查看.</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2405"/>
+        <location filename="../NgPost.cpp" line="2406"/>
         <source>obsolete keyword AUTO_COMPRESS, you should use PACK instead, please refer to the conf example: %1</source>
         <translation>废弃的关键词 AUTO_COMPRESS, 您应当使用 PACK 命令, 请参照配置文件中的例子: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2424"/>
+        <location filename="../NgPost.cpp" line="2425"/>
         <source>Wrong keywords for PACK: %1. It should be a subset of (%2)</source>
         <translation>使用 PACK 命令时使用了错误的关键词: %1. 关键词请使用下面中的 (%2)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3031"/>
+        <location filename="../NgPost.cpp" line="3032"/>
         <source>date</source>
         <translation>日期</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3031"/>
+        <location filename="../NgPost.cpp" line="3032"/>
         <source>nzb name</source>
         <translation>nzb文件名</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3031"/>
+        <location filename="../NgPost.cpp" line="3032"/>
         <source>size</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3031"/>
+        <location filename="../NgPost.cpp" line="3032"/>
         <source>avg. speed</source>
         <translation>平均速度</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3031"/>
+        <location filename="../NgPost.cpp" line="3032"/>
         <source>archive name</source>
         <translation>压缩文件名</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3031"/>
+        <location filename="../NgPost.cpp" line="3032"/>
         <source>archive pass</source>
         <translation>压缩文件密码</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3032"/>
+        <location filename="../NgPost.cpp" line="3033"/>
         <source>groups</source>
         <translation>新闻组</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3032"/>
+        <location filename="../NgPost.cpp" line="3033"/>
         <source>from</source>
         <translation>从</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2540"/>
+        <location filename="../NgPost.cpp" line="2541"/>
         <source>Syntax: </source>
         <translation>语法: </translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2544"/>
+        <location filename="../NgPost.cpp" line="2545"/>
         <source>you can provide servers in one string using -S and/or split the parameters for ONE SINGLE server (this will overwrite the configuration file)</source>
         <translation>您可以使用命令 -S 以一串形式提供服务器信息和/或者拆分一个单独服务器的参数（这将覆盖配置文件中的相关信息）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2585"/>
+        <location filename="../NgPost.cpp" line="2586"/>
         <source>Using default config file: %1</source>
         <translation>使用默认配置文件: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2709"/>
+        <location filename="../NgPost.cpp" line="2710"/>
         <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH</source>
         <translation>## 程序界面语言. 当前支持: 英语, 法语, 西班牙语, 德语, 荷兰语, 葡萄牙语以及简体中文</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2715"/>
+        <location filename="../NgPost.cpp" line="2716"/>
         <source>## use Proxy (only Socks5 type!)</source>
         <translation>## 使用 Proxy (仅限 Socks5!)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2736"/>
+        <location filename="../NgPost.cpp" line="2737"/>
         <source>## execute a command or script at the end of each post (see examples)</source>
         <translation>## 在每次发布的末尾执行命令或脚本（请参见示例)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2737"/>
+        <location filename="../NgPost.cpp" line="2738"/>
         <source>## you can use several post commands by defining several NZB_POST_CMD</source>
         <translation>## 您可以通过定义多个NZB_POST_CMD来使用多个发布命令</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2738"/>
+        <location filename="../NgPost.cpp" line="2739"/>
         <source>## here is the list of the available placehoders</source>
         <translation>## 这是可用的占位符列表</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2739"/>
+        <location filename="../NgPost.cpp" line="2740"/>
         <source>full path of the written nzb file</source>
         <translation>被写入的nzb文件的完整路径</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2740"/>
+        <location filename="../NgPost.cpp" line="2741"/>
         <source>name of the nzb without the extension (original source name)</source>
         <translation>不包含扩展名的nzb文件名（源文件名)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2741"/>
+        <location filename="../NgPost.cpp" line="2742"/>
         <source>name of the archive files (in case of obfuscation)</source>
         <translation>压缩文件名（如果使用了混淆)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2742"/>
+        <location filename="../NgPost.cpp" line="2743"/>
         <source>archive password</source>
         <translation>压缩文件密码</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2743"/>
+        <location filename="../NgPost.cpp" line="2744"/>
         <source>size of the post (before yEnc encoding)</source>
         <translation>帖子大小 (yEnc 编码前)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2744"/>
+        <location filename="../NgPost.cpp" line="2745"/>
         <source>list of groups (comma separated)</source>
         <translation>新闻组列表 (以逗号分隔)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2745"/>
+        <location filename="../NgPost.cpp" line="2746"/>
         <source>number of files in the post</source>
         <translation>帖子中的文件数</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2746"/>
+        <location filename="../NgPost.cpp" line="2747"/>
         <source>number of Articles</source>
         <translation>文章数</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2747"/>
+        <location filename="../NgPost.cpp" line="2748"/>
         <source>number of Articles that failed to be posted</source>
         <translation>发布失败的文章数</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2769"/>
+        <location filename="../NgPost.cpp" line="2770"/>
         <source>## for monitoring, delay to check the size of an incoming file/folder to make sure it is fully arrived before posting it</source>
         <translation>## 监控时，检查传入文件/文件夹大小的延迟，以确保其完整后再发布</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2770"/>
+        <location filename="../NgPost.cpp" line="2771"/>
         <source>## must be between 1sec and 120sec (otherwise default: 1sec)</source>
         <translation>## 必须在 1 秒到 120 秒之间（否则默认：1 秒）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2853"/>
+        <location filename="../NgPost.cpp" line="2854"/>
         <source>## For GUI ONLY, save the logs in a file (to debug potential crashes)</source>
         <translation>## 仅限图形界面, 保存记录为文件 (为了调试潜在的程序崩溃)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2854"/>
+        <location filename="../NgPost.cpp" line="2855"/>
         <source>## ~/ngPost.log on Linux and MacOS, in the executable folder for Windows</source>
         <translation>## ~/ngPost.log 在 Linux 和 MacOS 平台上, 在Windows平台中保存在可执行文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2855"/>
+        <location filename="../NgPost.cpp" line="2856"/>
         <source>## The log is overwritten each time ngPost is launched</source>
         <translation>## 记录会在每次ngPost启动时被覆盖</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2856"/>
+        <location filename="../NgPost.cpp" line="2857"/>
         <source>## =&gt; after a crash, please SAVE the log before relaunching ngPost</source>
         <translation>## =&gt; 在程序崩溃后,请在启动ngPost之前保存记录</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2866"/>
+        <location filename="../NgPost.cpp" line="2867"/>
         <source>## Shortcut for automatic packing for both GUI and CMD using --pack</source>
         <translation>## 图形界面和命令行自动打包的快捷方式为使用 --pack</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2867"/>
+        <location filename="../NgPost.cpp" line="2868"/>
         <source>## coma separated list using the keywords COMPRESS, GEN_NAME, GEN_PASS and GEN_PAR2</source>
         <translation>## 在使用关键词 COMPRESS, GEN_NAME, GEN_PASS and GEN_PAR2 时请使用逗号来进行分隔</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2868"/>
+        <location filename="../NgPost.cpp" line="2869"/>
         <source>## For Auto posting and Monitoring if you don&apos;t use COMPRESS you need GEN_PA2</source>
         <translation>## 在使用自动发布功能和监视功能时如果您不使用 COMPRESS 那么您需要使用 GEN_PAR2</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2869"/>
+        <location filename="../NgPost.cpp" line="2870"/>
         <source>#PACK = COMPRESS, GEN_NAME, GEN_PASS, GEN_PAR2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2870"/>
+        <location filename="../NgPost.cpp" line="2871"/>
         <source>#PACK = GEN_PAR2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2546"/>
+        <location filename="../NgPost.cpp" line="2547"/>
         <source>for compression and par2 support</source>
         <translation>为压缩和par2文件提供支持</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2548"/>
+        <location filename="../NgPost.cpp" line="2549"/>
         <source>automated posting (scanning and/or monitoring)</source>
         <translation>自动发布（扫描和/或者监视）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2550"/>
+        <location filename="../NgPost.cpp" line="2551"/>
         <source>quick posting (several files/folders)</source>
         <translation>快速发布（数个文件/文件夹）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2552"/>
+        <location filename="../NgPost.cpp" line="2553"/>
         <source>general options</source>
         <translation>常规选项</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2560"/>
+        <location filename="../NgPost.cpp" line="2561"/>
         <source>Examples:</source>
         <translation>示例:</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2561"/>
+        <location filename="../NgPost.cpp" line="2562"/>
         <source>with monitoring</source>
         <translation>使用监视功能</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2562"/>
+        <location filename="../NgPost.cpp" line="2563"/>
         <source>with auto post</source>
         <translation>使用自动发布功能</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2563"/>
+        <location filename="../NgPost.cpp" line="2564"/>
         <source>with compression, filename obfuscation, random password and par2</source>
         <translation>使用压缩，文件名混淆，随即压缩包密码以及par2文件</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2564"/>
+        <location filename="../NgPost.cpp" line="2565"/>
         <source>with config file</source>
         <translation>使用配置文件</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2565"/>
+        <location filename="../NgPost.cpp" line="2566"/>
         <source>with all params</source>
         <translation>使用所有参数</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2568"/>
+        <location filename="../NgPost.cpp" line="2569"/>
         <source>If you don&apos;t provide the output file (nzb file), we will create it in the nzbPath with the name of the first file or folder given in the command line.</source>
         <translation>如果您不指定输出文件（nzb文件），我们将在nzbPath中使用命令行中第一个文件或文件夹的名称创建它。</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2569"/>
+        <location filename="../NgPost.cpp" line="2570"/>
         <source>so in the second example above, the nzb would be: /tmp/file1.nzb</source>
         <translation>因此，在上面的第二个示例中，nzb文件为: /tmp/file1.nzb</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2705"/>
+        <location filename="../NgPost.cpp" line="2706"/>
         <source># ngPost configuration file</source>
         <translation># ngPost配置文件</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2712"/>
+        <location filename="../NgPost.cpp" line="2713"/>
         <source>## interface theme: AUTO (same as Windows), LIGHT or DARK</source>
         <translation>## 界面主题：AUTO（跟随 Windows）、LIGHT 或 DARK</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2718"/>
+        <location filename="../NgPost.cpp" line="2719"/>
         <source>## destination folder for all your nzb</source>
         <translation>##您所有nzb文件的目标文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2719"/>
+        <location filename="../NgPost.cpp" line="2720"/>
         <source>## if you don&apos;t put anything, the nzb will be generated in the folder of ngPost on Windows and in /tmp on Linux</source>
         <translation>##如果您什么都不设置，nzb文件将保存到Windows的ngPost文件夹和Linux的/ tmp文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2720"/>
+        <location filename="../NgPost.cpp" line="2721"/>
         <source>## this will be overwritten if you use the option -o with the full path of the nzb</source>
         <translation>##如果将参数-o与保存nzb的完整路径一起使用，则此设置将被覆盖</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2723"/>
+        <location filename="../NgPost.cpp" line="2724"/>
         <source>## Shutdown command to switch off the computer when ngPost is done with all its queued posting</source>
         <translation>##当ngPost完成所有发布时关闭命令将关闭计算机</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2724"/>
+        <location filename="../NgPost.cpp" line="2725"/>
         <source>## this should mainly used with the auto posting</source>
         <translation>##此选项主要用于自动发布功能</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2725"/>
+        <location filename="../NgPost.cpp" line="2726"/>
         <source>## you could use whatever script instead (like to send a mail...)</source>
         <translation>##您可以改用任何脚本（例如发送邮件...）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2726"/>
+        <location filename="../NgPost.cpp" line="2727"/>
         <source>#SHUTDOWN_CMD = shutdown /s /f /t 0  (Windows)</source>
         <translation>#SHUTDOWN_CMD = shutdown /s /f /t 0  （Windows运行环境）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2727"/>
+        <location filename="../NgPost.cpp" line="2728"/>
         <source>#SHUTDOWN_CMD = sudo -n /sbin/poweroff  (Linux, make sure poweroff has sudo rights without any password or change the command)</source>
         <translation>#SHUTDOWN_CMD = sudo -n /sbin/poweroff（Linux运行环境，请确保poweroff命令具有sudo权限且没有任何密码，否则请更改命令）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2728"/>
+        <location filename="../NgPost.cpp" line="2729"/>
         <source>#SHUTDOWN_CMD = sudo -n shutdown -h now (MacOS, same make sure you&apos;ve sudo rights)</source>
         <translation>#SHUTDOWN_CMD = sudo -n shutdown -h now （MacOS运行环境, 请确认您有 sudo 权限）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2731"/>
+        <location filename="../NgPost.cpp" line="2732"/>
         <source>## upload the nzb to a specific URL</source>
         <translation>##上传nzb文件到特定的URL</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2732"/>
+        <location filename="../NgPost.cpp" line="2733"/>
         <source>## only http, https or ftp (neither ftps or sftp are supported)</source>
         <translation>##只支持http，https或者ftp（不支持ftps和sftp协议）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2733"/>
+        <location filename="../NgPost.cpp" line="2734"/>
         <source>#NZB_UPLOAD_URL = ftp://user:pass@url_or_ip:21</source>
         <translation>#NZB_UPLOAD_URL = ftp://user:pass@url_or_ip:21</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2759"/>
+        <location filename="../NgPost.cpp" line="2760"/>
         <source>## nzb files are normally all created in nzbPath</source>
         <translation>##通常所有的nzb文件都会保存在nzbPath</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2760"/>
+        <location filename="../NgPost.cpp" line="2761"/>
         <source>## but using this option, the nzb of each monitoring folder will be stored in their own folder (created in nzbPath)</source>
         <translation>##但是使用此选项，每个监视文件夹的nzb文件将存储在自己的文件夹中（在nzbPath中创建）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2763"/>
+        <location filename="../NgPost.cpp" line="2764"/>
         <source>## for monitoring, extension file filter for new incoming files (coma separated, no dot)</source>
         <translation>##用于监视功能，文件扩展类型筛选用于新的导入文件（逗号分隔，请勿使用点）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2767"/>
+        <location filename="../NgPost.cpp" line="2768"/>
         <source>## for monitoring, ignore new incoming folders</source>
         <translation>##针对监视功能，忽略新导入的文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2773"/>
+        <location filename="../NgPost.cpp" line="2774"/>
         <source>## Default folder to open to select files from the HMI</source>
         <translation>##在HMI中选择文件时默认打开的文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2776"/>
+        <location filename="../NgPost.cpp" line="2777"/>
         <source>## History of the uploads (shown in the History page): ON or OFF</source>
         <translation>## 上传历史记录（显示在历史记录页面）：ON 或 OFF</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2777"/>
+        <location filename="../NgPost.cpp" line="2778"/>
         <source>## the file contains the archive passwords in clear text: keep it private</source>
         <translation>## 该文件以明文保存压缩包密码：请妥善保管</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2779"/>
+        <location filename="../NgPost.cpp" line="2780"/>
         <source>## by default the history is saved in ngPost_history.csv next to this file</source>
         <translation>## 默认情况下，历史记录保存在此文件旁边的 ngPost_history.csv 中</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2780"/>
+        <location filename="../NgPost.cpp" line="2781"/>
         <source>## History posting file</source>
         <translation>##发布历史日志</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2781"/>
+        <location filename="../NgPost.cpp" line="2782"/>
         <source>## each succesful post will append a line with the date, the file name, the archive name, the password...</source>
         <translation>##每个成功发布的帖子的发布日期，文件名，压缩文件名，密码等将会添加到此文件...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2785"/>
+        <location filename="../NgPost.cpp" line="2786"/>
         <source>## Character used to separate fields in the history posting file</source>
         <translation>##用于分隔历史发布记录文件中字段的字符</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2790"/>
+        <location filename="../NgPost.cpp" line="2791"/>
         <source>## If you give several Groups (comma separated) you&apos;ve 3 policies for posting:</source>
         <translation>## 如果您指定多个新闻组（以逗号分隔），则您有3个发布策略 :</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2791"/>
+        <location filename="../NgPost.cpp" line="2792"/>
         <source>##    ALL       : everything is posted on ALL the Groups</source>
         <translation>## ALL : 一切任务都将发布到所有新闻组</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2792"/>
+        <location filename="../NgPost.cpp" line="2793"/>
         <source>##    EACH_POST : each Post will be posted on a random Group from the list</source>
         <translation>## EACH_POST : 每个帖子将会随机发布到新闻组列表中的一个新闻组</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2793"/>
+        <location filename="../NgPost.cpp" line="2794"/>
         <source>##    EACH_FILE : each File will be posted on a random Group from the list</source>
         <translation>## EACH_FILE : 每个文件将会随机发布到新闻组列表中的一个新闻组</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2797"/>
+        <location filename="../NgPost.cpp" line="2798"/>
         <source>## uncomment the next line if you want a fixed uploader email (in the nzb and in the header of each articles)</source>
         <translation>##如果您想使用固定的发布者电子邮件，请取消注释下一行（在nzb文件和每篇文章的标题中）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2798"/>
+        <location filename="../NgPost.cpp" line="2799"/>
         <source>## if you let it commented, we&apos;ll generate ONE random email for all the posts of the session</source>
         <translation>##如果您选择设置，我们将为该使用期间的所有帖子生成一个随机邮件地址</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2801"/>
+        <location filename="../NgPost.cpp" line="2802"/>
         <source>## Generate new random poster for each post (--auto or --monitor)</source>
         <translation>##为每个帖子生成新的随机发布者（--auto 或者 --monitor）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2802"/>
+        <location filename="../NgPost.cpp" line="2803"/>
         <source>## if this option is set the FROM email just above will be ignored</source>
         <translation>##如果设置了此选项，则将忽略上面的FROM邮件地址</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2806"/>
+        <location filename="../NgPost.cpp" line="2807"/>
         <source>## uncomment the next line to limit the number of threads,  (by default it&apos;ll use the number of cores)</source>
         <translation>##取消注释下一行以限制线程数，（默认情况下，它将使用内核数）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2807"/>
+        <location filename="../NgPost.cpp" line="2808"/>
         <source>## all the connections are spread equally on those posting threads</source>
         <translation>##所有的连接平均分配在发布线程上</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2811"/>
+        <location filename="../NgPost.cpp" line="2812"/>
         <source>## How to display progressbar in command line: NONE, BAR, FILES</source>
         <translation>##如何在命令行中显示进度条: 无，进度条，文件名</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2816"/>
+        <location filename="../NgPost.cpp" line="2817"/>
         <source>## suffix of the msg_id for all the articles (cf nzb file)</source>
         <translation>##所有文章的msg_id的后缀（配置nzb文件）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2819"/>
+        <location filename="../NgPost.cpp" line="2820"/>
         <source>## article size (default 700k)</source>
         <translation>##文章大小（默认值700K）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2822"/>
+        <location filename="../NgPost.cpp" line="2823"/>
         <source>## number of retry to post an Article in case of failure (probably due to an already existing msg-id)</source>
         <translation>##在发布失败的情况下重试的次数（可能是由于已经存在的msg-id）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2826"/>
+        <location filename="../NgPost.cpp" line="2827"/>
         <source>## uncomment the following line to obfuscate the subjects of each Article</source>
         <translation>##取消注释下一行将混淆每个文章的主题</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2827"/>
+        <location filename="../NgPost.cpp" line="2828"/>
         <source>## /!\ CAREFUL you won&apos;t find your post if you lose the nzb file /!\</source>
         <translation>## /!\ 注意！如果nzb文件丢失您将无法找到发布的文件/!\</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2830"/>
+        <location filename="../NgPost.cpp" line="2831"/>
         <source>## remove accents and special characters from the nzb file names</source>
         <translation>##从nzb文件名中删除重音符号和特殊字符</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2833"/>
+        <location filename="../NgPost.cpp" line="2834"/>
         <source>## close Quick Post Tabs when posted successfully (for the GUI)</source>
         <translation>##成功发布后关闭快速发布标签页（用于GUI界面）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2837"/>
+        <location filename="../NgPost.cpp" line="2838"/>
         <source>## Time to wait (seconds) before trying to resume a Post automatically in case of loss of Network (min: %1)</source>
         <translation>##在失去网络的情况下尝试自动恢复发布之前的等待时间（秒）（至少:%1）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2841"/>
+        <location filename="../NgPost.cpp" line="2842"/>
         <source>## By default, ngPost tries to resume a Post if the network is down.</source>
         <translation>##默认情况下，如果网络中断，ngPost会尝试恢复发布。</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2842"/>
+        <location filename="../NgPost.cpp" line="2843"/>
         <source>## it won&apos;t stop trying until the network is back and the post is finished properly</source>
         <translation>##软件不会停止尝试直到网络恢复正常并且帖子正确发布完成</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2843"/>
+        <location filename="../NgPost.cpp" line="2844"/>
         <source>## you can disable this feature and thus stop a post when you loose the network</source>
         <translation>##您可以禁用此功能，从而在网络断开时停止发布信息</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2846"/>
+        <location filename="../NgPost.cpp" line="2847"/>
         <source>## if there is no activity on a connection it will be closed and restarted</source>
         <translation>##如果连接闲置，它将被关闭并重新启动</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2847"/>
+        <location filename="../NgPost.cpp" line="2848"/>
         <source>## The duration is in second, default: %1, min: %2)</source>
         <translation>##持续时间以秒为单位，默认:%1，最小:%2）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2850"/>
+        <location filename="../NgPost.cpp" line="2851"/>
         <source>## when several Posts are queued, prepare the packing of the next Post while uploading the current one</source>
         <translation>##当有发布任务在等候时，在上传当前发布任务的同时准备下一个发布的文件</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2873"/>
+        <location filename="../NgPost.cpp" line="2874"/>
         <source>## use the same Password for all your Posts using compression</source>
         <translation>##为您所有使用了压缩的帖子使用同样的密码</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2881"/>
+        <location filename="../NgPost.cpp" line="2882"/>
         <source>## temporary folder where the compressed files and par2 will be stored</source>
         <translation>##存放压缩文件以及par2文件的临时文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2882"/>
+        <location filename="../NgPost.cpp" line="2883"/>
         <source>## so we can post directly a compressed (obfuscated or not) archive of the selected files</source>
         <translation>##这样我们就可以直接发布所选文件的压缩文件（不论混淆与否）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2883"/>
+        <location filename="../NgPost.cpp" line="2884"/>
         <source>## /!\ The directory MUST HAVE WRITE PERMISSION /!\</source>
         <translation>## /!\此目录必须有写入权限/!\</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2884"/>
-        <location filename="../NgPost.cpp" line="2901"/>
+        <location filename="../NgPost.cpp" line="2885"/>
+        <location filename="../NgPost.cpp" line="2902"/>
         <source>## this is set for Linux environment, Windows users MUST change it</source>
         <translation>##这是为Linux运行环境设置的，Windows用户必须修改它</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2888"/>
+        <location filename="../NgPost.cpp" line="2889"/>
         <source>## temporary folder with size constraint, typically a tmpfs partition</source>
         <translation>## 有大小限制的临时文件夹，通常是tmpfs分区</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2889"/>
+        <location filename="../NgPost.cpp" line="2890"/>
         <source>## the size of a post multiply by TMP_RAM_RATIO must available on the disk</source>
         <translation>## 硬盘上必须有至少帖子大小乘以 TMP_RAM_RATIO 的空间</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2890"/>
+        <location filename="../NgPost.cpp" line="2891"/>
         <source>## otherwise ngPost will use TMP_DIR (with no check there)</source>
         <translation>## 否则 ngPost 将会使用 TMP_DIR (没有检查)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2891"/>
+        <location filename="../NgPost.cpp" line="2892"/>
         <source>## (uncomment and define TMP_RAM to activate the feature, make sure the path is writable)</source>
         <translation>## ( 取消注释并定义TMP_RAM以激活此功能，请确保路径可写  )</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2894"/>
+        <location filename="../NgPost.cpp" line="2895"/>
         <source>## Ratio used on the source files size to compensate the par2 generation</source>
         <translation>## 源文件大小上用于补偿par2文件生成的比率</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2895"/>
+        <location filename="../NgPost.cpp" line="2896"/>
         <source>## min is 10% to be sure (so 1.1), max 2.0</source>
         <translation>## 确保最小值为10％（1.1），最大值为2.0</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2899"/>
+        <location filename="../NgPost.cpp" line="2900"/>
         <source>## RAR or 7zip absolute file path (external application)</source>
         <translation>##RAR或7zip绝对路径（外部程序）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2900"/>
+        <location filename="../NgPost.cpp" line="2901"/>
         <source>## /!\ The file MUST EXIST and BE EXECUTABLE /!\</source>
         <translation>## /!\此文件必须存在且可执行/!\</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2904"/>
+        <location filename="../NgPost.cpp" line="2905"/>
         <source>## RAR EXTRA options (the first &apos;a&apos; and &apos;-idp&apos; will be added automatically)</source>
         <translation>##RAR额外选项（参数“a”以及“-idp”将会被自动添加）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2905"/>
+        <location filename="../NgPost.cpp" line="2906"/>
         <source>## -hp will be added if you use a password with --gen_pass, --rar_pass or using the HMI</source>
         <translation>##如果您配合参数--gen_pass，--rar_pass或者HMI使用密码，参数-hp将会被添加</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2906"/>
+        <location filename="../NgPost.cpp" line="2907"/>
         <source>## -v42m will be added with --rar_size or using the HMI</source>
         <translation>##配合参数--rar_size或者使用HMI，参数-v42m将会被添加</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2907"/>
+        <location filename="../NgPost.cpp" line="2908"/>
         <source>## you could change the compression level, lock the archive, add redundancy...</source>
         <translation>##您可以更改压缩级别，锁定压缩包，添加恢复记录...</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2912"/>
+        <location filename="../NgPost.cpp" line="2913"/>
         <source>## size in MB of the RAR volumes (0 by default meaning NO split)</source>
         <translation>##RAR卷的大小（MB）(默认情况下为0，表示不分卷)</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2913"/>
+        <location filename="../NgPost.cpp" line="2914"/>
         <source>## feel free to change the value or to comment the next line if you don&apos;t want to split the archive</source>
         <translation>##如果您不想创建分卷压缩包，请随意更改参数值或在下一行添加注释</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2916"/>
+        <location filename="../NgPost.cpp" line="2917"/>
         <source>## maximum number of archive volumes</source>
         <translation>##最大分卷数</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2917"/>
+        <location filename="../NgPost.cpp" line="2918"/>
         <source>## we&apos;ll use RAR_SIZE except if it genereates too many volumes</source>
         <translation>##我们将使用参数RAR_SIZE，除非它会产生过多的分卷</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2918"/>
+        <location filename="../NgPost.cpp" line="2919"/>
         <source>## in that case we&apos;ll update rar_size to be &lt;size of post&gt; / rar_max</source>
         <translation>##在此情况下我们将更新rar_size成&lt;size of post&gt; / rar_max</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2921"/>
+        <location filename="../NgPost.cpp" line="2922"/>
         <source>##  keep rar folder after posting (otherwise it is automatically deleted uppon successful post)</source>
         <translation>##发布后保留rar文件夹（否则成功发布后会自动将其删除）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2927"/>
+        <location filename="../NgPost.cpp" line="2928"/>
         <source>## par2 redundancy percentage (0 by default meaning NO par2 generation)</source>
         <translation>##par2冗余百分比（默认为0表示不生成par2文件）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2930"/>
+        <location filename="../NgPost.cpp" line="2931"/>
         <source>## par2 (or alternative) absolute file path</source>
         <translation>##par2（或替代文件）绝对文件路径</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2931"/>
+        <location filename="../NgPost.cpp" line="2932"/>
         <source>## this is only useful if you compile from source (as par2 is included on Windows and the AppImage)</source>
         <translation>##仅当从源代码编译时才有用（因为par2包含在Windows和AppImage中）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2932"/>
+        <location filename="../NgPost.cpp" line="2933"/>
         <source>## or if you wish to use an alternative to par2 (for exemple Multipar on Windows)</source>
         <translation>##或者如果您希望使用另一种方式替代par2（例如Windows上的Multipar）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2933"/>
+        <location filename="../NgPost.cpp" line="2934"/>
         <source>## (in that case, you may need to set also PAR2_ARGS)</source>
         <translation>##（在此情况下，您可能还需要设置PAR2_ARGS）</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2944"/>
+        <location filename="../NgPost.cpp" line="2945"/>
         <source>## fixed parameters for the par2 (or alternative) command</source>
         <translation>##par2（或替代文件）命令的固定参数</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2945"/>
+        <location filename="../NgPost.cpp" line="2946"/>
         <source>## you could for exemple use Multipar on Windows</source>
         <translation>##例如，您可以在Windows上使用Multipar</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2952"/>
+        <location filename="../NgPost.cpp" line="2953"/>
         <source>## length of the random generated archive&apos;s file name</source>
         <translation>##生成的随机压缩文件名的长度</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2955"/>
+        <location filename="../NgPost.cpp" line="2956"/>
         <source>## length of the random archive&apos;s passsword</source>
         <translation>##随机压缩包密码的长度</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2979"/>
+        <location filename="../NgPost.cpp" line="2980"/>
         <source>## You can add as many server if you have several providers by adding other &quot;server&quot; sections</source>
         <translation>##如果您有多个新闻组服务器可以通过“服务器”部分添加</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2996"/>
+        <location filename="../NgPost.cpp" line="2997"/>
         <source>the config &apos;%1&apos; file has been updated</source>
         <translation>更新了配置文件“%1”</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3032"/>
+        <location filename="../NgPost.cpp" line="3033"/>
         <source>status</source>
         <translation>状态</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3032"/>
+        <location filename="../NgPost.cpp" line="3033"/>
         <source>files</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3032"/>
+        <location filename="../NgPost.cpp" line="3033"/>
         <source>duration</source>
         <translation>耗时</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="3032"/>
+        <location filename="../NgPost.cpp" line="3033"/>
         <source>nzb file</source>
         <translation>nzb 文件</translation>
     </message>
     <message>
-        <location filename="../NgPost.cpp" line="2994"/>
-        <location filename="../NgPost.cpp" line="2999"/>
+        <location filename="../NgPost.cpp" line="2995"/>
+        <location filename="../NgPost.cpp" line="3000"/>
         <source>Error: Couldn&apos;t write default configuration file: %1</source>
         <translation>错误: 无法写入默认配置文件: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="694"/>
+        <location filename="../NgPost.h" line="697"/>
         <source>PACKing auto using: %1</source>
         <translation>打包功能自动使用: %1</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="720"/>
+        <location filename="../NgPost.h" line="723"/>
         <source>is a CMD/GUI Usenet binary poster developped in C++11/Qt5:</source>
         <translation>是一个用C++11/Qt开发的命令行/图形界面的新闻组二进制文件发布程序:</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="721"/>
+        <location filename="../NgPost.h" line="724"/>
         <source>It is designed to be as fast as possible and offer all the main features to post data easily and safely.</source>
         <translation>此程序的主要特点是快速发布、提供全部必须的重要功能以及轻松且安全的在新闻组中发布数据.</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="722"/>
+        <location filename="../NgPost.h" line="725"/>
         <source>Here are the main features and advantages of ngPost:</source>
         <translation>以下是ngPost的主要功能和优点：</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="723"/>
+        <location filename="../NgPost.h" line="726"/>
         <source>compress (using your external rar binary) and generate the par2 before posting!</source>
         <translation>压缩（使用外部rar可执行文件）并在发布前生成par2文件！</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="724"/>
+        <location filename="../NgPost.h" line="727"/>
         <source>scan folder(s) and post each file/folder individually after having them compressed</source>
         <translation>扫描文件夹并在压缩后分别发布每个文件/文件夹</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="725"/>
+        <location filename="../NgPost.h" line="728"/>
         <source>monitor folder(s) to post each new file/folder individually after having them compressed</source>
         <translation>监视文件夹并将每个新文件/文件夹压缩后分别发布</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="726"/>
+        <location filename="../NgPost.h" line="729"/>
         <source>auto delete files/folders once posted (only in command line with --auto or --monitor)</source>
         <translation>发布后自动删除文件/文件夹（仅在命令行中配合参数--auto或--monitor）</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="727"/>
+        <location filename="../NgPost.h" line="730"/>
         <source>generate the nzb</source>
         <translation>生成nzb文件</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="728"/>
+        <location filename="../NgPost.h" line="731"/>
         <source>invisible mode: full article obfuscation, unique feature making all Articles completely unrecognizable without the nzb</source>
         <translation>隐身模式：全文章混淆，此独特的功能使所有发布的文件在没有nzb的情况下都无法被识别</translation>
     </message>
     <message>
-        <location filename="../NgPost.h" line="730"/>
+        <location filename="../NgPost.h" line="733"/>
         <source>for more details, cf %1</source>
         <translation>更多细节请参见，配置文件%1</translation>
     </message>

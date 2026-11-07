@@ -28,7 +28,7 @@ SignedListWidget::SignedListWidget(QWidget *parent) :
     QListWidget(parent),
     _emptyState(new QWidget(viewport())),
     _emptyLogo(new QLabel(_emptyState)),
-    _emptyTitle(new QLabel("ngPost 2026", _emptyState)),
+    _emptyTitle(new QLabel("ngPost Deluxe", _emptyState)),
     _emptyHint(new QLabel(_emptyState)),
     _emptyButton1(new QPushButton(_emptyState)),
     _emptyButton2(new QPushButton(_emptyState)),

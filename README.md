@@ -1,10 +1,10 @@
 <img align="left" width="80" height="80" src="src/resources/icons/ngPost.png" alt="ngPost">
 
-# ngPost-2026
+# ngPost Deluxe
 
 **English** | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
-**ngPost-2026** is a revisited and redesigned version of the famous Usenet uploader **ngPost**.<br/>
+**ngPost Deluxe** is a revisited and redesigned version of the famous Usenet uploader **ngPost**.<br/>
 It is a fork of [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licence GPL v3). All the credit for the original program goes to its author, Matthieu Bruel.<br/>
 
 ### What is different in this fork
@@ -17,7 +17,7 @@ It is a fork of [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licenc
 -   **New interface**: side bar (Quick Post, Auto Posting, Servers, Settings, History), pages with cards, advanced options hidden until needed, a new icon and an empty screen that explains what to do. **Light and dark themes**, or automatic like Windows (`theme` key). Set the environment variable `NGPOST_NO_THEME` to get the native look back
 -   **Italian interface**: the GUI/CMD is now also translated in Italian (it was already available in Chinese, Dutch, English, French, German, Portuguese and Spanish)
 -   **New README**: rewritten for this fork and available in 8 languages (English, French, German, Italian, Spanish, Dutch, Portuguese, Chinese)
--   **ngPost 2026 v5.0 beta**: new name and version, redesigned About window, the donation buttons have been removed (to support the original author, see the end of this page)
+-   **ngPost Deluxe v5.0 beta**: new name and version (the Windows program is now `ngPostDeluxe.exe`; the configuration file does not change), redesigned About window, the original donation buttons are replaced by a **Ko-fi** button for this fork (in the About window and in the Settings)
 -   **New Servers section**: list of the servers with a status dot and an on/off box, details form (password shown on demand) and a **Test connection** button that checks the login. Editing the servers while posting can no longer crash ngPost
 -   **Autosave**: every change of the settings is saved automatically (the previous file is kept as `ngPost.conf.bak`)
 -   **Auto Posting tab**: new buttons **Remove completed**, **Remove All** and **Close finished Tabs**
@@ -113,6 +113,10 @@ If you'd like to translate ngPost in your language, it's easy to do (there is a 
 - hunesco for the Portuguese translation
 - Peng for the Chinese translation
 - all ngPost users ;)
+
+### Support this fork
+ngPost Deluxe is free. If it is useful to you, you can support its development on Ko-fi:<br/>
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support%20ngPost%20Deluxe-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/thenormal)
 
 ### Support the original author
 ngPost has been created by Matthieu Bruel. If you use the app and would like to contribute to the effort, please do it on the [original project](https://github.com/mbruel/ngPost).

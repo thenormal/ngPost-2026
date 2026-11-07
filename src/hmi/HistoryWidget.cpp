@@ -2,7 +2,7 @@
 //
 // Copyright (C) 2020 Matthieu Bruel <Matthieu.Bruel@gmail.com>
 // This file is a part of ngPost : https://github.com/mbruel/ngPost
-// ngPost 2026 fork: https://github.com/thenormal/ngPost-2026
+// ngPost Deluxe fork: https://github.com/thenormal/ngPost-Deluxe
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

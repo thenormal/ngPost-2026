@@ -1,4 +1,4 @@
-/* ngPost-2026 theme (Windows 11 inspired), light and dark.
+/* ngPost-Deluxe theme (Windows 11 inspired), light and dark.
    Applied at startup on top of the Fusion style, see NgPost::applyTheme().
    The @name@ tokens are replaced by the colours of the current theme. */
 

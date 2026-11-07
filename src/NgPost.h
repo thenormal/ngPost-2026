@@ -258,6 +258,7 @@ private:
     static const QString sVersion;
     static const QString sStage;   //!< release stage (beta...)
     static const QString sProFileURL;
+    static const QString sSupportURL; //!< page to support the project (Ko-fi)
 
     static const QList<QCommandLineOption> sCmdOptions;
     static const QStringList sDefaultGroups;
@@ -495,6 +496,7 @@ public:
     inline static const std::string &aticleSignature();
 
     inline static const QString & proFileUrl();
+    inline static const QString & supportUrl();
     inline static QString versionLabel();
     inline static const QString & asciiArt();
     inline static QString asciiArtWithVersion();
@@ -587,6 +589,7 @@ bool NgPost::removeNntpServer(NntpServerParams *server){ return _nntpServers.rem
 
 QString NgPost::versionLabel() { return sStage.isEmpty() ? sVersion : QString("%1 %2").arg(sVersion, sStage); }
 const QString &NgPost::proFileUrl() { return sProFileURL; }
+const QString &NgPost::supportUrl() { return sSupportURL; }
 const QString &NgPost::asciiArt()   { return sNgPostASCII; }
 
 QString NgPost::asciiArtWithVersion()
@@ -728,8 +731,8 @@ QString NgPost::desc(bool useHTML)
             tr("invisible mode: full article obfuscation, unique feature making all Articles completely unrecognizable without the nzb")).arg(
             "...").arg(
             tr("for more details, cf %1").arg(
-                    useHTML ? "<a href=\"https://github.com/thenormal/ngPost-2026/\">https://github.com/thenormal/ngPost-2026</a>"
-                            : "https://github.com/thenormal/ngPost-2026"));
+                    useHTML ? "<a href=\"https://github.com/thenormal/ngPost-Deluxe/\">https://github.com/thenormal/ngPost-Deluxe</a>"
+                            : "https://github.com/thenormal/ngPost-Deluxe"));
 }
 
 #endif // NGPOST_H

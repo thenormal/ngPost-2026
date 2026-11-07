@@ -1,6 +1,6 @@
 name: Build Windows (x64)
 
-# Builds ngPost-2026 on a Windows runner (Qt 5.15.2 + MinGW 8.1, 64bit) and publishes a
+# Builds ngPost-Deluxe on a Windows runner (Qt 5.15.2 + MinGW 8.1, 64bit) and publishes a
 # ready-to-run folder as a downloadable artifact: Actions tab > the run > "Artifacts".
 on:
   push:
@@ -35,8 +35,8 @@ jobs:
       - name: Assemble the package
         shell: pwsh
         run: |
-          $exe = Get-ChildItem -Path build -Recurse -Filter ngPost.exe | Select-Object -First 1
-          if (-not $exe) { throw "ngPost.exe not found" }
+          $exe = Get-ChildItem -Path build -Recurse -Filter ngPostDeluxe.exe | Select-Object -First 1
+          if (-not $exe) { throw "ngPostDeluxe.exe not found" }
           mkdir dist
           Copy-Item $exe.FullName dist/
           # Qt DLLs, plugins and the MinGW runtime (copied by hand: windeployqt could not find the platform plugin)
@@ -65,7 +65,7 @@ jobs:
             Copy-Item openssl_tmp/libs/libssl-1_1-x64.dll, openssl_tmp/libs/libcrypto-1_1-x64.dll dist/
           }
           (Get-Item dist/libssl-1_1-x64.dll).VersionInfo | Format-List ProductVersion, FileVersion
-          # ParPar (par2 generator), used automatically when parpar.exe is next to ngPost.exe
+          # ParPar (par2 generator), used automatically when parpar.exe is next to ngPostDeluxe.exe
           7z x release/libs/parpar-v0.4.6-win64.7z -oparpar_tmp
           Copy-Item (Get-ChildItem -Path parpar_tmp -Recurse -Filter parpar.exe | Select-Object -First 1).FullName dist/
           Copy-Item ngPost.conf, LICENSE dist/
@@ -77,11 +77,11 @@ jobs:
         shell: pwsh
         run: |
           $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
-          $out = & "$PWD\dist\ngPost.exe" --help 2>&1 | Out-String
+          $out = & "$PWD\dist\ngPostDeluxe.exe" --help 2>&1 | Out-String
           Write-Host $out
           # 0xC0000135 = a DLL is missing; any other exit code only reflects the sample config (Linux paths)
           if ($LASTEXITCODE -eq -1073741515 -or $LASTEXITCODE -eq -1073741701) { throw "missing DLL (exit code $LASTEXITCODE)" }
-          exit 0   # otherwise the step would fail with the exit code of ngPost.exe (the sample config is for Linux)
+          exit 0   # otherwise the step would fail with the exit code of ngPostDeluxe.exe (the sample config is for Linux)
 
       - name: Smoke test 3 - SSL support (OpenSSL DLLs loaded by Qt)
         shell: pwsh
@@ -89,7 +89,7 @@ jobs:
           $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
           # minimal config (the sample ngPost.conf has Linux paths and would stop ngPost before printing the version)
           Set-Content -Path smoke.conf -Value "lang = EN`nnzbPath = $env:RUNNER_TEMP"
-          $out = & "$PWD\dist\ngPost.exe" -c smoke.conf -v 2>&1 | Out-String
+          $out = & "$PWD\dist\ngPostDeluxe.exe" -c smoke.conf -v 2>&1 | Out-String
           Write-Host $out
           if ($out -notmatch 'SSL support: yes' -or $out -notmatch 'system version: OpenSSL 1\.1\.1') { throw "OpenSSL is not loaded" }
           exit 0
@@ -98,7 +98,7 @@ jobs:
         shell: pwsh
         run: |
           $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
-          $p = Start-Process -FilePath "$PWD\dist\ngPost.exe" -WorkingDirectory "$PWD\dist" -PassThru
+          $p = Start-Process -FilePath "$PWD\dist\ngPostDeluxe.exe" -WorkingDirectory "$PWD\dist" -PassThru
           Start-Sleep -Seconds 8
           if ($p.HasExited) { throw "the GUI closed by itself, exit code $($p.ExitCode)" }
           Write-Host "GUI is running"
@@ -106,5 +106,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ngPost-2026-win64-${{ github.sha }}
+          name: ngPost-Deluxe-win64-${{ github.sha }}
           path: dist

@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveQuickTab(false),
     _autoSaveAutoTab(false),
     _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr},
-    _history(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr),
+    _history(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
     _themeButton(nullptr), _aboutButton(nullptr),
     _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
     _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
@@ -201,7 +201,7 @@ void MainWindow::init(NgPost *ngPost)
         // first start with the history: tell the user once (the key "history" is then saved in the config)
         QTimer::singleShot(600, this, [this](){
             QMessageBox::information(this, tr("History of the uploads"),
-                tr("ngPost 2026 now keeps the history of your uploads (History page).\n\n"
+                tr("ngPost Deluxe now keeps the history of your uploads (History page).\n\n"
                    "Be careful: the history file also records the password of each archive in clear text, "
                    "so you can always open your releases again. It stays on this computer and is never sent "
                    "anywhere, but anyone using this computer can read it.\n\n"
@@ -1095,7 +1095,7 @@ void MainWindow::onPauseClicked()
 
 
 //========================================================================
-// ngPost 2026 layout: side bar on the left, one page per section on the right
+// ngPost Deluxe layout: side bar on the left, one page per section on the right
 //========================================================================
 #include <QStackedWidget>
 #include <QButtonGroup>
@@ -1104,6 +1104,8 @@ void MainWindow::onPauseClicked()
 #include <QGridLayout>
 #include <QPainter>
 #include <QMenuBar>
+#include <QDesktopServices>
+#include <QUrl>
 
 QIcon MainWindow::_navIcon(const QString &path, const QColor &normal, const QColor &checked)
 {
@@ -1158,7 +1160,7 @@ void MainWindow::_buildShell()
     QVBoxLayout *brandText = new QVBoxLayout();
     brandText->setSpacing(0);
     QLabel *appTitle = newLabel("appTitle", sideBar);
-    appTitle->setText("ngPost 2026");
+    appTitle->setText("ngPost Deluxe");
     _appVersion = newLabel("appVersion", sideBar);
     brandText->addWidget(appTitle);
     brandText->addWidget(_appVersion);
@@ -1425,6 +1427,18 @@ QWidget *MainWindow::_buildSettingsPage()
     g->addLayout(hbox({_ui->saveButton}), 3, 0, 1, 3);
     g->setColumnStretch(2, 1);
     right->addWidget(gui);
+
+    // support of the project (Ko-fi page opened in the browser)
+    QFrame *support = _card("support", g);
+    _supportHint = newLabel("hint", support);
+    _supportHint->setWordWrap(true);
+    _supportButton = new QPushButton(support);
+    _supportButton->setObjectName("supportButton");
+    _supportButton->setCursor(Qt::PointingHandCursor);
+    connect(_supportButton, &QAbstractButton::clicked, this, [](){ QDesktopServices::openUrl(QUrl(NgPost::supportUrl())); });
+    g->addWidget(_supportHint, 0, 0, 1, 2);
+    g->addLayout(hbox({_supportButton}), 1, 0, 1, 2);
+    left->insertWidget(left->count() - 1, support); // before the stretch of the left column
     right->addStretch();
 
     return scroll;
@@ -1456,6 +1470,10 @@ void MainWindow::_retranslateShell()
     _cardTitles["privacy"]->setText(tr("Privacy"));
     _cardTitles["interface"]->setText(tr("Interface"));
     _cardTitles["history"]->setText(tr("History of the uploads"));
+    _cardTitles["support"]->setText(tr("Support the project"));
+    _supportHint->setText(tr("%1 is free. If it is useful to you, you can support its development with a donation on Ko-fi.").arg(_ngPost ? _ngPost->appName() : "ngPost Deluxe"));
+    _supportButton->setText(tr("Support on Ko-fi"));
+    _supportButton->setToolTip(NgPost::supportUrl());
     _navButtons[NAV_HISTORY]->setText(tr("History"));
     _historyCB->setText(tr("Save the history of the uploads"));
     _historyPathButton->setToolTip(tr("Choose the history file"));

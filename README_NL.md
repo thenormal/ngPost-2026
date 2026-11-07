@@ -1,10 +1,10 @@
 <img align="left" width="80" height="80" src="src/resources/icons/ngPost.png" alt="ngPost">
 
-# ngPost-2026
+# ngPost Deluxe
 
 [English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md) | **Nederlands** | [Português](README_PT.md) | [中文](README_ZH.md)
 
-**ngPost-2026** is een herziene en opnieuw ontworpen versie van de bekende Usenet-uploader **ngPost**.<br/>
+**ngPost Deluxe** is een herziene en opnieuw ontworpen versie van de bekende Usenet-uploader **ngPost**.<br/>
 Het is een fork van [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licentie GPL v3). Alle eer voor het oorspronkelijke programma gaat naar de auteur, Matthieu Bruel.<br/>
 
 ### Wat is er anders in deze fork
@@ -17,7 +17,7 @@ Het is een fork van [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, li
 -   **Nieuwe interface**: zijbalk (Quick Post, Auto Posting, Servers, Instellingen, Geschiedenis), pagina's met kaarten, geavanceerde opties verborgen tot ze nodig zijn, een nieuw pictogram en een leeg scherm dat uitlegt wat te doen. **Licht en donker thema**, of automatisch zoals Windows (sleutel `theme`). Zet de omgevingsvariabele `NGPOST_NO_THEME` om het native uiterlijk terug te krijgen
 -   **Italiaanse interface**: de GUI/CMD is nu ook in het Italiaans vertaald (al beschikbaar in het Chinees, Nederlands, Engels, Frans, Duits, Portugees en Spaans)
 -   **Nieuwe README**: herschreven voor deze fork en beschikbaar in 8 talen (Engels, Frans, Duits, Italiaans, Spaans, Nederlands, Portugees, Chinees)
--   **ngPost 2026 v5.0 bèta**: nieuwe naam en versie, vernieuwd Over-venster, de donatieknoppen zijn verwijderd (om de oorspronkelijke auteur te steunen, zie het einde van deze pagina)
+-   **ngPost Deluxe v5.0 bèta**: nieuwe naam en versie (het Windows-programma heet nu `ngPostDeluxe.exe`; het configuratiebestand verandert niet), vernieuwd Over-venster, de oorspronkelijke donatieknoppen zijn vervangen door een **Ko-fi**-knop voor deze fork (in het Over-venster en in de Instellingen)
 -   **Nieuwe sectie Servers**: lijst van de servers met een statuslampje en een aan/uit-vakje, detailformulier (wachtwoord op verzoek zichtbaar) en een knop **Verbinding testen** die de aanmelding controleert. Servers wijzigen tijdens het posten kan ngPost niet meer laten crashen
 -   **Automatisch opslaan**: elke wijziging van de instellingen wordt automatisch opgeslagen (het vorige bestand blijft bewaard als `ngPost.conf.bak`)
 -   **Tabblad Auto Posting**: nieuwe knoppen **Voltooide verwijderen**, **Alles verwijderen** en **Voltooide tabbladen sluiten**
@@ -116,6 +116,10 @@ Als je ngPost in jouw taal wilt vertalen, is dat eenvoudig (daarvoor is er een h
 - hunesco voor de Portugese vertaling
 - Peng voor de Chinese vertaling
 - alle gebruikers van ngPost ;)
+
+### Steun deze fork
+ngPost Deluxe is gratis. Als je er iets aan hebt, kun je de ontwikkeling steunen op Ko-fi:<br/>
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support%20ngPost%20Deluxe-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/thenormal)
 
 ### Steun de oorspronkelijke auteur
 ngPost is gemaakt door Matthieu Bruel. Als je de app gebruikt en wilt bijdragen aan de inspanning, doe dat dan via het [oorspronkelijke project](https://github.com/mbruel/ngPost).

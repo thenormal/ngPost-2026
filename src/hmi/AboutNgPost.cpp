@@ -20,6 +20,10 @@
 #include "AboutNgPost.h"
 #include "ui_AboutNgPost.h"
 #include "NgPost.h"
+#include <QDesktopServices>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QUrl>
 
 AboutNgPost::AboutNgPost(NgPost *ngPost, QWidget *parent) :
     QDialog(parent),
@@ -31,7 +35,7 @@ AboutNgPost::AboutNgPost(NgPost *ngPost, QWidget *parent) :
 #endif
     setStyleSheet("QDialog {border:1px solid #c4c4c4}");
 
-    const QString repo     = "https://github.com/thenormal/ngPost-2026";
+    const QString repo     = "https://github.com/thenormal/ngPost-Deluxe";
     const QString original = "https://github.com/mbruel/ngPost";
 
     ui->titleLbl->setText(QString("<span style='font-size:26pt; font-weight:600;'>%1</span>").arg(ngPost->escapeXML(ngPost->appName())));
@@ -46,8 +50,21 @@ AboutNgPost::AboutNgPost(NgPost *ngPost, QWidget *parent) :
     ui->linksLbl->setText(QString("<a href=\"%1\">%2</a> &nbsp;&middot;&nbsp; <a href=\"%3\">%4</a>")
                           .arg(repo, tr("Project page"), original, tr("Original project")));
 
-    ui->copyrightLbl->setText(QString("%1<br/>Copyright &copy; 2020 - Matthieu Bruel<br/>%2")
-                              .arg(tr("Released under the GPL v3 licence."),
+    // support of the project: Ko-fi page opened in the browser
+    QPushButton *supportButton = new QPushButton(tr("Support on Ko-fi"), this);
+    supportButton->setObjectName("accentButton");
+    supportButton->setCursor(Qt::PointingHandCursor);
+    supportButton->setToolTip(NgPost::supportUrl());
+    connect(supportButton, &QAbstractButton::clicked, this, [](){ QDesktopServices::openUrl(QUrl(NgPost::supportUrl())); });
+    QHBoxLayout *supportLayout = new QHBoxLayout();
+    supportLayout->addStretch();
+    supportLayout->addWidget(supportButton);
+    supportLayout->addStretch();
+    ui->mainLayout->insertLayout(ui->mainLayout->indexOf(ui->linksLbl) + 1, supportLayout);
+
+    ui->copyrightLbl->setText(QString("%1<br/>%2<br/>Copyright &copy; 2020 - Matthieu Bruel<br/>%3")
+                              .arg(tr("Based on ngPost by %1").arg("Matthieu Bruel"),
+                                   tr("Released under the GPL v3 licence."),
                                    tr("Fork maintained by %1").arg("thenormal")));
     ui->copyrightLbl->setStyleSheet("QLabel { color : #6b6b6b; }");
 
