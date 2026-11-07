@@ -46,6 +46,7 @@ private:
     STATE           _state;
     PostingWidget  *_quickJobTab;
     AutoPostWidget *_autoPostTab;
+    ServersWidget  *_servers; //!< server section (list + details)
 
     // autosave: the settings are saved automatically shortly after each change made by the user
     QTimer         *_autoSaveTimer;
@@ -54,7 +55,6 @@ private:
     bool            _autoSaveAutoTab;   //!< a setting of the Auto Posting tab changed
     static constexpr int sAutoSaveDelayMs = 1000;
 
-    ServersWidget  *_servers; //!< server section (list + details)
 
 
 
@@ -126,6 +126,7 @@ public slots:
 
 private slots:
     void onAutoSave();
+    void onDiagnosticReport();
 
     void onObfucateToggled(bool checked);
 
@@ -161,6 +162,7 @@ private slots:
 private:
     void _watchForAutoSave(QWidget *root, int tab); //!< tab: -1 global settings, 0 Quick Post, 1 Auto Posting
     void _saveConfig(bool quickTab, bool autoTab);
+    QString _diagnosticReport() const;
 
     void _initServerBox();
     void _initPostingBox();

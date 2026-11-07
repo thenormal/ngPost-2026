@@ -36,6 +36,14 @@
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QComboBox>
+#include <QFileDialog>
+#include <QStorageInfo>
+#include <QDateTime>
+#include <QSysInfo>
+#include <QThread>
+#include <QSaveFile>
+#include "utils/Diagnostics.h"
+#include "PostingJob.h"
 
 
 const QColor  MainWindow::sPostingColor = QColor(255,162, 0); // gold (#FFA200)
@@ -401,6 +409,9 @@ void MainWindow::_initPostingBox()
 {
     connect(_ui->shutdownCB,        &QAbstractButton::toggled, this, &MainWindow::onShutdownToggled);
     connect(_ui->saveButton,        &QAbstractButton::clicked, this, &MainWindow::onSaveConfig);
+    connect(_ui->diagReportButton,  &QAbstractButton::clicked, this, &MainWindow::onDiagnosticReport);
+    _ui->diagReportButton->setToolTip(tr("Save a report of what ngPost did (durations, speeds, errors, anomalies) "
+                                         "to analyse a problem. Passwords, usernames and file names are masked."));
 
     connect(_ui->genPoster,         &QAbstractButton::clicked, this, &MainWindow::onGenPoster);
     connect(_ui->obfuscateMsgIdCB,  &QAbstractButton::toggled, this, &MainWindow::onObfucateToggled);
@@ -714,6 +725,151 @@ void MainWindow::_saveConfig(bool quickTab, bool autoTab)
     if (autoTab)
         _autoPostTab->udatePostingParams();
     _ngPost->saveConfig(true);
+}
+
+void MainWindow::onDiagnosticReport()
+{
+    QString defaultPath = QString("%1/ngPost_report_%2.txt").arg(
+                QDir::homePath(), QDateTime::currentDateTime().toString("yyyyMMdd_hhmm"));
+    QString path = QFileDialog::getSaveFileName(this, tr("Save the diagnostic report"), defaultPath,
+                                                tr("Text files (*.txt)"));
+    if (path.isEmpty())
+        return;
+
+    QSaveFile file(path);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        file.write(_diagnosticReport().toUtf8());
+        if (file.commit())
+        {
+            QMessageBox::information(this, tr("Diagnostic report"),
+                                     tr("The report has been saved:\n%1\n\nPasswords, usernames and file names are masked.").arg(
+                                         QDir::toNativeSeparators(path)));
+            return;
+        }
+    }
+    QMessageBox::critical(this, tr("Diagnostic report"), tr("Couldn't write the file %1").arg(QDir::toNativeSeparators(path)));
+}
+
+QString MainWindow::_diagnosticReport() const
+{
+    Diagnostics &diag = Diagnostics::instance();
+    // make sure the credentials of the servers are masked
+    for (const NntpServerParams *srv : _ngPost->_nntpServers)
+    {
+        diag.addSecret(QString::fromStdString(srv->pass), "<server password>");
+        diag.addSecret(QString::fromStdString(srv->user), "<server user>");
+    }
+    diag.addSecret(_ngPost->_rarPassFixed, "<fixed archive password>");
+
+    QString r;
+    QTextStream out(&r);
+    auto title = [&out](const QString &t){ out << "\n==== " << t << " ====\n"; };
+    auto yesNo = [](bool b){ return b ? "yes" : "no"; };
+
+    out << "ngPost diagnostic report\n"
+        << "generated: " << QDateTime::currentDateTime().toString(Qt::ISODate) << "\n"
+        << "(passwords, usernames, file names and the home folder are masked)\n";
+
+    title("System");
+    out << "program:   " << _ngPost->appName() << " v" << NgPost::versionLabel() << "\n"
+        << "OS:        " << QSysInfo::prettyProductName() << " (kernel " << QSysInfo::kernelVersion()
+        << ", " << QSysInfo::currentCpuArchitecture() << ")\n"
+        << "CPU cores: " << QThread::idealThreadCount() << "\n"
+        << "Qt:        " << qVersion() << "\n"
+        << "SSL:       " << PostingJob::sslSupportInfo() << "\n"
+        << "log file:  " << diag.mask(diag.logFilePath()) << "\n";
+
+    title("Settings");
+    out << "compression: " << yesNo(_ngPost->_doCompress) << ", par2: " << yesNo(_ngPost->_doPar2)
+        << ", random name: " << yesNo(_ngPost->_genName) << ", random password: " << yesNo(_ngPost->_genPass)
+        << ", keep archives: " << yesNo(_ngPost->_keepRar) << "\n"
+        << "RAR_PATH:    " << diag.mask(_ngPost->_rarPath) << "\n"
+        << "RAR_EXTRA:   " << (_ngPost->_rarArgs.isEmpty() ? "(default)" : diag.mask(_ngPost->_rarArgs)) << "\n"
+        << "RAR_SIZE:    " << _ngPost->_rarSize << " MB, RAR_MAX: " << _ngPost->_rarMax
+        << " (limit used: " << yesNo(_ngPost->_useRarMax) << ")\n"
+        << "PAR2_PATH:   " << diag.mask(_ngPost->_par2Path) << (_ngPost->useParPar() ? " (ParPar)" : "") << "\n"
+        << "PAR2_ARGS:   " << (_ngPost->_par2Args.isEmpty() ? "(default)" : diag.mask(_ngPost->_par2Args))
+        << ", PAR2_PCT: " << _ngPost->_par2Pct << "%\n"
+        << "threads:     " << _ngPost->_nbThreads << ", article size: " << NgPost::articleSize()
+        << ", socket timeout: " << _ngPost->_socketTimeOut / 1000 << " s\n"
+        << "obfuscation: articles " << yesNo(_ngPost->_obfuscateArticles)
+        << ", file names " << yesNo(_ngPost->_obfuscateFileName) << "\n"
+        << "prepare packing: " << yesNo(_ngPost->_preparePacking) << "\n";
+
+    title("Servers");
+    int nbCons = 0;
+    for (const NntpServerParams *srv : _ngPost->_nntpServers)
+    {
+        out << "- " << srv->host << ":" << srv->port << (srv->useSSL ? " SSL" : "") << ", "
+            << srv->nbCons << " connections, " << (srv->enabled ? "enabled" : "disabled")
+            << ", auth: " << yesNo(!srv->user.empty()) << "\n";
+        if (srv->enabled)
+            nbCons += srv->nbCons;
+    }
+    out << "total connections: " << nbCons << "\n";
+
+    title("Folders and disks");
+    auto folder = [&](const QString &name, const QString &path){
+        out << name << ": " << (path.isEmpty() ? "(not set)" : diag.mask(path)) << "\n";
+        if (path.isEmpty())
+            return;
+        QFileInfo fi(path);
+        QStorageInfo storage(fi.exists() ? path : fi.absolutePath());
+        out << "    exists: " << yesNo(fi.exists()) << ", writable: " << yesNo(fi.isWritable());
+        if (storage.isValid())
+            out << ", free: " << Diagnostics::humanSize(storage.bytesAvailable()) << " / "
+                << Diagnostics::humanSize(storage.bytesTotal()) << ", file system: " << storage.fileSystemType();
+        out << "\n";
+        QString lower = QDir::fromNativeSeparators(path).toLower();
+        if (lower.contains("onedrive") || lower.contains("dropbox") || lower.contains("google drive"))
+            out << "    WARNING: synced folder (every file written is uploaded by the sync software)\n";
+        else if (lower.endsWith("/desktop") || lower.contains("/desktop/"))
+            out << "    note: Desktop folder, it may be synced by OneDrive on Windows 11\n";
+        if (lower.startsWith("//"))
+            out << "    note: network folder\n";
+    };
+    folder("TMP_DIR", _ngPost->_tmpPath);
+    folder("nzbPath", _ngPost->_nzbPath);
+
+    title("Anomalies (this session)");
+    QStringList anomalies = diag.anomalies();
+    if (anomalies.isEmpty())
+        out << "none\n";
+    for (const QString &a : anomalies)
+        out << "- " << a << "\n";
+
+    QStringList events = diag.events();
+    QStringList errors = events.filter("[ERROR]");
+    title(QString("Errors (this session): %1").arg(errors.size()));
+    for (int i = qMax(0, errors.size() - 30); i < errors.size(); ++i)
+        out << errors.at(i) << "\n";
+
+    title("Events (this session)");
+    const int maxEvents = 600;
+    if (events.size() > maxEvents)
+        out << "(" << events.size() - maxEvents << " older events not shown)\n";
+    for (int i = qMax(0, events.size() - maxEvents); i < events.size(); ++i)
+        out << events.at(i) << "\n";
+
+    bool closedProperly = true;
+    QString previous = diag.previousSessionLog(&closedProperly);
+    title("Previous session");
+    if (previous.isEmpty())
+        out << "(none)\n";
+    else
+    {
+        if (!closedProperly)
+            out << "WARNING: the previous session did not end properly (crash or killed)\n";
+        QStringList lines = previous.split('\n');
+        const int maxLines = 300;
+        if (lines.size() > maxLines)
+            out << "(" << lines.size() - maxLines << " older lines not shown)\n";
+        for (int i = qMax(0, lines.size() - maxLines); i < lines.size(); ++i)
+            out << lines.at(i) << "\n";
+    }
+    out.flush();
+    return r;
 }
 
 void MainWindow::_watchForAutoSave(QWidget *root, int tab)

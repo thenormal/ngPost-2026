@@ -19,6 +19,7 @@
 
 #include "NgPost.h"
 #include <QSaveFile>
+#include "utils/Diagnostics.h"
 #include "PostingJob.h"
 #include "FoldersMonitorForNewFiles.h"
 #include "nntp/NntpArticle.h"
@@ -1211,6 +1212,7 @@ void NgPost::_log(const QString &aMsg, bool newline) const
 
 void NgPost::_error(const QString &error) const
 {
+    Diagnostics::instance().event("ERROR", error);
 #ifdef __USE_HMI__
     if (_hmi)
     {

@@ -106,6 +106,9 @@ private:
     uint         _part;     //!< part number (Article) on the current file
 
     QElapsedTimer _timeStart; //!< to get some stats (upload time and avg speed)
+    QElapsedTimer _diagTimer;               //!< diagnostics: duration of the compression / par2 phase
+    qint64        _diagInputSize   = 0;     //!< diagnostics: size of the files to pack
+    bool          _diagRegistered  = false; //!< diagnostics: secrets (names, password) already registered
     quint64       _totalSize; //!< total size (in Bytes) to be uploaded
     QElapsedTimer _pauseTimer;   //!< to record the time when ngPost is in pause
     qint64        _pauseDuration; //!< total duration of all pauses
@@ -320,6 +323,7 @@ private:
 
 
     qint64 _dirSize(const QString &path);
+    void   _diagRegisterPost(); //!< diagnostics: mask the names of the files and the password of this post
 
     inline QString timestamp() const;
 };

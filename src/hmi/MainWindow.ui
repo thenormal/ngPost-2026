@@ -553,6 +553,17 @@
             </spacer>
            </item>
            <item>
+            <widget class="QPushButton" name="diagReportButton">
+             <property name="text">
+              <string>Diagnostic report</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/resources.qrc">
+               <normaloff>:/icons/about.png</normaloff>:/icons/about.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="clearLogButton">
              <property name="toolTip">
               <string>clear log</string>
