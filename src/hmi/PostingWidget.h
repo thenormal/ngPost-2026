@@ -50,6 +50,7 @@ private:
 
     // ngPost 2026 layout (built in code over the widgets of the .ui)
     QLabel            *_filesTitle;
+    QLabel            *_releaseInfo;   //!< shown when the list has several items (they make one release)
     QLabel            *_nzbTitle;
     QLabel            *_archiveTitle;
     QLabel            *_advancedTitle;
@@ -59,6 +60,7 @@ private:
     void _buildLayout();
     void _retranslateLayout();
     void _showAdvanced(bool show);
+    void _updateReleaseInfo();
 
 public:
     explicit PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber);

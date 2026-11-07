@@ -44,7 +44,7 @@ PostingWidget::PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber) :
     _postingJob(nullptr),
     _state(STATE::IDLE),
     _postingFinished(false),
-    _filesTitle(nullptr), _nzbTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
+    _filesTitle(nullptr), _releaseInfo(nullptr), _nzbTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
     _advancedCard(nullptr), _advancedToggle(nullptr)
 {
     _ui->setupUi(this);
@@ -699,6 +699,17 @@ void PostingWidget::_buildLayout()
     root->addLayout(head);
     root->addWidget(_ui->filesList, 1);
 
+    // reminder: everything in the list is one release
+    _releaseInfo = new QLabel(page);
+    _releaseInfo->setObjectName("infoBanner");
+    _releaseInfo->setWordWrap(true);
+    _releaseInfo->setTextFormat(Qt::RichText);
+    _releaseInfo->hide();
+    root->addWidget(_releaseInfo);
+    connect(_ui->filesList->model(), &QAbstractItemModel::rowsInserted, this, &PostingWidget::_updateReleaseInfo);
+    connect(_ui->filesList->model(), &QAbstractItemModel::rowsRemoved,  this, &PostingWidget::_updateReleaseInfo);
+    connect(_ui->filesList->model(), &QAbstractItemModel::modelReset,   this, &PostingWidget::_updateReleaseInfo);
+
     // NZB and Archive cards side by side
     QHBoxLayout *cards = new QHBoxLayout();
     cards->setSpacing(12);
@@ -780,10 +791,22 @@ void PostingWidget::_showAdvanced(bool show)
     _retranslateLayout();
 }
 
+void PostingWidget::_updateReleaseInfo()
+{
+    if (!_releaseInfo)
+        return;
+    _releaseInfo->setVisible(_ui->filesList->count() > 1);
+}
+
 void PostingWidget::_retranslateLayout()
 {
     if (!_filesTitle)
         return;
+    _releaseInfo->setText(tr("<b>One release:</b> all the files and folders of this list are posted together, "
+                             "with a single NZB file and, if Compress is on, a single archive. "
+                             "To post separate releases, use one tab per release (<i>New</i>) "
+                             "or the <i>Auto Posting</i> tab, which makes one post for each file or folder."));
+    _updateReleaseInfo();
     _filesTitle->setText(tr("Files to post"));
     _nzbTitle->setText(tr("NZB"));
     _archiveTitle->setText(tr("Archive"));

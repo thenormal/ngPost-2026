@@ -74,6 +74,13 @@ SignedListWidget::SignedListWidget(QWidget *parent) :
     connect(model(), &QAbstractItemModel::modelReset,   this, &SignedListWidget::_updateEmptyState);
 }
 
+SignedListWidget::~SignedListWidget()
+{
+    // the model is destroyed with the list: its signals must not reach the empty screen (already deleted) anymore
+    if (model())
+        disconnect(model(), nullptr, this, nullptr);
+}
+
 void SignedListWidget::setEmptyState(const QString &hint, const QString &button1, const QString &button2)
 {
     _emptyHint->setText(hint);

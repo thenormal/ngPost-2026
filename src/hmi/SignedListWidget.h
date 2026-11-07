@@ -29,6 +29,7 @@ class SignedListWidget : public QListWidget
 
 public:
     SignedListWidget(QWidget *parent = nullptr);
+    ~SignedListWidget() override;
 
     //! screen shown in the middle of the list when it is empty (logo, name, help and two buttons)
     void setEmptyState(const QString &hint, const QString &button1, const QString &button2);
