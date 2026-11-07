@@ -2,7 +2,7 @@
 
 # ngPost-2026
 
-[English](README.md) | **Français** | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md)
+[English](README.md) | **Français** | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
 **ngPost-2026** est une version revisitée et redessinée du célèbre uploader Usenet **ngPost**.<br/>
 C'est un fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licence GPL v3). Tout le mérite du programme original revient à son auteur, Matthieu Bruel.<br/>
@@ -30,7 +30,7 @@ Voici la liste des principales fonctionnalités et atouts de ngPost:
   - **mode invisible**: obfuscation complète des Articles : impossible de (re)trouver un post sans avoir le fichier nzb
   - **exécution d'une commande ou un script une fois les nzb générés**
   - possibilité **d'éteindre l'ordinateur** lorsque tous les posts sont finis
-  - multi-langues (Français, Allemand, Anglais, Chinois, Espagnol, Néerlandais, Portugais)
+  - multi-langues (Français, Allemand, Anglais, Chinois, Espagnol, Italien, Néerlandais, Portugais)
   - ...
 
 ![ngPost_v4.3](pics/ngPost_v4.3.png)
@@ -287,7 +287,7 @@ Voici une liste des posteurs alternatif sur le [github de Nyuu](https://github.c
 
 
 ### Langues supportées
-Pour l'instant ngPost est traduit en Allemand, Anglais, Chinois, Espagnol, Français, Néerlandais et Portugais. Une traduction italienne est prévue pour ce fork.<br/>
+Pour l'instant ngPost est traduit en Allemand, Anglais, Chinois, Espagnol, Français, Italien, Néerlandais et Portugais (la traduction italienne a été ajoutée dans ce fork).<br/>
 Si vous souhaitez le traduire dans une autre langue, c'est très simple (Qt fournit un GUI pour cela: QtLinguist), les fichiers de traduction sont dans le dossier **src/lang**.
 
 
