@@ -67,6 +67,7 @@ jobs:
           Write-Host $out
           # 0xC0000135 = a DLL is missing; any other exit code only reflects the sample config (Linux paths)
           if ($LASTEXITCODE -eq -1073741515 -or $LASTEXITCODE -eq -1073741701) { throw "missing DLL (exit code $LASTEXITCODE)" }
+          exit 0   # otherwise the step would fail with the exit code of ngPost.exe (the sample config is for Linux)
 
       - name: Smoke test 2 - GUI (must stay open for 8 seconds)
         shell: pwsh
