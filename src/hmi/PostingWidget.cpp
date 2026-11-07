@@ -115,10 +115,13 @@ void PostingWidget::onPostingJobDone()
     else
         _hmi->clearJobTab(this);
 
+    bool uploadedOk = _postingJob->nbArticlesTotal() > 0 && _postingJob->nbArticlesFailed() == 0
+                      && _postingJob->nbArticlesUploaded() > 0;
     disconnect(_postingJob);
     _postingJob = nullptr; //!< we don't own it, NgPost will delete it
     _postingFinished = true;
     setIDLE();
+    emit postingDone(uploadedOk);
 }
 
 void PostingWidget::onPostFiles()
