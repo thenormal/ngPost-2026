@@ -18,6 +18,7 @@
 //========================================================================
 
 #include "NgPost.h"
+#include <QSaveFile>
 #include "PostingJob.h"
 #include "FoldersMonitorForNewFiles.h"
 #include "nntp/NntpArticle.h"
@@ -2584,7 +2585,7 @@ void NgPost::_showVersionASCII() const
           << MB_FLUSH;
 }
 
-void NgPost::saveConfig()
+void NgPost::saveConfig(bool quiet)
 {
 #if defined(WIN32) || defined(__MINGW64__)
     QString conf = sDefaultConfig;
@@ -2592,7 +2593,19 @@ void NgPost::saveConfig()
     QString conf = QString("%1/%2").arg(getenv("HOME")).arg(sDefaultConfig);
 #endif
 
-    QFile file(conf);
+    // the whole file is rewritten: keep a copy of the previous one, once per session (ngPost.conf.bak)
+    static bool backupDone = false;
+    if (!backupDone && QFileInfo::exists(conf))
+    {
+        QString backup = conf + ".bak";
+        QFile::remove(backup);
+        if (QFile::copy(conf, backup))
+            backupDone = true;
+    }
+
+    // QSaveFile writes in a temporary file and replaces the config only when everything is written
+    // (the config can't be left half written in case of crash or full disk)
+    QSaveFile file(conf);
     if (file.open(QIODevice::WriteOnly|QIODevice::Text))
     {
         QTextStream stream(&file);
@@ -2876,8 +2889,11 @@ void NgPost::saveConfig()
                << "\n";
 
 
-        _log(tr("the config '%1' file has been updated").arg(conf));
-        file.close();
+        stream.flush();
+        if (!file.commit())
+            _error(tr("Error: Couldn't write default configuration file: %1").arg(conf));
+        else if (!quiet)
+            _log(tr("the config '%1' file has been updated").arg(conf));
     }
     else
         _error(tr("Error: Couldn't write default configuration file: %1").arg(conf));

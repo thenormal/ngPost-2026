@@ -365,7 +365,7 @@ public:
 
     inline bool dispPostingFile() const;
 
-    void saveConfig();
+    void saveConfig(bool quiet = false);
 
     void setDelFilesAfterPosted(bool delFiles);
     void addMonitoringFolder(const QString &dirPath);

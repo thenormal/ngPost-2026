@@ -30,6 +30,11 @@
 #include <QLabel>
 #include <QScreen>
 #include <QMessageBox>
+#include <QTimer>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QSpinBox>
+#include <QComboBox>
 
 
 const QColor  MainWindow::sPostingColor = QColor(255,162, 0); // gold (#FFA200)
@@ -61,8 +66,15 @@ MainWindow::MainWindow(QWidget *parent) :
     _ngPost(nullptr),
     _state(STATE::IDLE),
     _quickJobTab(nullptr),
-    _autoPostTab(nullptr)
+    _autoPostTab(nullptr),
+    _autoSaveTimer(new QTimer(this)),
+    _autoSaveReady(false),
+    _autoSaveQuickTab(false),
+    _autoSaveAutoTab(false)
 {
+    _autoSaveTimer->setSingleShot(true);
+    _autoSaveTimer->setInterval(sAutoSaveDelayMs);
+    connect(_autoSaveTimer, &QTimer::timeout, this, &MainWindow::onAutoSave);
     setAcceptDrops(true);
 
     _ui->setupUi(this);
@@ -148,6 +160,13 @@ void MainWindow::init(NgPost *ngPost)
     _initPostingBox();
     _quickJobTab->init();
     _autoPostTab->init();
+
+    // autosave: watch the global settings, the servers, the default Quick Post and the Auto Posting tabs
+    _watchForAutoSave(_ui->serverBox, -1);
+    _watchForAutoSave(_ui->postingBox, -1);
+    _watchForAutoSave(_quickJobTab, 0);
+    _watchForAutoSave(_autoPostTab, 1);
+    QTimer::singleShot(0, this, [this](){ _autoSaveReady = true; }); // after the initialisation of the widgets
 
     _ui->goCmdButton->hide();
 //    connect(_ui->goCmdButton, &QAbstractButton::clicked, _ngPost, &NgPost::onGoCMD, Qt::QueuedConnection);
@@ -243,6 +262,11 @@ void MainWindow::dropEvent(QDropEvent *e)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    if (_autoSaveTimer->isActive()) // a change not saved yet
+    {
+        _autoSaveTimer->stop();
+        onAutoSave();
+    }
     if (_ngPost->hasPostingJobs())
     {
         int res = QMessageBox::question(this,
@@ -791,8 +815,68 @@ void MainWindow::onDebugValue(int value)
 }
 
 
+void MainWindow::scheduleAutoSave()
+{
+    if (_autoSaveReady)
+        _autoSaveTimer->start(); // restarted at each change: we save 1 sec after the last one
+}
+
+void MainWindow::onAutoSave()
+{
+    _saveConfig(_autoSaveQuickTab, _autoSaveAutoTab);
+    _autoSaveQuickTab = false;
+    _autoSaveAutoTab  = false;
+
+    // small feedback on the save button
+    _ui->saveButton->setText(tr("saved"));
+    QTimer::singleShot(1500, this, [this](){ _ui->saveButton->setText(tr("save")); });
+}
+
+void MainWindow::_saveConfig(bool quickTab, bool autoTab)
+{
+    updateServers();
+    updateParams();
+    if (quickTab)
+        _quickJobTab->udatePostingParams();
+    if (autoTab)
+        _autoPostTab->udatePostingParams();
+    _ngPost->saveConfig(true);
+}
+
+void MainWindow::_watchForAutoSave(QWidget *root, int tab)
+{
+    // only the signals emitted by a user action (not when the code fills the widgets)
+    // the fields that only concern one post (nzb name, archive name and password of a post) are not watched
+    static const QStringList perPostFields = {"nzbFileEdit", "nzbPassCB", "nzbPassEdit", "compressNameEdit",
+                                              "debugBox", "debugSB"};
+    auto changed = [this, tab]() {
+        if (tab == 0)
+            _autoSaveQuickTab = true;
+        else if (tab == 1)
+            _autoSaveAutoTab = true;
+        scheduleAutoSave();
+    };
+    for (QLineEdit *w : root->findChildren<QLineEdit*>())
+    {
+        if (perPostFields.contains(w->objectName()) || qobject_cast<QAbstractSpinBox*>(w->parent()))
+            continue;
+        connect(w, &QLineEdit::textEdited, this, changed);
+        connect(w, &QLineEdit::editingFinished, this, changed); // also after a selection with a "..." button
+    }
+    for (QCheckBox *w : root->findChildren<QCheckBox*>())
+        if (!perPostFields.contains(w->objectName()))
+            connect(w, &QAbstractButton::toggled, this, changed);
+    for (QSpinBox *w : root->findChildren<QSpinBox*>())
+        if (!perPostFields.contains(w->objectName()))
+            connect(w, QOverload<int>::of(&QSpinBox::valueChanged), this, changed);
+    for (QComboBox *w : root->findChildren<QComboBox*>())
+        if (!perPostFields.contains(w->objectName()))
+            connect(w, QOverload<int>::of(&QComboBox::currentIndexChanged), this, changed);
+}
+
 void MainWindow::onSaveConfig()
 {
+    _autoSaveTimer->stop();
     updateServers();
     updateParams();
     int currentTabIdx = _ui->postTabWidget->currentIndex();
