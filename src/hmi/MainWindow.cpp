@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveQuickTab(false),
     _autoSaveAutoTab(false),
     _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr},
-    _history(nullptr), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr),
+    _history(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr),
     _themeButton(nullptr), _aboutButton(nullptr),
     _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
     _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
@@ -165,7 +165,7 @@ void MainWindow::init(NgPost *ngPost)
     _ui->postTabWidget->installEventFilter(this);
 //    _ui->postTabWidget->setCurrentIndex(1);
 
-    setJobLabel(1);
+    setJobLabel(-1);
 
 
     for (const QString &lang : _ngPost->languages())
@@ -356,7 +356,7 @@ void MainWindow::changeEvent(QEvent *event)
                                             _ngPost->_shutdownCmd));
 
             _ui->fileBox->setTitle(QString());
-            _ui->logBox->setTitle(tr("Posting Log"));
+            _ui->logBox->setTitle(tr("Log"));
             _retranslateShell();
 
             tabBar->setTabText(0, _ngPost->quickJobName());
@@ -368,7 +368,7 @@ void MainWindow::changeEvent(QEvent *event)
             tabBar->setTabText(lastTabIdx, tr("New"));
             tabBar->setTabToolTip(2, QString("Create a new %1").arg(_ngPost->quickJobName()));
 
-            setJobLabel(_ui->postTabWidget->currentIndex());
+            setJobLabel(_jobNumber);
 
             _servers->retranslate();
 
@@ -659,7 +659,13 @@ void MainWindow::updateJobTab(QWidget *postWidget, const QColor &color, const QI
 
 void MainWindow::setJobLabel(int jobNumber)
 {
-    _ui->jobLabel->setText(QString("<b><u>Post #%1</u></b>").arg(jobNumber != 1 ? QString::number(jobNumber) : "Auto"));
+    _jobNumber = jobNumber;
+    if (jobNumber < 0)
+        _ui->jobLabel->setText(tr("Ready"));
+    else if (jobNumber <= 1)
+        _ui->jobLabel->setText(_ngPost->quickJobName());
+    else
+        _ui->jobLabel->setText(QString("%1 #%2").arg(_ngPost->quickJobName()).arg(jobNumber));
 }
 
 
@@ -1070,10 +1076,10 @@ void MainWindow::onShutdownToggled(bool checked)
 
 void MainWindow::setPauseIcon(bool pause)
 {
-    if (pause)
-        _ui->pauseButton->setIcon(QIcon(":/icons/pause.png"));
-    else
-        _ui->pauseButton->setIcon(QIcon(":/icons/play.png"));
+    _pauseIcon = pause;
+    QColor color = _ngPost && _ngPost->isDarkTheme() ? QColor("#d6d6d6") : QColor("#3b3b3b");
+    _ui->pauseButton->setIcon(_navIcon(pause ? ":/icons/nav_pause.png" : ":/icons/nav_play.png", color, color));
+    _ui->pauseButton->setToolTip(pause ? tr("Pause the uploads") : tr("Resume the uploads"));
 }
 
 void MainWindow::onPauseClicked()
@@ -1255,6 +1261,13 @@ void MainWindow::_buildShell()
     _ui->uploadFrame->setAttribute(Qt::WA_StyledBackground, true);
     _ui->uploadFrame->setFrameShape(QFrame::NoFrame);
     _ui->uploadFrame->layout()->setContentsMargins(24, 8, 24, 8);
+    _ui->uploadFrame->layout()->setSpacing(12);
+    _ui->jobLabel->setObjectName("jobLabel");
+    _ui->jobLabel->setMinimumWidth(110);
+    _ui->pauseButton->setObjectName("iconButton");
+    _ui->pauseButton->setIconSize({16, 16});
+    _ui->pauseButton->setFixedSize(34, 30);
+    _ui->uploadLbl->setObjectName("hint");
     rightLayout->addWidget(_ui->uploadFrame);
 
     rootLayout->addWidget(right, 1);
@@ -1421,14 +1434,15 @@ void MainWindow::_retranslateShell()
 {
     if (!_pages)
         return;
-    _navButtons[NAV_QUICK]->setText(tr("Quick Post"));
-    _navButtons[NAV_AUTO]->setText(tr("Auto Posting"));
+    // same names as the tabs
+    _navButtons[NAV_QUICK]->setText(_ngPost ? _ngPost->quickJobName() : tr("Quick Post"));
+    _navButtons[NAV_AUTO]->setText(_ngPost ? _ngPost->folderMonitoringName() : tr("Auto Posting"));
     _navButtons[NAV_SERVERS]->setText(tr("Servers"));
     _navButtons[NAV_SETTINGS]->setText(tr("Settings"));
     _aboutButton->setText(tr("About"));
     _updateThemeButton();
 
-    _postsTitle->setText(_navButtons[NAV_AUTO]->isChecked() ? tr("Auto Posting") : tr("Quick Post"));
+    _postsTitle->setText(_navButtons[NAV_AUTO]->isChecked() ? _navButtons[NAV_AUTO]->text() : _navButtons[NAV_QUICK]->text());
     _serversTitle->setText(tr("Servers"));
     _serversSubtitle->setText(tr("The posts are uploaded on all the enabled servers. Test a server before using it."));
     _settingsTitle->setText(tr("Settings"));
@@ -1458,6 +1472,8 @@ void MainWindow::_retranslateShell()
     _themeCB->setItemText(2, tr("Dark"));
     _autoSaveHint->setText(tr("The settings are saved automatically after each change."));
     _ui->saveButton->setText(tr("Save now"));
+    _ui->logBox->setTitle(tr("Log"));
+    setJobLabel(_jobNumber);
 }
 
 void MainWindow::_updateThemeButton()
@@ -1483,6 +1499,7 @@ void MainWindow::onThemeApplied()
     _themeButton->setIcon(_navIcon(":/icons/nav_theme.png", normal, checked));
     _adaptIcons();
     _aboutButton->setIcon(_navIcon(":/icons/nav_about.png", normal, checked));
+    setPauseIcon(_pauseIcon);
     _updateThemeButton();
 }
 
@@ -1509,7 +1526,7 @@ void MainWindow::onNavClicked(int id)
         _pages->setCurrentIndex(PAGE_HISTORY);
         break;
     }
-    _postsTitle->setText(id == NAV_AUTO ? tr("Auto Posting") : tr("Quick Post"));
+    _postsTitle->setText(_navButtons[id == NAV_AUTO ? NAV_AUTO : NAV_QUICK]->text());
 }
 
 void MainWindow::onPostTabChanged(int index)
@@ -1518,7 +1535,7 @@ void MainWindow::onPostTabChanged(int index)
         return;
     int nav = index == 1 ? NAV_AUTO : NAV_QUICK;
     _navButtons[nav]->setChecked(true);
-    _postsTitle->setText(nav == NAV_AUTO ? tr("Auto Posting") : tr("Quick Post"));
+    _postsTitle->setText(_navButtons[nav]->text());
 }
 
 void MainWindow::onThemeSelected(int index)

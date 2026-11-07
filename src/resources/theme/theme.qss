@@ -69,6 +69,14 @@ QLabel#infoBanner {
     border-radius: 4px;
     padding: 8px 12px;
 }
+QLabel#jobLabel {
+    font-weight: 600;
+    color: @text@;
+}
+QTextBrowser {
+    font-family: "Cascadia Mono", "Consolas", "DejaVu Sans Mono", monospace;
+    font-size: 12px;
+}
 QLabel#emptyTitle {
     font-size: 20px;
     font-weight: 600;

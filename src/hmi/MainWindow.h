@@ -73,6 +73,8 @@ private:
     QButtonGroup   *_nav;
     QPushButton    *_navButtons[NB_NAV];
     HistoryWidget  *_history;
+    int             _jobNumber;   //!< post shown in the bottom bar (-1: none)
+    bool            _pauseIcon;   //!< the pause button shows pause (true) or play
     QCheckBox      *_historyCB;
     QLineEdit      *_historyPathEdit;
     QPushButton    *_historyPathButton;

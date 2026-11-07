@@ -20,6 +20,7 @@
 #include "PostingWidget.h"
 #include "ui_PostingWidget.h"
 #include "MainWindow.h"
+#include <QCoreApplication>
 #include "AboutNgPost.h"
 #include "NgPost.h"
 #include "PostingJob.h"
@@ -804,8 +805,9 @@ void PostingWidget::_retranslateLayout()
         return;
     _releaseInfo->setText(tr("<b>One release:</b> all the files and folders of this list are posted together, "
                              "with a single NZB file and, if Compress is on, a single archive. "
-                             "To post separate releases, use one tab per release (<i>New</i>) "
-                             "or the <i>Auto Posting</i> tab, which makes one post for each file or folder."));
+                             "To post separate releases, use one tab per release (<i>%1</i>) "
+                             "or the <i>%2</i> tab, which makes one post for each file or folder.").arg(
+                              QCoreApplication::translate("MainWindow", "New"), _ngPost->folderMonitoringName()));
     _updateReleaseInfo();
     _filesTitle->setText(tr("Files to post"));
     _nzbTitle->setText(tr("NZB"));

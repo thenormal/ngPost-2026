@@ -14,7 +14,7 @@
 -   **NZB_POST_CMD**: os marcadores podem conter espaços (um caminho como `C:\Minhas pastas\arquivo.nzb` continua sendo UM argumento) e o comando é iniciado em segundo plano (o ngPost não espera mais por ele, então o código de saída deixa de ser registrado)
 -   **RAR_EXTRA e PAR2_ARGS**: são interpretados respeitando as aspas duplas. O 7-Zip é reconhecido pelo nome do programa e não pelo caminho completo
 -   **ParPar** (um gerador de par2 muito mais rápido) está incluído para Windows 64 bits (v0.4.6, domínio público) e é usado automaticamente quando `parpar.exe` está na pasta do ngPost. O par2cmdline de 64 bits foi removido do pacote; a versão de 32 bits continua para Windows 32 bits
--   **Tema claro moderno**: a GUI tem um visual limpo inspirado no Windows 11 (estilo Fusion + folha de estilo). Defina a variável de ambiente `NGPOST_NO_THEME` para voltar ao visual nativo
+-   **Nova interface**: barra lateral (Quick Post, Postagem Automática, Servidores, Definições, Histórico), páginas com cartões, opções avançadas ocultas até serem precisas, um novo ícone e um ecrã vazio que explica o que fazer. **Temas claro e escuro**, ou automático como o Windows (chave `theme`). Defina a variável de ambiente `NGPOST_NO_THEME` para voltar ao aspeto nativo
 -   **Interface em italiano**: a GUI/CMD agora também está traduzida para italiano (já disponível em chinês, holandês, inglês, francês, alemão, português e espanhol)
 -   **Novo README**: reescrito para este fork e disponível em 8 idiomas (inglês, francês, alemão, italiano, espanhol, holandês, português, chinês)
 -   **ngPost 2026 v5.0 beta**: novo nome e nova versão, janela Sobre redesenhada, os botões de donativo foram removidos (para apoiar o autor original, ver o fim desta página)
@@ -24,6 +24,8 @@
 -   **Palavra-passe do arquivo fora da linha de comandos**: o 7-Zip recebe-a na entrada padrão e o rar através da variável de ambiente `RAR`, por isso já não aparece na lista de processos
 -   **Diagnóstico**: o ngPost regista a duração e a velocidade de cada fase (compressão, par2, envio), os erros e os bloqueios, e o botão **Relatório de diagnóstico** guarda um relatório para analisar um problema. Palavras-passe, utilizadores e nomes de ficheiros são ocultados, nada é enviado
 -   **Windows**: a janela da consola fecha-se sozinha quando o ngPost é iniciado com duplo clique; o pacote inclui o OpenSSL 1.1.1w (última versão suportada pelo Qt 5)
+-   **Página Histórico**: cada upload é registado (`ngPost_history.csv` ao lado da configuração, ou `POST_HISTORY`) com o estado, o número de ficheiros e a duração. A página lista-os com pesquisa, filtro por período, totais, palavras-passe ocultas até serem pedidas, cópia, exportação e pasta do NZB. Atenção: o ficheiro contém as palavras-passe dos arquivos em texto simples
+-   **Quick Post**: uma nota lembra que todos os elementos da lista são publicados como uma só release (um NZB, um arquivo)
 
 Ainda não há versões oficiais deste fork. Um pacote **Windows 64bit** pronto a usar é compilado automaticamente pelo GitHub Actions a cada alteração (separador *Actions* > execução *Build Windows (x64)* > *Artifacts*, é necessária uma conta GitHub). Nos outros sistemas, compile-o a partir do código-fonte (ver abaixo).<br/>
 
@@ -47,6 +49,8 @@ O arquivo de configuração funciona como no projeto original (padrão: **~/.ngP
 - **RAR_EXTRA**: para personalizar o comando rar (não é preciso indicar 'a', '-idp' nem '-r'). Desnecessário para o 7-zip, exceto se quiser mudar o nível de compressão.
 - **PAR2_CMD**: para mudar o gerador de par2 e poder usar o [Parpar](https://github.com/animetosho/ParPar) ou o [Multipar](http://hp.vector.co.jp/authors/VA021385/). (o par2cmdline é o gerador incluído por padrão; no Windows 64 bits o ParPar é usado automaticamente se `parpar.exe` estiver na pasta do ngPost)
 - **PAR2_ARGS**: para personalizar o comando par2, sobretudo se escolher um programa diferente do par2cmdline padrão
+- **theme**: tema da interface, `AUTO` (como o Windows), `LIGHT` ou `DARK`
+- **history**: `ON` (predefinido) ou `OFF`, histórico dos uploads mostrado na página Histórico. Sem **POST_HISTORY** o ficheiro é `ngPost_history.csv` ao lado da configuração. São adicionadas novas colunas no fim de cada linha: estado, número de ficheiros, duração e ficheiro NZB
 
 ### Compilar
 #### Dependências:
