@@ -17,9 +17,15 @@ Es un fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licencia
 -   **Tema claro moderno**: la GUI tiene un aspecto limpio inspirado en Windows 11 (estilo Fusion + hoja de estilos). Define la variable de entorno `NGPOST_NO_THEME` para recuperar el aspecto nativo
 -   **Interfaz en italiano**: la GUI/CMD ahora también está traducida al italiano (ya estaba disponible en chino, neerlandés, inglés, francés, alemán, portugués y español)
 -   **Nuevo README**: reescrito para este fork y disponible en 8 idiomas (inglés, francés, alemán, italiano, español, neerlandés, portugués, chino)
+-   **ngPost 2026 v5.0 beta**: nuevo nombre y nueva versión, ventana Acerca de rediseñada, se han quitado los botones de donación (para apoyar al autor original, ver el final de esta página)
+-   **Nueva sección Servidores**: lista de servidores con un indicador de estado y una casilla activado/desactivado, ficha de detalle (contraseña visible a petición) y un botón **Probar conexión** que comprueba el acceso. Modificar los servidores durante una subida ya no puede bloquear ngPost
+-   **Guardado automático**: cada cambio de los ajustes se guarda automáticamente (el archivo anterior se conserva como `ngPost.conf.bak`)
+-   **Pestaña Auto Posting**: nuevos botones **Quitar completados**, **Quitar todo** y **Cerrar pestañas terminadas**
+-   **Contraseña del archivo fuera de la línea de comandos**: 7-Zip la recibe por su entrada estándar y rar mediante la variable de entorno `RAR`, así que ya no aparece en la lista de procesos
+-   **Diagnóstico**: ngPost registra la duración y la velocidad de cada fase (compresión, par2, subida), los errores y los bloqueos, y el botón **Informe de diagnóstico** guarda un informe para analizar un problema. Contraseñas, usuarios y nombres de archivo se ocultan, no se envía nada
+-   **Windows**: la ventana de consola se cierra sola cuando ngPost se inicia con doble clic; el paquete incluye OpenSSL 1.1.1w (última versión soportada por Qt 5)
 
-Este fork todavía no publica binarios: compílalo desde el código fuente (ver abajo).<br/>
-**Usuarios de Windows**: por el momento no hay un instalador listo para usar de este fork, hay que compilar el programa (por ejemplo con Qt Creator). Los instaladores del proyecto original no incluyen los cambios anteriores y siguen usando el antiguo par2cmdline.<br/>
+Todavía no hay versiones oficiales de este fork. GitHub Actions genera automáticamente un paquete **Windows 64bit** listo para usar en cada cambio (pestaña *Actions* > ejecución *Build Windows (x64)* > *Artifacts*, se necesita una cuenta de GitHub). En los demás sistemas, compílalo desde el código fuente (ver abajo).<br/>
 
 ### Funciones principales
 -   **Cargador de Usenet por línea de comandos y con una bonita interfaz gráfica** para binarios, desarrollado en **C++11/Qt5**

@@ -17,9 +17,15 @@ C'est un fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licen
 -   **Thème clair moderne**: l'interface graphique a un aspect épuré inspiré de Windows 11 (style Fusion + feuille de style). Définissez la variable d'environnement `NGPOST_NO_THEME` pour retrouver l'aspect natif
 -   **Interface en italien**: l'interface graphique et la ligne de commande sont maintenant aussi traduites en italien (déjà disponibles en allemand, anglais, chinois, espagnol, français, néerlandais et portugais)
 -   **Nouveau README**: réécrit pour ce fork et disponible en 8 langues (anglais, français, allemand, italien, espagnol, néerlandais, portugais, chinois)
+-   **ngPost 2026 v5.0 bêta** : nouveau nom et nouvelle version, fenêtre À propos redessinée, les boutons de don ont été retirés (pour soutenir l'auteur original, voir la fin de cette page)
+-   **Nouvelle section Serveurs** : liste des serveurs avec un voyant d'état et une case activé/désactivé, fiche de détail (mot de passe affiché à la demande) et un bouton **Tester la connexion** qui vérifie l'identification. Modifier les serveurs pendant un envoi ne peut plus faire planter ngPost
+-   **Enregistrement automatique** : chaque modification des réglages est enregistrée automatiquement (le fichier précédent est conservé en `ngPost.conf.bak`)
+-   **Onglet Auto Posting** : nouveaux boutons **Retirer les terminés**, **Tout retirer** et **Fermer les onglets terminés**
+-   **Mot de passe de l'archive hors de la ligne de commande** : 7-Zip le reçoit sur son entrée standard et rar par la variable d'environnement `RAR`, il n'apparaît donc plus dans la liste des processus
+-   **Diagnostic** : ngPost enregistre la durée et la vitesse de chaque phase (compression, par2, envoi), les erreurs et les blocages, et le bouton **Rapport de diagnostic** enregistre un rapport pour analyser un problème. Mots de passe, identifiants et noms de fichiers sont masqués, rien n'est envoyé
+-   **Windows** : la fenêtre de console se ferme d'elle-même quand ngPost est lancé par un double clic ; le paquet contient OpenSSL 1.1.1w (dernière version supportée par Qt 5)
 
-Ce fork ne publie pas encore de binaires: compilez-le depuis les sources (cf plus bas).<br/>
-**Utilisateurs Windows**: pour le moment il n'y a pas d'installeur prêt à l'emploi pour ce fork, il faut compiler le programme (par exemple avec Qt Creator). Les installeurs du projet original ne contiennent pas les modifications ci-dessus et utilisent encore l'ancien par2cmdline.<br/>
+Il n'y a pas encore de version officielle de ce fork. Un paquet **Windows 64bit** prêt à l'emploi est construit automatiquement par GitHub Actions à chaque modification (onglet *Actions* > exécution *Build Windows (x64)* > *Artifacts*, un compte GitHub est nécessaire). Sur les autres systèmes, compilez-le depuis les sources (voir ci-dessous).<br/>
 
 ### Fonctionnalités principales
 -   **Posteur Usenet en ligne de commande et avec interface graphique** pour les binaires, développé en **C++11/Qt5** et conçu pour être le plus rapide possible
