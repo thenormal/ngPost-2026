@@ -22,6 +22,7 @@
 
 #include <QMainWindow>
 #include <QFileInfoList>
+class QTimer;
 class NgPost;
 struct NntpServerParams;
 class NntpFile;
@@ -44,6 +45,13 @@ private:
     STATE           _state;
     PostingWidget  *_quickJobTab;
     AutoPostWidget *_autoPostTab;
+
+    // autosave: the settings are saved automatically shortly after each change made by the user
+    QTimer         *_autoSaveTimer;
+    bool            _autoSaveReady;     //!< false during the initialisation (the widgets are filled by the code)
+    bool            _autoSaveQuickTab;  //!< a setting of the default Quick Post tab changed
+    bool            _autoSaveAutoTab;   //!< a setting of the Auto Posting tab changed
+    static constexpr int sAutoSaveDelayMs = 1000;
 
     static const bool sDefaultServerSSL   = true;
     static const int  sDefaultConnections = 5;
@@ -118,7 +126,11 @@ public slots:
     void onCloseAllFinishedQuickTabs();
 
 
+public slots:
+    void scheduleAutoSave(); //!< to be called after any change of a setting (the save is delayed and grouped)
+
 private slots:
+    void onAutoSave();
     void onAddServer();
     void onDelServer();
 
@@ -154,6 +166,9 @@ private slots:
     void onPauseClicked();
 
 private:
+    void _watchForAutoSave(QWidget *root, int tab); //!< tab: -1 global settings, 0 Quick Post, 1 Auto Posting
+    void _saveConfig(bool quickTab, bool autoTab);
+
     void _initServerBox();
     void _initPostingBox();
 
