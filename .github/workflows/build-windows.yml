@@ -1,27 +1,50 @@
-name: Build Windows (x64)
+name: Build Windows (64 and 32 bit)
 
-# Builds ngPost-Deluxe on a Windows runner (Qt 5.15.2 + MinGW 8.1, 64bit) and publishes a
-# ready-to-run folder as a downloadable artifact: Actions tab > the run > "Artifacts".
+# Builds ngPost Deluxe on a Windows runner (Qt 5.15.2 + MinGW 8.1) for Windows 64 bit and 32 bit and
+# publishes a ready-to-run folder as a downloadable artifact: Actions tab > the run > "Artifacts".
+# When a tag "v*" is pushed (v1.0, v1.1...), a GitHub release is created with the two ZIP files.
 on:
   push:
     branches: [ master ]
+    tags: [ 'v*' ]
   pull_request:
   workflow_dispatch:
 
 jobs:
   build:
+    name: Windows ${{ matrix.name }}
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: win64
+            qt_arch: win64_mingw81
+            qt_tools: 'tools_mingw,qt.tools.win64_mingw810'
+            mingw_dir: mingw810_64
+            gcc_dll: libgcc_s_seh-1
+            ssl_ssl: libssl-1_1-x64.dll
+            ssl_crypto: libcrypto-1_1-x64.dll
+            ssl_zip: libs_win7_64bit.zip
+          - name: win32
+            qt_arch: win32_mingw81
+            qt_tools: 'tools_mingw,qt.tools.win32_mingw810'
+            mingw_dir: mingw810_32
+            gcc_dll: libgcc_s_dw2-1
+            ssl_ssl: libssl-1_1.dll
+            ssl_crypto: libcrypto-1_1.dll
+            ssl_zip: libs_win7_32bit.zip
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Qt 5.15.2 (MinGW 8.1, 64bit)
+      - name: Install Qt 5.15.2 (MinGW 8.1, ${{ matrix.name }})
         uses: jurplel/install-qt-action@v4
         with:
           version: '5.15.2'
           host: 'windows'
           target: 'desktop'
-          arch: 'win64_mingw81'
-          tools: 'tools_mingw,qt.tools.win64_mingw810'
+          arch: ${{ matrix.qt_arch }}
+          tools: ${{ matrix.qt_tools }}
           cache: true
 
       - name: Build
@@ -41,10 +64,10 @@ jobs:
           Copy-Item $exe.FullName dist/
           # Qt DLLs, plugins and the MinGW runtime (copied by hand: windeployqt could not find the platform plugin)
           $qtRoot = $env:QT_ROOT_DIR
-          $gccBin = Join-Path $env:IQTA_TOOLS 'mingw810_64\bin'
+          $gccBin = Join-Path $env:IQTA_TOOLS '${{ matrix.mingw_dir }}\bin'
           if (-not (Test-Path $gccBin)) { $gccBin = Split-Path (Get-Command g++.exe).Source }
           foreach ($n in 'Qt5Core','Qt5Gui','Qt5Network','Qt5Widgets') { Copy-Item "$qtRoot\bin\$n.dll" dist/ }
-          foreach ($n in 'libgcc_s_seh-1','libstdc++-6','libwinpthread-1') { Copy-Item "$gccBin\$n.dll" dist/ }
+          foreach ($n in '${{ matrix.gcc_dll }}','libstdc++-6','libwinpthread-1') { Copy-Item "$gccBin\$n.dll" dist/ }
           New-Item -ItemType Directory dist/platforms, dist/imageformats | Out-Null
           Copy-Item "$qtRoot\plugins\platforms\qwindows.dll" dist/platforms/
           foreach ($n in 'qjpeg','qgif','qico') { Copy-Item "$qtRoot\plugins\imageformats\$n.dll" dist/imageformats/ }
@@ -55,19 +78,25 @@ jobs:
             Invoke-WebRequest -Uri 'https://download.firedaemon.com/FireDaemon-OpenSSL/openssl-1.1.1w.zip' -OutFile openssl.zip
             Write-Host "openssl.zip SHA256: $((Get-FileHash openssl.zip -Algorithm SHA256).Hash)"
             Expand-Archive openssl.zip -DestinationPath openssl_new
-            $ssl    = Get-ChildItem -Path openssl_new -Recurse -Filter libssl-1_1-x64.dll    | Select-Object -First 1
-            $crypto = Get-ChildItem -Path openssl_new -Recurse -Filter libcrypto-1_1-x64.dll | Select-Object -First 1
+            $ssl    = Get-ChildItem -Path openssl_new -Recurse -Filter ${{ matrix.ssl_ssl }}    | Select-Object -First 1
+            $crypto = Get-ChildItem -Path openssl_new -Recurse -Filter ${{ matrix.ssl_crypto }} | Select-Object -First 1
             if ($ssl -and $crypto) { Copy-Item $ssl.FullName, $crypto.FullName dist/; $sslOk = $true }
           } catch { Write-Warning "OpenSSL 1.1.1w download failed: $_" }
           if (-not $sslOk) {
             Write-Warning "using the OpenSSL DLLs of the repository"
-            Expand-Archive release/libs/libs_win7_64bit.zip -DestinationPath openssl_tmp
-            Copy-Item openssl_tmp/libs/libssl-1_1-x64.dll, openssl_tmp/libs/libcrypto-1_1-x64.dll dist/
+            Expand-Archive release/libs/${{ matrix.ssl_zip }} -DestinationPath openssl_tmp
+            Copy-Item openssl_tmp/libs/${{ matrix.ssl_ssl }}, openssl_tmp/libs/${{ matrix.ssl_crypto }} dist/
           }
-          (Get-Item dist/libssl-1_1-x64.dll).VersionInfo | Format-List ProductVersion, FileVersion
-          # ParPar (par2 generator), used automatically when parpar.exe is next to ngPostDeluxe.exe
-          7z x release/libs/parpar-v0.4.6-win64.7z -oparpar_tmp
-          Copy-Item (Get-ChildItem -Path parpar_tmp -Recurse -Filter parpar.exe | Select-Object -First 1).FullName dist/
+          (Get-Item dist/${{ matrix.ssl_ssl }}).VersionInfo | Format-List ProductVersion, FileVersion
+          if ('${{ matrix.name }}' -eq 'win64') {
+            # ParPar (par2 generator), used automatically when parpar.exe is next to ngPostDeluxe.exe
+            7z x release/libs/parpar-v0.4.6-win64.7z -oparpar_tmp
+            Copy-Item (Get-ChildItem -Path parpar_tmp -Recurse -Filter parpar.exe | Select-Object -First 1).FullName dist/
+          } else {
+            # no 32 bit ParPar: par2cmdline (32 bit) is used
+            Expand-Archive release/libs/par2cmdline-0.8.0-win-x86.zip -DestinationPath par2_tmp
+            Copy-Item (Get-ChildItem -Path par2_tmp -Recurse -Filter par2.exe | Select-Object -First 1).FullName dist/
+          }
           Copy-Item ngPost.conf, LICENSE dist/
           Get-ChildItem dist | Format-Table Name, Length
 
@@ -113,5 +142,46 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ngPost-Deluxe-win64-${{ github.sha }}
+          name: ngPost-Deluxe-${{ matrix.name }}-${{ github.sha }}
           path: dist
+
+      - name: Make the ZIP of the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force pkg/ngPostDeluxe | Out-Null
+          Copy-Item dist/* pkg/ngPostDeluxe -Recurse
+          Compress-Archive -Path pkg/ngPostDeluxe -DestinationPath "ngPostDeluxe-${{ github.ref_name }}-${{ matrix.name }}.zip"
+
+      - uses: actions/upload-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          name: zip-${{ matrix.name }}
+          path: ngPostDeluxe-*.zip
+
+  release:
+    name: GitHub release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: zip-*
+          merge-multiple: true
+          path: zips
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -l zips
+          tag="${{ github.ref_name }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            # the release was already created from the GitHub page ("Draft a new release"): add the ZIP files to it
+            gh release upload "$tag" zips/*.zip --clobber
+          else
+            gh release create "$tag" zips/*.zip --title "ngPost Deluxe $tag" --notes-file RELEASE_NOTES.md
+          fi

@@ -1,6 +1,6 @@
 QT += core network
 
-DEFINES += "APP_VERSION=\"5.0\""
+DEFINES += "APP_VERSION=\"1.0\""
 
 INCLUDEPATH += $$PWD
 TARGET = ngPost
@@ -26,6 +26,12 @@ TRANSLATIONS = lang/ngPost_en.ts lang/ngPost_fr.ts lang/ngPost_es.ts lang/ngPost
 
 win32: {
     RC_ICONS += ngPost.ico
+
+# information shown by Windows (Explorer > Properties > Details)
+    VERSION = 1.0.0.0
+    QMAKE_TARGET_PRODUCT     = "ngPost Deluxe"
+    QMAKE_TARGET_DESCRIPTION = "ngPost Deluxe - Usenet poster"
+    QMAKE_TARGET_COPYRIGHT   = "Copyright (C) 2020 Matthieu Bruel - fork ngPost Deluxe"
 
 # we need the console to be able to print stuff in command line mode...
 # we hide the console if we start in GUI mode

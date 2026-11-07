@@ -62,7 +62,7 @@
 
 const char *NgPost::sAppName          = "ngPost Deluxe";
 const QString NgPost::sVersion        = QString(QT_STRINGIFY(APP_VERSION)).remove('"');
-const QString NgPost::sStage          = "beta";
+const QString NgPost::sStage          = "";
 const QString NgPost::sProFileURL     = "https://raw.githubusercontent.com/thenormal/ngPost-Deluxe/master/src/ngPost.pri";
 const QString NgPost::sSupportURL     = "https://ko-fi.com/thenormal";
 

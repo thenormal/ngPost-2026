@@ -7,6 +7,16 @@
 **ngPost Deluxe** é uma versão revisitada e redesenhada do famoso uploader de Usenet **ngPost**.<br/>
 É um fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licença GPL v3). Todo o mérito do programa original pertence ao autor, Matthieu Bruel.<br/>
 
+### Transferência
+Os pacotes prontos a usar para Windows (sem instalação) estão na página [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest): `ngPostDeluxe-v1.0-win64.zip` (Windows 64 bits) e `ngPostDeluxe-v1.0-win32.zip` (Windows 32 bits). Descomprima a pasta onde quiser e inicie `ngPostDeluxe.exe`. Para comprimir os posts precisa também do [7-Zip](https://www.7-zip.org/) ou do WinRAR (indique o caminho nas Definições).
+
+### Capturas de ecrã
+| Quick Post (tema claro) | Histórico |
+|---|---|
+| ![Quick Post (tema claro)](docs/screenshots/quick-post.png) | ![Histórico](docs/screenshots/history.png) |
+| **Definições (tema escuro)** | **Servidores (tema escuro)** |
+| ![Definições (tema escuro)](docs/screenshots/settings-dark.png) | ![Servidores (tema escuro)](docs/screenshots/servers-dark.png) |
+
 ### O que muda neste fork
 -   **Correção de segurança**: possível estouro de heap no buffer de codificação yEnc (com certos dados, a saída podia exceder o buffer)
 -   **Correção yEnc**: um espaço ou tab no fim de uma linha agora é escapado corretamente (alguns servidores o removiam, corrompendo os dados)
@@ -17,7 +27,9 @@
 -   **Nova interface**: barra lateral (Quick Post, Postagem Automática, Servidores, Definições, Histórico), páginas com cartões, opções avançadas ocultas até serem precisas, um novo ícone e um ecrã vazio que explica o que fazer. **Temas claro e escuro**, ou automático como o Windows (chave `theme`). Defina a variável de ambiente `NGPOST_NO_THEME` para voltar ao aspeto nativo
 -   **Interface em italiano**: a GUI/CMD agora também está traduzida para italiano (já disponível em chinês, holandês, inglês, francês, alemão, português e espanhol)
 -   **Novo README**: reescrito para este fork e disponível em 8 idiomas (inglês, francês, alemão, italiano, espanhol, holandês, português, chinês)
--   **ngPost Deluxe v5.0 beta**: novo nome e nova versão (o programa para Windows chama-se agora `ngPostDeluxe.exe`; o ficheiro de configuração não muda), janela Sobre redesenhada, os botões de donativo originais foram substituídos por um botão **Ko-fi** para este fork (na janela Sobre e nas Definições)
+-   **ngPost Deluxe v1.0**: novo nome e nova versão (o programa para Windows chama-se agora `ngPostDeluxe.exe`; o ficheiro de configuração não muda), janela Sobre redesenhada, os botões de donativo originais foram substituídos por um botão **Ko-fi** para este fork (na janela Sobre e nas Definições)
+-   Pacotes Windows de **64 e 32 bits**, criados automaticamente no GitHub e publicados nas Releases (`ngPostDeluxe.exe`)
+-   **Compressão mais rápida no Windows**: a saída do 7-Zip / rar passa a ser lida à medida que chega (um post de 115 MB esperava 200 s, agora 1 s)
 -   **Nova secção Servidores**: lista dos servidores com um indicador de estado e uma caixa ativo/inativo, ficha de detalhe (palavra-passe visível a pedido) e um botão **Testar ligação** que verifica o acesso. Alterar os servidores durante um envio já não pode fazer o ngPost falhar
 -   **Gravação automática**: cada alteração das definições é gravada automaticamente (o ficheiro anterior é mantido como `ngPost.conf.bak`)
 -   **Separador Auto Posting**: novos botões **Remover concluídos**, **Remover tudo** e **Fechar separadores concluídos**
