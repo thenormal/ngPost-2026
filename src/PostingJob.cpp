@@ -1098,7 +1098,17 @@ bool PostingJob::startCompressFiles(const QString &cmdRar,
     _diagRegisterPost();
     Diagnostics::instance().event("COMPRESS", QString("start: %1 %2 | input: %3 in %4 file(s)/folder(s) | tmp: %5").arg(
                                       cmdRar, args.join(" "), Diagnostics::humanSize(_diagInputSize)).arg(
-                                      _originalFiles.size()).arg(archiveTmpFolder));
+                                      (_originalFiles.isEmpty() ? _files : _originalFiles).size()).arg(archiveTmpFolder));
+    _diagCompressing = true;
+    _diagFirstOut = _diagLastOut = _diagProcDone = -1;
+    _diagNbOut = 0;
+    _diagOutTail.clear();
+    // exact moment when the compressor exits (the "finished" slot is queued: it could run later)
+    connect(_extProc, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
+            [this](){ if (_diagCompressing && _diagProcDone < 0) _diagProcDone = _diagTimer.elapsed(); }, Qt::DirectConnection);
+    connect(_extProc, &QProcess::started, this,
+            [this](){ if (_diagCompressing) Diagnostics::instance().event("COMPRESS", QString("process started after %1 ms").arg(_diagTimer.elapsed())); },
+            Qt::DirectConnection);
     _diagTimer.start();
     _extProc->start(cmdRar, args);
     if (!passForStdin.isEmpty())
@@ -1122,7 +1132,7 @@ void PostingJob::_diagRegisterPost()
     _diagRegistered = true;
     Diagnostics &diag = Diagnostics::instance();
     _diagInputSize = 0;
-    for (const QFileInfo &fileInfo : _originalFiles)
+    for (const QFileInfo &fileInfo : (_originalFiles.isEmpty() ? _files : _originalFiles))
     {
         QString label = diag.nextInputLabel();
         diag.addSecret(fileInfo.absoluteFilePath(), label);
@@ -1145,6 +1155,14 @@ void PostingJob::onCompressionFinished(int exitCode)
         QString msg = QString("end: exit code %1 | %2 in %3 s => %4").arg(exitCode).arg(
                     Diagnostics::humanSize(_diagInputSize)).arg(ms / 1000.0, 0, 'f', 1).arg(Diagnostics::speed(_diagInputSize, ms));
         Diagnostics::instance().event("COMPRESS", msg);
+        if (_diagCompressing)
+        {
+            QString tail = QString::fromLocal8Bit(_diagOutTail).trimmed().replace('\r', ' ').replace('\n', " | ");
+            Diagnostics::instance().event("COMPRESS", QString("compressor exited after %1 ms, slot run after %2 ms | output: %3 chunk(s), first after %4 ms, last after %5 ms | end of the output: %6").arg(
+                                              _diagProcDone).arg(ms).arg(_diagNbOut).arg(_diagFirstOut).arg(_diagLastOut).arg(tail.right(300)));
+            _diagCompressing = false;
+            _diagProcDone    = 0;
+        }
         if (exitCode != 0)
             Diagnostics::instance().anomaly(QString("compression failed (exit code %1)").arg(exitCode));
         else if (_diagInputSize >= 20*1024*1024 && ms > 0 && _diagInputSize * 1000. / ms < 20.*1024*1024)
@@ -1305,6 +1323,7 @@ bool PostingJob::startGenPar2(const QString &tmpFolder,
         _limitProcDisplay = true;
     _nbProcDisp = 0;
     _diagRegisterPost();
+    _diagCompressing = false;
     Diagnostics::instance().event("PAR2", QString("start: %1 %2").arg(_ngPost->_par2Path, args.join(" ")));
     _diagTimer.start();
     _extProc->start(_ngPost->_par2Path, args);    
@@ -1392,8 +1411,20 @@ QString PostingJob::_createArchiveFolder(const QString &tmpFolder, const QString
 
 void PostingJob::onExtProcReadyReadStandardOutput()
 {
+    const QByteArray data = _extProc->readAllStandardOutput();
+    if (_diagCompressing)
+    {
+        qint64 ms = _diagTimer.elapsed();
+        if (_diagFirstOut < 0)
+            _diagFirstOut = ms;
+        _diagLastOut = ms;
+        ++_diagNbOut;
+        _diagOutTail.append(data);
+        if (_diagOutTail.size() > 1000)
+            _diagOutTail = _diagOutTail.right(1000);
+    }
     if (_ngPost->debugMode())
-        _log(_extProc->readAllStandardOutput(), false);
+        _log(data, false);
     else if (_isActiveJob)
     {
         if (!_limitProcDisplay || ++_nbProcDisp%42 == 0)

@@ -104,6 +104,13 @@ jobs:
           Write-Host "GUI is running"
           Stop-Process -Id $p.Id -Force
 
+      - name: Remove the files created by the smoke tests
+        shell: pwsh
+        run: |
+          # the diagnostics log of the GUI test (killed on purpose, on a CI server) must not be shipped:
+          # it would make ngPost warn "the previous session did not end properly" at the first start
+          Get-ChildItem -Path dist -Filter '*diagnostics*.log' -Force -ErrorAction SilentlyContinue | Remove-Item -Force
+
       - uses: actions/upload-artifact@v4
         with:
           name: ngPost-Deluxe-win64-${{ github.sha }}
