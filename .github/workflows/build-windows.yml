@@ -171,7 +171,8 @@ jobs:
         run: |
           $setup = (Get-ChildItem installer_out -Filter *-setup.exe | Select-Object -First 1).FullName
           $dir = 'C:\ngtest\ngPost Deluxe'
-          $p = Start-Process -FilePath $setup -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',"/DIR=$dir",'/LOG=C:\ngtest-install.log' -Wait -PassThru
+          # one single string: Start-Process does not quote the elements of an array (the path has a space, like C:\Program Files)
+          $p = Start-Process -FilePath $setup -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=`"$dir`" /LOG=C:\ngtest-install.log" -Wait -PassThru
           if ($p.ExitCode -ne 0) { Get-Content C:\ngtest-install.log -ErrorAction SilentlyContinue | Select-Object -Last 30; throw "install failed ($($p.ExitCode))" }
           Get-ChildItem $dir | Format-Table Name, Length
           foreach ($f in 'ngPostDeluxe.exe','7-Zip\7z.exe','7-Zip\7z.dll','7-Zip\License.txt','unins000.exe') {
