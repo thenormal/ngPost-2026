@@ -40,5 +40,6 @@
         <file>icons/left.png</file>
         <file>icons/right.png</file>
         <file>icons/btc-logo.png</file>
+        <file>theme/light.qss</file>
     </qresource>
 </RCC>

@@ -326,6 +326,7 @@ public:
     bool checkSupportSSL();
 #ifdef __USE_HMI__
     int startHMI() override;
+    void applyTheme(); //!< light theme (Fusion + :/theme/light.qss), disabled with the env variable NGPOST_NO_THEME
 #endif
 
     inline int errCode() const;

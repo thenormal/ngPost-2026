@@ -163,9 +163,6 @@ private:
     int _getPostWidgetIndex(PostingWidget *postWidget) const;
 
 
-    static const QString sGroupBoxStyle;
-    static const QString sTabWidgetStyle;
-
 };
 
 AutoPostWidget *MainWindow::autoWidget() const { return _autoPostTab; }
