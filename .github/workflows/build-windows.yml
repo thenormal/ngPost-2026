@@ -21,7 +21,7 @@ jobs:
           host: 'windows'
           target: 'desktop'
           arch: 'win64_mingw81'
-          tools: 'tools_mingw,qt.tools.win64_mingw810'
+          tools: 'tools_mingw,qt.tools.win64_mingw810 tools_openssl_x64,qt.tools.openssl.win_x64'
           cache: true
 
       - name: Build
@@ -48,9 +48,17 @@ jobs:
           New-Item -ItemType Directory dist/platforms, dist/imageformats | Out-Null
           Copy-Item "$qtRoot\plugins\platforms\qwindows.dll" dist/platforms/
           foreach ($n in 'qjpeg','qgif','qico') { Copy-Item "$qtRoot\plugins\imageformats\$n.dll" dist/imageformats/ }
-          # OpenSSL 1.1 DLLs needed by Qt 5 for ssl connections (taken from the repository)
-          Expand-Archive release/libs/libs_win7_64bit.zip -DestinationPath openssl_tmp
-          Copy-Item openssl_tmp/libs/libssl-1_1-x64.dll, openssl_tmp/libs/libcrypto-1_1-x64.dll dist/
+          # OpenSSL 1.1.1 DLLs needed by Qt 5 for ssl connections (Qt 5.15 does not support OpenSSL 3).
+          # Taken from the official Qt "OpenSSL Toolkit" (latest 1.1.1), the old 2019 DLLs of the repository are only a fallback.
+          $sslBin = Join-Path $env:IQTA_TOOLS 'OpenSSL\Win_x64\bin'
+          if (Test-Path "$sslBin\libssl-1_1-x64.dll") {
+            Copy-Item "$sslBin\libssl-1_1-x64.dll", "$sslBin\libcrypto-1_1-x64.dll" dist/
+          } else {
+            Write-Warning "Qt OpenSSL toolkit not found, using the DLLs of the repository"
+            Expand-Archive release/libs/libs_win7_64bit.zip -DestinationPath openssl_tmp
+            Copy-Item openssl_tmp/libs/libssl-1_1-x64.dll, openssl_tmp/libs/libcrypto-1_1-x64.dll dist/
+          }
+          (Get-Item dist/libssl-1_1-x64.dll).VersionInfo | Format-List ProductVersion, FileVersion
           # ParPar (par2 generator), used automatically when parpar.exe is next to ngPost.exe
           7z x release/libs/parpar-v0.4.6-win64.7z -oparpar_tmp
           Copy-Item (Get-ChildItem -Path parpar_tmp -Recurse -Filter parpar.exe | Select-Object -First 1).FullName dist/
@@ -68,6 +76,15 @@ jobs:
           # 0xC0000135 = a DLL is missing; any other exit code only reflects the sample config (Linux paths)
           if ($LASTEXITCODE -eq -1073741515 -or $LASTEXITCODE -eq -1073741701) { throw "missing DLL (exit code $LASTEXITCODE)" }
           exit 0   # otherwise the step would fail with the exit code of ngPost.exe (the sample config is for Linux)
+
+      - name: Smoke test 3 - SSL support (OpenSSL DLLs loaded by Qt)
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+          $out = & "$PWD\dist\ngPost.exe" -v 2>&1 | Out-String
+          Write-Host $out
+          if ($out -notmatch 'SSL support: yes' -or $out -notmatch 'system version: OpenSSL 1\.1\.1') { throw "OpenSSL is not loaded" }
+          exit 0
 
       - name: Smoke test 2 - GUI (must stay open for 8 seconds)
         shell: pwsh
