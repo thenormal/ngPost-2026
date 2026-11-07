@@ -110,6 +110,7 @@ private:
     QElapsedTimer _diagTimer;               //!< diagnostics: duration of the compression / par2 phase
     qint64        _diagInputSize   = 0;     //!< diagnostics: size of the files to pack
     bool          _diagRegistered  = false; //!< diagnostics: secrets (names, password) already registered
+    bool          _statsDeferred   = false; //!< _finishPosting called before the last file is posted: the stats will be printed by the next call
     bool          _diagCompressing = false; //!< diagnostics: the external process is the compressor
     qint64        _diagFirstOut    = -1;    //!< diagnostics: ms (since the start) of the first output of the compressor
     qint64        _diagLastOut     = -1;    //!< diagnostics: ms of the last output

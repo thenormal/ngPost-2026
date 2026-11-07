@@ -477,7 +477,12 @@ void PostingJob::onDisconnectedConnection(NntpConnection *con)
         {
             if (con->hasNoMoreFiles())
             {
+                // the last connection is closed while the signal of the last file posted is still queued:
+                // _finishPosting will be called again when it arrives, with the final numbers.
+                // Printing the stats now would print them twice (the first time with a smaller size).
+                _statsDeferred = (!_postFinished && _filesToUpload.isEmpty() && _filesFailed.isEmpty() && _nbPosted < _nbFiles);
                 _finishPosting();
+                _statsDeferred = false;
                 if (!_postFinished)
                     emit noMoreConnection();
             }
@@ -786,7 +791,7 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
     _ngPost->_finishPosting(); // to update progress bar
 
     // 1.: print stats
-    if (_timeStart.isValid())
+    if (_timeStart.isValid() && !_statsDeferred)
         _printStats();
 
 
