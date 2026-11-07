@@ -39,8 +39,15 @@ jobs:
           if (-not $exe) { throw "ngPost.exe not found" }
           mkdir dist
           Copy-Item $exe.FullName dist/
-          # Qt DLLs, plugins and the MinGW runtime
-          windeployqt --release --no-translations dist/ngPost.exe
+          # Qt DLLs, plugins and the MinGW runtime (copied by hand: windeployqt could not find the platform plugin)
+          $qtRoot = $env:QT_ROOT_DIR
+          $gccBin = Join-Path $env:IQTA_TOOLS 'mingw810_64\bin'
+          if (-not (Test-Path $gccBin)) { $gccBin = Split-Path (Get-Command g++.exe).Source }
+          foreach ($n in 'Qt5Core','Qt5Gui','Qt5Network','Qt5Widgets') { Copy-Item "$qtRoot\bin\$n.dll" dist/ }
+          foreach ($n in 'libgcc_s_seh-1','libstdc++-6','libwinpthread-1') { Copy-Item "$gccBin\$n.dll" dist/ }
+          New-Item -ItemType Directory dist/platforms, dist/imageformats | Out-Null
+          Copy-Item "$qtRoot\plugins\platforms\qwindows.dll" dist/platforms/
+          foreach ($n in 'qjpeg','qgif','qico') { Copy-Item "$qtRoot\plugins\imageformats\$n.dll" dist/imageformats/ }
           # OpenSSL 1.1 DLLs needed by Qt 5 for ssl connections (taken from the repository)
           Expand-Archive release/libs/libs_win7_64bit.zip -DestinationPath openssl_tmp
           Copy-Item openssl_tmp/libs/libssl-1_1-x64.dll, openssl_tmp/libs/libcrypto-1_1-x64.dll dist/
@@ -50,13 +57,26 @@ jobs:
           Copy-Item ngPost.conf, LICENSE dist/
           Get-ChildItem dist | Format-Table Name, Length
 
-      - name: Smoke test (the program must start and print its help)
+      # Both tests run with a minimal PATH, so that a missing DLL in the package is detected
+      # (with the full PATH the Qt DLLs of the runner would be found and hide the problem).
+      - name: Smoke test 1 - command line (must start and print its help)
         shell: pwsh
-        continue-on-error: true
         run: |
-          $out = & dist/ngPost.exe --help 2>&1 | Out-String
+          $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+          $out = & "$PWD\dist\ngPost.exe" --help 2>&1 | Out-String
           Write-Host $out
-          if ($LASTEXITCODE -ne 0) { throw "exit code $LASTEXITCODE" }
+          # 0xC0000135 = a DLL is missing; any other exit code only reflects the sample config (Linux paths)
+          if ($LASTEXITCODE -eq -1073741515 -or $LASTEXITCODE -eq -1073741701) { throw "missing DLL (exit code $LASTEXITCODE)" }
+
+      - name: Smoke test 2 - GUI (must stay open for 8 seconds)
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+          $p = Start-Process -FilePath "$PWD\dist\ngPost.exe" -WorkingDirectory "$PWD\dist" -PassThru
+          Start-Sleep -Seconds 8
+          if ($p.HasExited) { throw "the GUI closed by itself, exit code $($p.ExitCode)" }
+          Write-Host "GUI is running"
+          Stop-Process -Id $p.Id -Force
 
       - uses: actions/upload-artifact@v4
         with:
