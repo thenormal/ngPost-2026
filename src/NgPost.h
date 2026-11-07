@@ -250,6 +250,7 @@ private:
 
     static const char *sAppName;
     static const QString sVersion;
+    static const QString sStage;   //!< release stage (beta...)
     static const QString sProFileURL;
 
     static const QList<QCommandLineOption> sCmdOptions;
@@ -275,8 +276,6 @@ private:
     static const int sprogressbarBarWidth = 50;
     static const int sDefaultRefreshRate = 500; //!< how often shall we refresh the progressbar bar?
 
-    static const QString sDonationURL;
-    static const QString sDonationBtcURL;
     static const QString sNgPostASCII;
 
     static const QString sMainThreadName;
@@ -296,8 +295,6 @@ private:
 
     static const int sNbPreparedArticlePerConnection = NB_ARTICLES_TO_PREPARE_PER_CONNECTION;
 
-    static const char *sDonationTooltip;
-    static const char *sDonationBtcTooltip;
 
     static const char sDefaultFieldSeparator = ';';
     static constexpr const char *sTranslationPath = ":/lang";
@@ -419,8 +416,6 @@ signals:
 public slots:
     void onCheckForNewVersion();
 #ifdef __USE_HMI__
-    void onDonation();
-    void onDonationBTC();
     void onAboutClicked();
 #endif
 
@@ -484,15 +479,13 @@ public:
     inline static const std::string &aticleSignature();
 
     inline static const QString & proFileUrl();
-    inline static const QString & donationURL();
+    inline static QString versionLabel();
     inline static const QString & asciiArt();
     inline static QString asciiArtWithVersion();
     inline static QString desc(bool useHTML = false);
 
     inline static QString quickJobName();
     inline static QString folderMonitoringName();
-    inline static QString donationTooltip();
-    inline static QString donationBtcTooltip();
 
     inline static std::string randomStdFrom(ushort length = 13);
 
@@ -513,8 +506,6 @@ public:
 
 QString NgPost::quickJobName() { return tr(sQuickJobName); }
 QString NgPost::folderMonitoringName() { return tr(sFolderMonitoringName); }
-QString NgPost::donationTooltip() { return tr(sDonationTooltip); }
-QString NgPost::donationBtcTooltip() { return tr(sDonationBtcTooltip); }
 
 
 std::string NgPost::from() const
@@ -578,13 +569,13 @@ QString NgPost::nzbPath() const
 
 bool NgPost::removeNntpServer(NntpServerParams *server){ return _nntpServers.removeOne(server); }
 
+QString NgPost::versionLabel() { return sStage.isEmpty() ? sVersion : QString("%1 %2").arg(sVersion, sStage); }
 const QString &NgPost::proFileUrl() { return sProFileURL; }
-const QString &NgPost::donationURL(){ return sDonationURL; }
 const QString &NgPost::asciiArt()   { return sNgPostASCII; }
 
 QString NgPost::asciiArtWithVersion()
 {
-    return QString("%1                          v%2\n").arg(sNgPostASCII).arg(sVersion);
+    return QString("%1                    %2 v%3\n").arg(sNgPostASCII, sAppName, versionLabel());
 }
 
 QList<QString> NgPost::languages() const{ return _translators.keys(); }
@@ -721,8 +712,8 @@ QString NgPost::desc(bool useHTML)
             tr("invisible mode: full article obfuscation, unique feature making all Articles completely unrecognizable without the nzb")).arg(
             "...").arg(
             tr("for more details, cf %1").arg(
-                    useHTML ? "<a href=\"https://github.com/mbruel/ngPost/\">https://github.com/mbruel/ngPost</a>"
-                            : "https://github.com/mbruel/ngPost"));
+                    useHTML ? "<a href=\"https://github.com/thenormal/ngPost-2026/\">https://github.com/thenormal/ngPost-2026</a>"
+                            : "https://github.com/thenormal/ngPost-2026"));
 }
 
 #endif // NGPOST_H

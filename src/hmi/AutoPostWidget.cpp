@@ -87,8 +87,8 @@ void AutoPostWidget::init()
 
     connect(_ui->postButton,   &QAbstractButton::clicked, this,    &AutoPostWidget::onGenQuickPosts);
     connect(_ui->aboutButton,  &QAbstractButton::clicked, _ngPost, &NgPost::onAboutClicked);
-    connect(_ui->donateButton, &QAbstractButton::clicked, _ngPost, &NgPost::onDonation);
-    connect(_ui->btcDonate,    &QAbstractButton::clicked, _ngPost, &NgPost::onDonationBTC);
+    connect(_ui->removeCompletedButton, &QAbstractButton::clicked, this, &AutoPostWidget::onRemoveCompleted);
+    connect(_ui->closeTabsButton,       &QAbstractButton::clicked, _hmi, &MainWindow::onCloseAllFinishedQuickTabs);
 
     connect(_ui->monitorButton, &QAbstractButton::clicked, this, &AutoPostWidget::onMonitoringClicked);
 
@@ -435,7 +435,23 @@ void AutoPostWidget::updateFinishedJob(const QString &path, uint nbArticles, uin
                     color = _hmi->sArticlesFailedColor;
             }
             item->setForeground(color);
+            if (nbUploaded > 0 && nbFailed == 0)
+                item->setData(sCompletedRole, true); // cf onRemoveCompleted
             break;
+        }
+    }
+}
+
+void AutoPostWidget::onRemoveCompleted()
+{
+    // only the uploads finished without any error are removed: the failed ones stay in the list (to be seen or retried)
+    for (int i = _ui->filesList->count() - 1; i >= 0; --i)
+    {
+        QListWidgetItem *item = _ui->filesList->item(i);
+        if (item->data(sCompletedRole).toBool())
+        {
+            _ui->filesList->removeItemWidget2(item);
+            delete item;
         }
     }
 }
@@ -447,8 +463,8 @@ void AutoPostWidget::retranslate()
     _ui->retranslateUi(this);
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
     _ui->redundancySB->setToolTip(tr("Using PAR2_ARGS from config file: %1").arg(_ngPost->_par2Args));
-    _ui->donateButton->setToolTip(_ngPost->donationTooltip());
-    _ui->btcDonate->setToolTip(_ngPost->donationBtcTooltip());
+    _ui->removeCompletedButton->setToolTip(tr("Remove from the list the files/folders that have been uploaded without error"));
+    _ui->closeTabsButton->setToolTip(tr("Close the Quick Post tabs whose upload is finished"));
     _ui->filesList->setToolTip(QString("%1<br/><br/>%2<ul><li>%3</li><li>%4</li><li>%5</li></ul>%6").arg(
                                    tr("You can use the <b>Monitor Mode</b>")).arg(
                                    tr("or <b>Generate Posts</b> by adding files:")).arg(

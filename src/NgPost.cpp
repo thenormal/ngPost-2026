@@ -56,17 +56,14 @@
   #include <QStorageInfo>
 #endif
 
-const char *NgPost::sAppName          = "ngPost";
-const QString NgPost::sVersion        = QString::number(APP_VERSION);
-const QString NgPost::sProFileURL     = "https://raw.githubusercontent.com/mbruel/ngPost/master/src/ngPost.pri";
-const QString NgPost::sDonationURL    = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=W2C236U6JNTUA&item_name=ngPost&currency_code=EUR";
-const QString NgPost::sDonationBtcURL = "https://github.com/mbruel/ngPost#donations";
+const char *NgPost::sAppName          = "ngPost 2026";
+const QString NgPost::sVersion        = QString(QT_STRINGIFY(APP_VERSION)).remove('"');
+const QString NgPost::sStage          = "beta";
+const QString NgPost::sProFileURL     = "https://raw.githubusercontent.com/thenormal/ngPost-2026/master/src/ngPost.pri";
 
 const QString NgPost::sMainThreadName     = "MainThread";
 const char *NgPost::sFolderMonitoringName = QT_TRANSLATE_NOOP("NgPost", "Auto Posting");
 const char *NgPost::sQuickJobName         = QT_TRANSLATE_NOOP("NgPost", "Quick Post");
-const char *NgPost::sDonationTooltip      = QT_TRANSLATE_NOOP("NgPost", "Donations are welcome, I spent quite some time to develop this app and make a sexy GUI although I'm not using it ;)");
-const char *NgPost::sDonationBtcTooltip   = QT_TRANSLATE_NOOP("NgPost", "Feel free to donate in BTC, click here to see my address on the GitHub section");
 
 std::string NgPost::sArticleIdSignature   = sDefaultMsgIdSignature;
 const std::string NgPost::sRandomAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -313,7 +310,7 @@ NgPost::NgPost(int &argc, char *argv[]):
 
 #ifdef __USE_HMI__
     if (_hmi)
-        _hmi->setWindowTitle(QString("%1_v%2").arg(sAppName).arg(sVersion));
+        _hmi->setWindowTitle(QString("%1 v%2").arg(sAppName, versionLabel()));
 #endif
 
     // in case we want to generate random uploader (_from not provided)
@@ -877,6 +874,11 @@ void NgPost::onCheckForNewVersion()
     QNetworkReply      *reply = static_cast<QNetworkReply*>(sender());
     QRegularExpression appVersionRegExp("^DEFINES \\+= \"APP_VERSION=\\\\\"((\\d+)\\.(\\d+))\\\\\"\"$");
     QStringList v = sVersion.split(".");
+    if (v.size() < 2)
+    {
+        reply->deleteLater();
+        return;
+    }
     int currentMajor = v.at(0).toInt(), currentMinor = v.at(1).toInt();
     while (!reply->atEnd())
     {
@@ -897,15 +899,14 @@ void NgPost::onCheckForNewVersion()
                 {
                     QString msg = tr("<center><h3>New version available on GitHUB</h3></center>");
                     msg += tr("<br/>The last release is now <b>v%1</b>").arg(lastRealease);
-                    msg += tr("<br/><br/>You can download it from the <a href='https://github.com/mbruel/ngPost/releases/tag/v%1'>release directory</a>").arg(lastRealease);
-                    msg += tr("<br/><br/>Here are the full <a href='https://github.com/mbruel/ngPost/blob/master/release_notes.txt'>release_notes</a>");
+                    msg += tr("<br/><br/>You can download it from the <a href='https://github.com/thenormal/ngPost-2026/releases'>release directory</a>");
 
                     QMessageBox::information(_hmi, tr("New version available"), msg);
                 }
                 else
 #endif
                     qCritical() << "There is a new version available on GitHUB: v" << lastRealease
-                                << " (visit https://github.com/mbruel/ngPost/ to get it)";
+                                << " (visit https://github.com/thenormal/ngPost-2026/releases to get it)";
             }
 
             break; // no need to continue to parse the page
@@ -916,14 +917,6 @@ void NgPost::onCheckForNewVersion()
 
 #ifdef __USE_HMI__
 #include <QDesktopServices>
-void NgPost::onDonation()
-{
-    QDesktopServices::openUrl(sDonationURL);
-}
-void NgPost::onDonationBTC()
-{
-    QDesktopServices::openUrl(sDonationBtcURL);
-}
 
 #include "hmi/AboutNgPost.h"
 void NgPost::onAboutClicked()
@@ -1306,7 +1299,7 @@ bool NgPost::hasMonitoringPostingJobs() const
 bool NgPost::parseCommandLine(int argc, char *argv[])
 {
     Q_UNUSED(argc)
-    QString appVersion = QString("%1_v%2").arg(sAppName, sVersion);
+    QString appVersion = QString("%1 v%2").arg(sAppName, versionLabel());
     QCommandLineParser parser;
     parser.setApplicationDescription(appVersion);
     parser.addOptions(sCmdOptions);
@@ -2586,7 +2579,7 @@ void NgPost::_dumpParams() const
 void NgPost::_showVersionASCII() const
 {
     _cout << sNgPostASCII
-          << "                          v" << sVersion << "\n\n"
+          << "                          " << sAppName << " v" << versionLabel() << "\n\n"
           << PostingJob::sslSupportInfo()  << "\n"
           << MB_FLUSH;
 }

@@ -115,6 +115,7 @@ protected:
 
 public slots:
     void onSetProgressBarRange(int nbArticles);
+    void onCloseAllFinishedQuickTabs();
 
 
 private slots:
@@ -124,7 +125,6 @@ private slots:
     void onObfucateToggled(bool checked);
 
     void onTabContextMenu(const QPoint &point);
-    void onCloseAllFinishedQuickTabs();
 
 
 
