@@ -142,6 +142,21 @@ Press the Scan button and remove what you don't want to post ;)\n\
         quickPostWidget->init();
         quickPostWidget->genNameAndPassword(_ngPost->_genName, _ngPost->_genPass, _ngPost->_doPar2, useRarMax);
 
+        // keep track of the result to be able to "Remove completed"
+        const QString srcPath = file.filePath();
+        connect(quickPostWidget, &PostingWidget::postingDone, this, [this, srcPath](bool uploadedOk) {
+            for (int i = 0; i < _ui->filesList->count(); ++i)
+            {
+                QListWidgetItem *item = _ui->filesList->item(i);
+                if (item->text() == srcPath)
+                {
+                    item->setForeground(uploadedOk ? _hmi->sDoneOKColor : _hmi->sDoneKOColor);
+                    item->setData(sCompletedRole, uploadedOk);
+                    break;
+                }
+            }
+        });
+
         if (startPost)
             quickPostWidget->postFiles(false);
     }

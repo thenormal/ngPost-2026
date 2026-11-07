@@ -76,6 +76,9 @@ public:
     void postFiles(bool updateMainParams);
 
 
+signals:
+    void postingDone(bool uploadedWithoutError); //!< emitted when the post is finished (used by the Auto Posting tab)
+
 public slots: // for PostingJob
     void onFilePosted(QString filePath, uint nbArticles, uint nbFailed);
     void onArchiveFileNames(QStringList paths);
