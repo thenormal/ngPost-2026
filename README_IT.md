@@ -46,7 +46,7 @@ La versione a riga di comando è disponibile anche come immagine Docker che cont
 -   **Pagina Cronologia**: ogni upload viene registrato (`ngPost_history.csv` accanto alla configurazione, oppure `POST_HISTORY`) con stato, numero di file e durata. La pagina li elenca con ricerca, filtro per periodo, totali, password nascoste finché non le chiedi, copia, esportazione e cartella dell'NZB. Attenzione: il file contiene le password degli archivi in chiaro
 -   **Quick Post**: una nota ricorda che tutti gli elementi dell'elenco vengono postati come un'unica release (un NZB, un archivio)
 
-Non ci sono ancora release ufficiali di questo fork. Un pacchetto **Windows 64bit** pronto all'uso viene compilato automaticamente da GitHub Actions a ogni modifica (scheda *Actions* > esecuzione *Build Windows (x64)* > *Artifacts*, serve un account GitHub). Sugli altri sistemi va compilato dai sorgenti (vedi sotto).<br/>
+Gli installer e i pacchetti portatili per Windows e l'immagine Docker sono nelle [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest). Sugli altri sistemi va compilato dai sorgenti (vedi sotto).<br/>
 
 ### Funzioni principali
 -   **Poster Usenet da riga di comando e con una bella interfaccia grafica** per file binari, sviluppato in **C++11/Qt5**
@@ -66,29 +66,38 @@ Il file di configurazione funziona come nel progetto originale (predefinito: **~
 
 - **NZB_POST_CMD**: comando eseguito dopo ogni post. I segnaposto possono contenere spazi e il comando viene avviato in background (il suo codice di uscita non viene registrato)
 - **RAR_EXTRA**: per personalizzare il comando rar (non serve indicare 'a', '-idp' o '-r'). Non serve per 7-zip, tranne se vuoi cambiare il livello di compressione.
-- **PAR2_CMD**: per cambiare il generatore di par2 e poter usare [Parpar](https://github.com/animetosho/ParPar) o [Multipar](http://hp.vector.co.jp/authors/VA021385/). (par2cmdline è il generatore incluso di default, ParPar viene usato automaticamente su Windows a 64 bit se `parpar.exe` è nella cartella di ngPost)
+- **PAR2_PATH**: per cambiare il generatore di par2 e poter usare [Parpar](https://github.com/animetosho/ParPar) o [Multipar](http://hp.vector.co.jp/authors/VA021385/). (par2cmdline è il generatore incluso di default, ParPar viene usato automaticamente su Windows a 64 bit se `parpar.exe` è nella cartella di ngPost)
 - **PAR2_ARGS**: per personalizzare il comando par2, soprattutto se scegli un programma diverso dal par2cmdline predefinito
 - **theme**: tema dell'interfaccia, `AUTO` (come Windows), `LIGHT` o `DARK`
 - **history**: `ON` (predefinito) o `OFF`, cronologia degli upload mostrata nella pagina Cronologia. Senza **POST_HISTORY** il file è `ngPost_history.csv` accanto alla configurazione. In fondo a ogni riga ci sono nuove colonne: stato, numero di file, durata e file NZB
 
 ### Come compilare
-#### Dipendenze:
-- build-essential (compilatore C++, libstdc++, make, ...)
-- qt5-default (librerie e header di Qt5)
-- qt5-qmake (per generare i file moc e creare il Makefile)
-- libssl (v1.0.2 o v1.1), ma dovrebbe essere già installata sul tuo sistema
+#### Linux
+Dipendenze (Ubuntu / Debian):
+```
+sudo apt install build-essential qtbase5-dev qt5-qmake libssl-dev
+```
+Compilare la versione grafica, oppure solo quella a riga di comando (non servono le librerie grafiche di Qt):
+```
+# GUI
+cd src && qmake ngPost.pro && make -j$(nproc)
 
-#### Compilazione:
-- vai nella cartella src
-- qmake
-- make
+# command line only, in its own folder
+mkdir build-cmd && cd build-cmd && qmake ../src/ngPost_cmd.pro && make -j$(nproc)
+```
+L'eseguibile **ngPost** viene creato nella cartella in cui hai compilato: copialo in una cartella del PATH.
 
-Facile! Dovrebbe aver generato l'eseguibile **ngPost**</br>
-puoi copiarlo in una cartella del tuo PATH così sarà accessibile da ovunque
+#### Windows
+Installa [Qt 5.15](https://www.qt.io/download) con MinGW, poi apri `src/ngPost.pro` in Qt Creator, oppure da un prompt dei comandi di Qt: `mkdir build && cd build && qmake ../src/ngPost.pro CONFIG+=release && mingw32-make`. Il programma si chiama `ngPostDeluxe.exe`. L'installer si crea con [Inno Setup](https://jrsoftware.org/isinfo.php) (`installer/ngPostDeluxe.iss`); tutti i passaggi dei pacchetti ufficiali sono in `.github/workflows/build-windows.yml`.
 
+#### Docker
+Versione a riga di comando in un container (vedi [docker/README.md](docker/README.md)):
+```
+docker build -t ngpost-deluxe .
+```
 
-Essendo fatto in C++/Qt, puoi compilarlo ed eseguirlo su qualsiasi sistema operativo (Linux / Windows / MacOS / Android). <br/>
-Per compilare su un altro sistema, la cosa più semplice è [installare Qt](https://www.qt.io/download) e caricare il progetto in QtCreator<br/>
+#### Altri sistemi
+Essendo scritto in C++/Qt, si può compilare ed eseguire su qualsiasi sistema (macOS, Android...): il modo più semplice è [installare Qt](https://www.qt.io/download) e aprire `src/ngPost.pro` in Qt Creator.
 
 ### Documentazione completa
 Le opzioni da riga di comando, l'elenco completo delle parole chiave di configurazione e le guide di installazione sono quelle del progetto originale: vedi il [README di ngPost](https://github.com/mbruel/ngPost#readme). Le sue guide di installazione si riferiscono ai binari originali, non a questo fork.
