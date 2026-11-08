@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>ngPost-Deluxe</Name>
+  <Repository>ghcr.io/thenormal/ngpost-deluxe:latest</Repository>
+  <Registry>https://github.com/thenormal/ngPost-Deluxe/pkgs/container/ngpost-deluxe</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/thenormal/ngPost-Deluxe/issues</Support>
+  <Project>https://github.com/thenormal/ngPost-Deluxe</Project>
+  <Overview>ngPost Deluxe is a fast Usenet poster. This container watches a folder: every file or folder you drop in it is compressed (7-Zip, random name and password), protected with par2 (ParPar) and posted to your Usenet provider. The NZB file is written in the NZB folder and the history (with the archive passwords) in the config folder. The first time, fill in your Usenet server and the newsgroup(s): a configuration file is created in the config folder (you can then edit it, or put your own ngPost.conf there).</Overview>
+  <Category>Tools:</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/thenormal/ngPost-Deluxe/master/unraid/ngpost-deluxe.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/thenormal/ngPost-Deluxe/master/src/resources/icons/ngPost.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText>Support the project</DonateText>
+  <DonateLink>https://ko-fi.com/thenormal</DonateLink>
+  <Requires/>
+  <Config Name="Watch folder" Target="/watch" Default="" Mode="rw" Description="Everything you put in this folder is posted. It must be writable if you want the posted files to be deleted." Type="Path" Display="always" Required="true" Mask="false"/>
+  <Config Name="NZB folder" Target="/nzb" Default="/mnt/user/appdata/ngpost-deluxe/nzb" Mode="rw" Description="The NZB files are written here." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/ngpost-deluxe/nzb</Config>
+  <Config Name="Config folder" Target="/config" Default="/mnt/user/appdata/ngpost-deluxe/config" Mode="rw" Description="ngPost.conf and the history of the posts (it contains the archive passwords in clear text: keep it private)." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/ngpost-deluxe/config</Config>
+  <Config Name="Work folder" Target="/work" Default="/mnt/cache/appdata/ngpost-deluxe/work" Mode="rw" Description="Temporary folder for the archives and par2: it needs as much space as your biggest post (ideally on the cache or a fast disk)." Type="Path" Display="always" Required="true" Mask="false">/mnt/cache/appdata/ngpost-deluxe/work</Config>
+  <Config Name="Server host" Target="NG_HOST" Default="" Mode="" Description="Address of your Usenet server, for example news.example.com. Only used to create ngPost.conf the first time." Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Server port" Target="NG_PORT" Default="563" Mode="" Description="563 (or 443) with SSL, 119 without." Type="Variable" Display="always" Required="false" Mask="false">563</Config>
+  <Config Name="Use SSL" Target="NG_SSL" Default="true|false" Mode="" Description="Encrypted connection to the server." Type="Variable" Display="always" Required="false" Mask="false">true</Config>
+  <Config Name="Server user" Target="NG_USER" Default="" Mode="" Description="Your Usenet account user name." Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Server password" Target="NG_PASS" Default="" Mode="" Description="Your Usenet account password. It is visible in the container settings: if you prefer, put your own ngPost.conf in the config folder instead." Type="Variable" Display="always" Required="false" Mask="true"/>
+  <Config Name="Connections" Target="NG_CONNECTIONS" Default="20" Mode="" Description="Number of connections to the server (check what your provider allows)." Type="Variable" Display="always" Required="false" Mask="false">20</Config>
+  <Config Name="Newsgroups" Target="NG_GROUPS" Default="" Mode="" Description="Newsgroup(s) to post in, separated by a comma, for example alt.binaries.test" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="par2 redundancy (%)" Target="NG_PAR2_PCT" Default="10" Mode="" Description="Percentage of par2 recovery data." Type="Variable" Display="advanced" Required="false" Mask="false">10</Config>
+  <Config Name="Archive volume size (MB)" Target="NG_ARCHIVE_SIZE_MB" Default="0" Mode="" Description="Split the archive in volumes of this size. 0 = no split." Type="Variable" Display="advanced" Required="false" Mask="false">0</Config>
+  <Config Name="Delete after posting" Target="NG_DELETE_AFTER_POST" Default="false|true" Mode="" Description="Delete the files from the watch folder once they are posted." Type="Variable" Display="advanced" Required="false" Mask="false">false</Config>
+  <Config Name="Scan delay (s)" Target="NG_SCAN_DELAY_SEC" Default="10" Mode="" Description="Seconds without size change before a new file is considered complete and posted." Type="Variable" Display="advanced" Required="false" Mask="false">10</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID the program runs as (99 = nobody)." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID the program runs as (100 = users)." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  <Config Name="UMASK" Target="UMASK" Default="022" Mode="" Description="Permissions of the created files." Type="Variable" Display="advanced" Required="false" Mask="false">022</Config>
+</Container>
