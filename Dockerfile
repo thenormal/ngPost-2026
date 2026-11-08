@@ -20,18 +20,12 @@ WORKDIR /build
 RUN qmake /src/ngPost_cmd.pro CONFIG+=release && make -j"$(nproc)" && strip ngPost
 
 # ---------- ParPar (fast par2 generator, public domain) ----------
+# the file is in the repository (release/libs): no download that can fail (GitHub answered 504 for hours)
 FROM ubuntu:22.04 AS parpar
-ARG PARPAR_VERSION=v0.4.6
-ARG TARGETARCH
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl xz-utils \
+RUN apt-get update && apt-get install -y --no-install-recommends xz-utils \
     && rm -rf /var/lib/apt/lists/*
-RUN case "${TARGETARCH:-amd64}" in \
-        amd64) arch=amd64 ;; \
-        arm64) arch=aarch64 ;; \
-        *) echo "unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
-    esac \
-    && curl -fsSL -o /parpar.xz \
-        "https://github.com/animetosho/ParPar/releases/download/${PARPAR_VERSION}/parpar-${PARPAR_VERSION}-linux-static-${arch}.xz" \
+COPY release/libs/parpar-v0.4.6-linux-static-amd64.xz /parpar.xz
+RUN echo "25da379e76f968608b6f24d332b93ca75e0c8a88b92a6ebbb21cbbb0d00c1f18  /parpar.xz" | sha256sum -c - \
     && xz -d /parpar.xz && chmod +x /parpar && /parpar --help >/dev/null
 
 # ---------- runtime ----------

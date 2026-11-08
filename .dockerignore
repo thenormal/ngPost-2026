@@ -2,7 +2,10 @@
 .github
 docs
 pics
-release
 installer
 unraid
 *.md
+release/*
+!release/libs
+release/libs/*
+!release/libs/parpar-*-linux-static-amd64.xz

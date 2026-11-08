@@ -10,3 +10,8 @@ How to use it:
      (or in a "parpar" sub-folder)
   2. restart ngPost: it uses parpar.exe automatically instead of par2.exe
      (PAR2_PATH / PAR2_ARGS in ngPost.conf still take precedence)
+
+---
+Linux (used by the Docker image, 64 bit)
+File: parpar-v0.4.6-linux-static-amd64.xz  (sha256: 25da379e76f968608b6f24d332b93ca75e0c8a88b92a6ebbb21cbbb0d00c1f18)
+Source: https://github.com/animetosho/ParPar/releases/tag/v0.4.6 (static build, runs on any Linux x86-64)
