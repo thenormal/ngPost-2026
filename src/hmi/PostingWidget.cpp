@@ -750,18 +750,21 @@ void PostingWidget::_buildLayout()
     _ui->rarSizeEdit->setMaximumWidth(100);
     root->addWidget(_advancedCard);
 
-    // bottom: advanced toggle on the left, Post button on the right
-    QHBoxLayout *bottom = new QHBoxLayout();
+    // bottom: advanced toggle on the left, Post button in the middle of the page
+    QGridLayout *bottom = new QGridLayout();
     _advancedToggle = new QPushButton(page);
     _advancedToggle->setObjectName("linkButton");
     _advancedToggle->setCursor(Qt::PointingHandCursor);
     connect(_advancedToggle, &QAbstractButton::clicked, this, [this](){ _showAdvanced(!sShowAdvanced); });
-    bottom->addWidget(_advancedToggle);
-    bottom->addStretch();
+    bottom->addWidget(_advancedToggle, 0, 0, Qt::AlignLeft | Qt::AlignVCenter);
     _ui->postButton->setObjectName("accentButton");
     _ui->postButton->setIcon(QIcon());
     _ui->postButton->setMinimumSize(170, 38);
-    bottom->addWidget(_ui->postButton);
+    bottom->addWidget(_ui->postButton, 0, 1, Qt::AlignCenter);
+    bottom->setHorizontalSpacing(0); // nothing in the right column: no spacing, so the button is really in the middle
+    bottom->setColumnStretch(0, 1);
+    bottom->setColumnStretch(1, 0);
+    bottom->setColumnStretch(2, 1);
     root->addLayout(bottom);
 
     _ui->aboutButton->hide(); // About is in the side bar

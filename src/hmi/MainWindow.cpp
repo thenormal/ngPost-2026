@@ -141,11 +141,14 @@ void MainWindow::init(NgPost *ngPost)
 
     _ui->postTabWidget->clear();
     _ui->postTabWidget->setUsesScrollButtons(true);
-    _ui->postTabWidget->addTab(_quickJobTab, QIcon(":/icons/quick.png"), _ngPost->quickJobName());
+    _ui->postTabWidget->addTab(_quickJobTab, _tabIcon(":/icons/quick.png"), _ngPost->quickJobName());
+    tabBar->setTabData(0, ":/icons/quick.png");
     tabBar->setTabToolTip(0, tr("Default %1").arg(_ngPost->quickJobName()));
-    _ui->postTabWidget->addTab(_autoPostTab, QIcon(":/icons/auto.png"), _ngPost->folderMonitoringName());
+    _ui->postTabWidget->addTab(_autoPostTab, _tabIcon(":/icons/auto.png"), _ngPost->folderMonitoringName());
+    tabBar->setTabData(1, ":/icons/auto.png");
     tabBar->setTabToolTip(1, _ngPost->folderMonitoringName());
-    _ui->postTabWidget->addTab(new QWidget(_ui->postTabWidget), QIcon(":/icons/plus.png"), tr("New"));
+    _ui->postTabWidget->addTab(new QWidget(_ui->postTabWidget), _tabIcon(":/icons/plus.png"), tr("New"));
+    tabBar->setTabData(2, ":/icons/plus.png");
     tabBar->setTabToolTip(2, QString("Create a new %1").arg(_ngPost->quickJobName()));
 
 //    connect(_ui->postTabWidget,           &QTabWidget::currentChanged, this, &MainWindow::onJobTabClicked);
@@ -601,8 +604,9 @@ PostingWidget *MainWindow::addNewQuickTab(int lastTabIdx, const QFileInfoList &f
     QString tabName = QString("%1 #%2").arg(_ngPost->quickJobName()).arg(lastTabIdx);
     _ui->postTabWidget->insertTab(lastTabIdx,
                                   newPostingWidget ,
-                                  QIcon(":/icons/quick.png"),
+                                  _tabIcon(":/icons/quick.png"),
                                   tabName);
+    _ui->postTabWidget->tabBar()->setTabData(lastTabIdx, ":/icons/quick.png");
     _ui->postTabWidget->setTabToolTip(lastTabIdx, tabName);
 
     for (const QFileInfo &file : files)
@@ -634,8 +638,9 @@ void MainWindow::clearJobTab(QWidget *postWidget)
         {
             QTabBar *bar = _ui->postTabWidget->tabBar();
             bar->setTabToolTip(i, "");
-            bar->setTabTextColor(i, Qt::black);
-            bar->setTabIcon(i, QIcon(":/icons/quick.png"));
+            bar->setTabTextColor(i, _tabNormalColor());
+            bar->setTabIcon(i, _tabIcon(":/icons/quick.png"));
+            bar->setTabData(i, ":/icons/quick.png");
         }
     }
 }
@@ -652,6 +657,7 @@ void MainWindow::updateJobTab(QWidget *postWidget, const QColor &color, const QI
                 bar->setTabToolTip(i, tooltip);
             bar->setTabTextColor(i, color);
             bar->setTabIcon(i, icon);
+            bar->setTabData(i, QVariant());
             break;
         }
     }
@@ -1126,6 +1132,33 @@ QIcon MainWindow::_navIcon(const QString &path, const QColor &normal, const QCol
     return icon;
 }
 
+QColor MainWindow::_tabNormalColor() const
+{
+    bool dark = _ngPost && _ngPost->isDarkTheme();
+    return dark ? QColor("#d6d6d6") : QColor("#3b3b3b");
+}
+
+// black icons of the tabs (quick, auto, new): tinted with the colour of the theme
+QIcon MainWindow::_tabIcon(const QString &path) const
+{
+    QColor c = _tabNormalColor();
+    return _navIcon(path, c, c);
+}
+
+void MainWindow::_adaptTabIcons()
+{
+    QTabBar *bar = _ui->postTabWidget->tabBar();
+    for (int i = 0; i < bar->count(); ++i)
+    {
+        QString path = bar->tabData(i).toString();
+        if (path.isEmpty())
+            continue; // coloured icon of a running / finished post: left as is
+        bar->setTabIcon(i, _tabIcon(path));
+        if (path == ":/icons/quick.png" && i > 1)
+            bar->setTabTextColor(i, _tabNormalColor());
+    }
+}
+
 static QLabel *newLabel(const QString &objectName, QWidget *parent)
 {
     QLabel *lbl = new QLabel(parent);
@@ -1516,6 +1549,7 @@ void MainWindow::onThemeApplied()
         _navButtons[i]->setIcon(_navIcon(icons[i], normal, checked));
     _themeButton->setIcon(_navIcon(":/icons/nav_theme.png", normal, checked));
     _adaptIcons();
+    _adaptTabIcons();
     _aboutButton->setIcon(_navIcon(":/icons/nav_about.png", normal, checked));
     setPauseIcon(_pauseIcon);
     _updateThemeButton();

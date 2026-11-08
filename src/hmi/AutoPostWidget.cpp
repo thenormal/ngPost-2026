@@ -705,8 +705,8 @@ void AutoPostWidget::_buildLayout()
     root->addWidget(_advancedCard);
 
     // bottom: advanced toggle, start option and Generate Posts
-    QHBoxLayout *bottom = new QHBoxLayout();
-    bottom->setSpacing(12);
+    QGridLayout *bottom = new QGridLayout();
+    bottom->setHorizontalSpacing(12);
     _advancedToggle = new QPushButton(page);
     _advancedToggle->setObjectName("linkButton");
     _advancedToggle->setCursor(Qt::PointingHandCursor);
@@ -715,13 +715,15 @@ void AutoPostWidget::_buildLayout()
         _advancedCard->setVisible(_showAdvanced);
         _retranslateLayout();
     });
-    bottom->addWidget(_advancedToggle);
-    bottom->addStretch();
-    bottom->addWidget(_ui->startJobsCB);
+    bottom->addWidget(_advancedToggle, 0, 0, Qt::AlignLeft | Qt::AlignVCenter);
     _ui->postButton->setObjectName("accentButton");
     _ui->postButton->setIcon(QIcon());
     _ui->postButton->setMinimumSize(170, 38);
-    bottom->addWidget(_ui->postButton);
+    bottom->addWidget(_ui->postButton, 0, 1, Qt::AlignCenter);
+    bottom->addWidget(_ui->startJobsCB, 0, 2, Qt::AlignRight | Qt::AlignVCenter);
+    bottom->setColumnStretch(0, 1);
+    bottom->setColumnStretch(1, 0);
+    bottom->setColumnStretch(2, 1);
     root->addLayout(bottom);
 
     _ui->aboutButton->hide(); // About is in the side bar
