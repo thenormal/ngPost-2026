@@ -235,11 +235,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ls -l zips
+          ls -lR zips
           tag="${{ github.ref_name }}"
+          # the ZIP files are in zips/ and the installers in zips/installer_out/: look in all the sub folders
+          mapfile -t files < <(find zips -type f \( -name '*.zip' -o -name '*.exe' \) | sort)
+          printf 'File to publish: %s\n' "${files[@]}"
+          if [ "${#files[@]}" -ne 4 ]; then
+            echo "::error::Expected 4 files (2 ZIP and 2 installers), found ${#files[@]}"
+            exit 1
+          fi
           if gh release view "$tag" >/dev/null 2>&1; then
-            # the release was already created from the GitHub page ("Draft a new release"): add the ZIP files to it
-            gh release upload "$tag" zips/*.zip zips/*.exe --clobber
+            # the release was already created from the GitHub page ("Draft a new release"): add the files to it
+            gh release upload "$tag" "${files[@]}" --clobber
           else
-            gh release create "$tag" zips/*.zip zips/*.exe --title "ngPost Deluxe $tag" --notes-file RELEASE_NOTES.md
+            gh release create "$tag" "${files[@]}" --title "ngPost Deluxe $tag" --notes-file RELEASE_NOTES.md
           fi
