@@ -4,16 +4,32 @@
 
 [English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | **Español** | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
+**Un cargador de Usenet rápido, gratuito y moderno para Windows, Linux y Docker.**<br/>
+Comprime, añade par2, ofusca y publica tus archivos desde una interfaz limpia (temas claro y oscuro) o desde la línea de comandos.
+
+[![Latest release](https://img.shields.io/github/v/release/thenormal/ngPost-Deluxe)](https://github.com/thenormal/ngPost-Deluxe/releases/latest)
+[![Build](https://github.com/thenormal/ngPost-Deluxe/actions/workflows/build-windows.yml/badge.svg)](https://github.com/thenormal/ngPost-Deluxe/actions)
+[![Licence: GPL v3](https://img.shields.io/badge/licence-GPL%20v3-blue)](LICENSE)
+
+[![Download](https://img.shields.io/badge/Download-latest%20release-2ea44f?style=for-the-badge)](https://github.com/thenormal/ngPost-Deluxe/releases/latest)
+
 **ngPost Deluxe** es una versión revisada y rediseñada del famoso cargador de Usenet **ngPost**.<br/>
 Es un fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licencia GPL v3). Todo el mérito del programa original corresponde a su autor, Matthieu Bruel.<br/>
 
-### Descarga
-**Instalador**: descarga `ngPostDeluxe-v1.1-win64-setup.exe` (Windows 64 bits) o `ngPostDeluxe-v1.1-win32-setup.exe` (Windows 32 bits) desde la página [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) y sigue los pasos. [7-Zip](https://www.7-zip.org/) está incluido: no hay que instalar nada más. Tus ajustes y el historial se guardan en `%APPDATA%\ngPost Deluxe` y se conservan al actualizar y al desinstalar.<br/>
-Windows puede mostrar «Windows protegió su PC» porque el instalador no está firmado digitalmente: haz clic en **Más información** y luego en **Ejecutar de todas formas**.<br/>
-**Versión portátil**: `ngPostDeluxe-v1.1-win64.zip` / `ngPostDeluxe-v1.1-win32.zip`, sin instalación: descomprime la carpeta donde quieras y ejecuta `ngPostDeluxe.exe` (los ajustes están en el `ngPost.conf` junto al programa).
+### Primeros pasos
+| Instalador de Windows | Windows portátil | Docker / Unraid |
+|---|---|---|
+| Descarga `ngPostDeluxe-v…-win64-setup.exe` (o `win32`) desde la página [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest). 7-Zip está incluido. | Descomprime `ngPostDeluxe-v…-win64.zip` (o `win32`) donde quieras e inicia `ngPostDeluxe.exe`. Los ajustes están en el `ngPost.conf` junto al programa. | Imagen `ghcr.io/thenormal/ngpost-deluxe` con una plantilla para Unraid. Ver [docker/README.md](docker/README.md). |
 
-### Docker / Unraid
-La versión en línea de comandos también está disponible como imagen Docker que vigila una carpeta y publica todo lo que llega (para NAS o servidores), con una plantilla para Unraid: `ghcr.io/thenormal/ngpost-deluxe`. Ver [docker/README.md](docker/README.md) (en inglés).
+> Windows puede mostrar «Windows protegió su PC» porque el instalador no está firmado digitalmente: haz clic en **Más información** y luego en **Ejecutar de todas formas**.
+
+### Inicio rápido
+1. Instala e inicia ngPost Deluxe.
+2. Abre **Servers**, añade tu servidor de Usenet y pulsa **Test connection**.
+3. Abre **Quick Post** y arrastra tus archivos o carpetas a la ventana.
+4. Pulsa **Post Files**. El archivo NZB se escribe en la carpeta elegida en los ajustes y cada subida aparece en **History**.
+
+¿Ya usas ngPost? Copia tu `ngPost.conf` en `%APPDATA%\ngPost Deluxe` y tendrás tus servidores y ajustes.
 
 ### Capturas de pantalla
 | Quick Post (tema claro) | Historial |
@@ -23,27 +39,37 @@ La versión en línea de comandos también está disponible como imagen Docker q
 | ![Ajustes (tema oscuro)](docs/screenshots/settings-dark.png) | ![Servidores (tema oscuro)](docs/screenshots/servers-dark.png) |
 
 ### Qué cambia en este fork
+
+**Interfaz**
+-   **Nueva interfaz**: barra lateral (Quick Post, Publicación Automática, Servidores, Ajustes, Historial), páginas con tarjetas, opciones avanzadas ocultas hasta que se necesitan, un nuevo icono y una pantalla vacía que explica qué hacer. **Temas claro y oscuro**, o automático como Windows (clave `theme`). Define la variable de entorno `NGPOST_NO_THEME` para volver al aspecto nativo
+-   **Interfaz en italiano**: la GUI/CMD ahora también está traducida al italiano (ya estaba disponible en chino, neerlandés, inglés, francés, alemán, portugués y español)
+-   **ngPost Deluxe v1.0**: nuevo nombre y nueva versión (el programa de Windows ahora es `ngPostDeluxe.exe`; el archivo de configuración no cambia), ventana Acerca de rediseñada, los botones de donación originales se sustituyen por un botón de **Ko-fi** para este fork (en la ventana Acerca de y en los Ajustes)
+-   **Nueva sección Servidores**: lista de servidores con un indicador de estado y una casilla activado/desactivado, ficha de detalle (contraseña visible a petición) y un botón **Probar conexión** que comprueba el acceso. Modificar los servidores durante una subida ya no puede bloquear ngPost
+-   **Pestaña Auto Posting**: nuevos botones **Quitar completados**, **Quitar todo** y **Cerrar pestañas terminadas**
+-   **Página Historial**: cada subida se registra (`ngPost_history.csv` junto a la configuración, o `POST_HISTORY`) con su estado, número de archivos y duración. La página las muestra con búsqueda, filtro por periodo, totales, contraseñas ocultas hasta que se piden, copia, exportación y carpeta del NZB. Cuidado: el archivo contiene las contraseñas de los archivos comprimidos en texto claro
+-   **Quick Post**: una nota recuerda que todos los elementos de la lista se publican como una sola release (un NZB, un archivo comprimido)
+
+**Velocidad**
+-   **ParPar** (un generador de par2 mucho más rápido) se incluye para Windows de 64 bits (v0.4.6, dominio público) y se usa automáticamente cuando `parpar.exe` está en la carpeta de ngPost. Se ha quitado par2cmdline de 64 bits del paquete; el de 32 bits se mantiene para Windows de 32 bits
+-   **Compresión más rápida en Windows**: la salida de 7-Zip / rar ahora se lee a medida que llega (un post de 115 MB esperaba 200 s, ahora 1 s)
+
+**Paquetes de Windows y Docker**
 -   **ngPost Deluxe v1.1**: **imagen Docker** de la versión en línea de comandos (vigila una carpeta y publica todo lo que llega, con una plantilla para **Unraid**), el botón Post está centrado en Quick Post y Auto Posting, los iconos de las pestañas y las pestañas terminadas se leen bien en el tema oscuro
+-   **Instalador de Windows** (64 y 32 bits, con **7-Zip incluido**) y paquetes ZIP portátiles, creados automáticamente en GitHub y publicados en las Releases (`ngPostDeluxe.exe`)
+-   **Windows**: la ventana de consola se cierra sola cuando ngPost se inicia con doble clic; el paquete incluye OpenSSL 1.1.1w (última versión soportada por Qt 5)
+
+**Seguridad y correcciones**
 -   **Corrección de seguridad**: posible desbordamiento de memoria en el búfer de codificación yEnc (con ciertos datos la salida podía ser mayor que el búfer)
 -   **Corrección yEnc**: un espacio o tabulador al final de una línea ahora se escapa correctamente (algunos servidores lo eliminaban y corrompían los datos)
 -   **Contraseñas más seguras**: las contraseñas y nombres de archivo generados usan el generador aleatorio criptográfico del sistema operativo (Qt >= 5.10) en lugar de `std::rand()`
+-   **Contraseña del archivo fuera de la línea de comandos**: 7-Zip la recibe por su entrada estándar y rar mediante la variable de entorno `RAR`, así que ya no aparece en la lista de procesos
+
+**Ajustes y herramientas**
 -   **NZB_POST_CMD**: los marcadores pueden contener espacios (una ruta como `C:\Mis carpetas\archivo.nzb` sigue siendo UN SOLO argumento) y el comando se lanza en segundo plano (ngPost ya no lo espera, así que su código de salida ya no se registra)
 -   **RAR_EXTRA y PAR2_ARGS**: se analizan respetando las comillas. 7-Zip se detecta por el nombre del programa y no por toda la ruta
--   **ParPar** (un generador de par2 mucho más rápido) se incluye para Windows de 64 bits (v0.4.6, dominio público) y se usa automáticamente cuando `parpar.exe` está en la carpeta de ngPost. Se ha quitado par2cmdline de 64 bits del paquete; el de 32 bits se mantiene para Windows de 32 bits
--   **Nueva interfaz**: barra lateral (Quick Post, Publicación Automática, Servidores, Ajustes, Historial), páginas con tarjetas, opciones avanzadas ocultas hasta que se necesitan, un nuevo icono y una pantalla vacía que explica qué hacer. **Temas claro y oscuro**, o automático como Windows (clave `theme`). Define la variable de entorno `NGPOST_NO_THEME` para volver al aspecto nativo
--   **Interfaz en italiano**: la GUI/CMD ahora también está traducida al italiano (ya estaba disponible en chino, neerlandés, inglés, francés, alemán, portugués y español)
 -   **Nuevo README**: reescrito para este fork y disponible en 8 idiomas (inglés, francés, alemán, italiano, español, neerlandés, portugués, chino)
--   **ngPost Deluxe v1.0**: nuevo nombre y nueva versión (el programa de Windows ahora es `ngPostDeluxe.exe`; el archivo de configuración no cambia), ventana Acerca de rediseñada, los botones de donación originales se sustituyen por un botón de **Ko-fi** para este fork (en la ventana Acerca de y en los Ajustes)
--   **Instalador de Windows** (64 y 32 bits, con **7-Zip incluido**) y paquetes ZIP portátiles, creados automáticamente en GitHub y publicados en las Releases (`ngPostDeluxe.exe`)
--   **Compresión más rápida en Windows**: la salida de 7-Zip / rar ahora se lee a medida que llega (un post de 115 MB esperaba 200 s, ahora 1 s)
--   **Nueva sección Servidores**: lista de servidores con un indicador de estado y una casilla activado/desactivado, ficha de detalle (contraseña visible a petición) y un botón **Probar conexión** que comprueba el acceso. Modificar los servidores durante una subida ya no puede bloquear ngPost
 -   **Guardado automático**: cada cambio de los ajustes se guarda automáticamente (el archivo anterior se conserva como `ngPost.conf.bak`)
--   **Pestaña Auto Posting**: nuevos botones **Quitar completados**, **Quitar todo** y **Cerrar pestañas terminadas**
--   **Contraseña del archivo fuera de la línea de comandos**: 7-Zip la recibe por su entrada estándar y rar mediante la variable de entorno `RAR`, así que ya no aparece en la lista de procesos
 -   **Diagnóstico**: ngPost registra la duración y la velocidad de cada fase (compresión, par2, subida), los errores y los bloqueos, y el botón **Informe de diagnóstico** guarda un informe para analizar un problema. Contraseñas, usuarios y nombres de archivo se ocultan, no se envía nada
--   **Windows**: la ventana de consola se cierra sola cuando ngPost se inicia con doble clic; el paquete incluye OpenSSL 1.1.1w (última versión soportada por Qt 5)
--   **Página Historial**: cada subida se registra (`ngPost_history.csv` junto a la configuración, o `POST_HISTORY`) con su estado, número de archivos y duración. La página las muestra con búsqueda, filtro por periodo, totales, contraseñas ocultas hasta que se piden, copia, exportación y carpeta del NZB. Cuidado: el archivo contiene las contraseñas de los archivos comprimidos en texto claro
--   **Quick Post**: una nota recuerda que todos los elementos de la lista se publican como una sola release (un NZB, un archivo comprimido)
 
 Los instaladores y paquetes portátiles para Windows y la imagen Docker están en [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest). En los demás sistemas, compílalo desde el código fuente (ver abajo).<br/>
 
