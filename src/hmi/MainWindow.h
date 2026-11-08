@@ -219,6 +219,9 @@ private:
     void _retranslateShell();
     void _fixIconButtons();
     void _adaptIcons();
+    void _adaptTabIcons();
+    QColor _tabNormalColor() const;
+    QIcon  _tabIcon(const QString &path) const;
     void _updateThemeButton();
     void _updateHistorySettings();
     static QIcon _navIcon(const QString &path, const QColor &normal, const QColor &checked);
