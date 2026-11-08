@@ -127,28 +127,28 @@ docker build -t ngpost-deluxe .
 ### 完整文档
 命令行选项、完整的配置关键字列表和安装指南与原始项目相同：请参阅 [ngPost 的 README](https://github.com/mbruel/ngPost#readme)。其中的安装指南针对的是原始二进制文件，而不是本分支。
 
+### 常见问题
+
+**Windows 提示“Windows 已保护你的电脑”，安全吗？**<br/>
+安装程序没有数字签名（签名需要付费），所以 SmartScreen 会对任何未知程序发出警告。点击**更多信息**，然后点击**仍要运行**。本程序是开源的，软件包由本仓库自动构建。
+
+**我的设置和历史记录在哪里？**<br/>
+使用安装程序时：在 `%APPDATA%\ngPost Deluxe` 中（`ngPost.conf` 和 `ngPost_history.csv`）。便携版：`ngPost.conf` 在程序旁边。如果 `ngPostDeluxe.exe` 旁边有 `ngPost.conf`，则优先使用它，而不是 `%APPDATA%` 中的文件。历史记录可以用 `POST_HISTORY` 移动。
+
+**如何保留原版 ngPost 的设置？**<br/>
+关闭 ngPost Deluxe，把旧的 `ngPost.conf` 复制到 `%APPDATA%\ngPost Deluxe`；如果其中有指向旧文件夹的 `PAR2_PATH` 行，请删除该行（程序会使用自带的 ParPar）。旧的 `ngPost_history.csv` 也能读取：把它复制到配置文件旁边，或在 `POST_HISTORY` 中保留其路径。
+
+**有些功能不工作（压缩、par2、上传……），怎么办？**<br/>
+在日志中点击 **Diagnostic report**，并把文件附加到一个 [issue](https://github.com/thenormal/ngPost-Deluxe/issues) 中。密码、用户名和文件名都已被屏蔽，不会发送任何数据。
+
+**需要安装 7-Zip 或 rar 吗？**<br/>
+不需要：安装程序和便携包都已包含 7-Zip。你仍然可以在设置中选择其他 7-Zip 或 WinRAR。
+
+**历史记录是私密的吗？**<br/>
+其中包含明文的压缩包密码：请妥善保管 `ngPost_history.csv` 和 `ngPost.conf`（其中有你的服务器登录信息），不要把它们附加到公开的 issue 中。
+
 ### 许可证
-**ngPost** 以 **GPL v3** 许可证发布
-<pre>
-//========================================================================
-//
-// Copyright (C) 2020 Matthieu Bruel <Matthieu.Bruel@gmail.com>
-// This file is a part of ngPost : https://github.com/mbruel/ngPost
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, version 3..
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>
-//
-//========================================================================
-</pre>
+[**ngPost**](https://github.com/mbruel/ngPost) 采用 **GPL v3** 许可证发布（见 [LICENSE](LICENSE)）。版权所有 (C) 2020 Matthieu Bruel。ngPost Deluxe 是由 [thenormal](https://github.com/thenormal) 维护的分支。
 
 ### 问题 / 故障 / 请求
 - 关于本分支的问题，请在 GitHub 上联系维护者：[thenormal](https://github.com/thenormal)

@@ -124,28 +124,28 @@ As it is made in C++/Qt, you can build and run it on any OS (macOS, Android...):
 ### Full documentation
 The command line options, the complete list of configuration keywords and the installation guides are those of the original project: see the [README of ngPost](https://github.com/mbruel/ngPost#readme). Its installation guides refer to the original binaries, not to this fork.
 
+### FAQ
+
+**Windows says "Windows protected your PC". Is it safe?**<br/>
+The installer is not digitally signed (a signature costs money), so SmartScreen warns about any unknown program. Click **More info**, then **Run anyway**. The program is open source and the packages are built automatically from this repository.
+
+**Where are my settings and my history?**<br/>
+With the installer: in `%APPDATA%\ngPost Deluxe` (`ngPost.conf` and `ngPost_history.csv`). With the portable version: `ngPost.conf` next to the program. If there is a `ngPost.conf` next to `ngPostDeluxe.exe`, it is used instead of the one in `%APPDATA%`. The history can be moved with `POST_HISTORY`.
+
+**How do I keep the settings of the original ngPost?**<br/>
+Close ngPost Deluxe, copy your old `ngPost.conf` into `%APPDATA%\ngPost Deluxe` and, if it contains a `PAR2_PATH` line pointing to an old folder, delete that line (the program then uses its own ParPar). Your old `ngPost_history.csv` is read too: copy it next to the configuration, or keep the path in `POST_HISTORY`.
+
+**Something does not work (compression, par2, upload…). What can I do?**<br/>
+Press **Diagnostic report** in the log and attach the file to an [issue](https://github.com/thenormal/ngPost-Deluxe/issues). Passwords, user names and file names are masked, nothing is sent anywhere.
+
+**Do I have to install 7-Zip or rar?**<br/>
+No: 7-Zip is included in the installer and the portable package. You can still choose another 7-Zip or WinRAR in the Settings.
+
+**Is the history private?**<br/>
+It contains the archive passwords in clear text: keep `ngPost_history.csv` (and your `ngPost.conf`, which contains your server login) private, and do not attach them to a public issue.
+
 ### Licence
-**ngPost** is released under the **GPL v3** licence
-<pre>
-//========================================================================
-//
-// Copyright (C) 2020 Matthieu Bruel <Matthieu.Bruel@gmail.com>
-// This file is a part of ngPost : https://github.com/mbruel/ngPost
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, version 3..
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>
-//
-//========================================================================
-</pre>
+[**ngPost**](https://github.com/mbruel/ngPost) is released under the **GPL v3** licence (see [LICENSE](LICENSE)). Copyright (C) 2020 Matthieu Bruel. ngPost Deluxe is a fork maintained by [thenormal](https://github.com/thenormal).
 
 ### Questions / Issues / Requests
 - for questions about this fork, you can contact its maintainer on GitHub: [thenormal](https://github.com/thenormal)
