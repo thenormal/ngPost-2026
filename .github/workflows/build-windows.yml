@@ -167,7 +167,7 @@ jobs:
           choco install innosetup -y --no-progress | Out-Null
           $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
           if (-not (Test-Path $iscc)) { throw "ISCC.exe not found" }
-          $ver = if ('${{ github.ref_name }}' -match '^v(.+)$' -and '${{ github.ref_type }}' -eq 'tag') { $Matches[1] } else { '1.0' }
+          $ver = if ('${{ github.ref_name }}' -match '^v(.+)$' -and '${{ github.ref_type }}' -eq 'tag') { $Matches[1] } else { '1.1' }
           & $iscc "/DAppVersion=$ver" "/DArch=${{ matrix.arch }}" "/DSourceDir=$PWD\dist" "/DOutName=ngPostDeluxe-v$ver-${{ matrix.name }}-setup" installer\ngPostDeluxe.iss
           if ($LASTEXITCODE -ne 0) { throw "ISCC failed ($LASTEXITCODE)" }
           Get-ChildItem installer_out | Format-Table Name, Length

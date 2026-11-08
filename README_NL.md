@@ -8,9 +8,12 @@
 Het is een fork van [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licentie GPL v3). Alle eer voor het oorspronkelijke programma gaat naar de auteur, Matthieu Bruel.<br/>
 
 ### Download
-**Installatieprogramma**: download `ngPostDeluxe-v1.0-win64-setup.exe` (Windows 64 bit) of `ngPostDeluxe-v1.0-win32-setup.exe` (Windows 32 bit) van de pagina [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) en volg de stappen. [7-Zip](https://www.7-zip.org/) is inbegrepen: je hoeft niets anders te installeren. Je instellingen en de geschiedenis staan in `%APPDATA%\ngPost Deluxe` en blijven behouden bij updates en verwijderen.<br/>
+**Installatieprogramma**: download `ngPostDeluxe-v1.1-win64-setup.exe` (Windows 64 bit) of `ngPostDeluxe-v1.1-win32-setup.exe` (Windows 32 bit) van de pagina [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) en volg de stappen. [7-Zip](https://www.7-zip.org/) is inbegrepen: je hoeft niets anders te installeren. Je instellingen en de geschiedenis staan in `%APPDATA%\ngPost Deluxe` en blijven behouden bij updates en verwijderen.<br/>
 Windows kan "Windows heeft uw pc beschermd" tonen omdat het installatieprogramma niet digitaal is ondertekend: klik op **Meer info** en daarna op **Toch uitvoeren**.<br/>
-**Draagbare versie**: `ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`, zonder installatie: pak de map ergens uit en start `ngPostDeluxe.exe` (de instellingen staan in de `ngPost.conf` naast het programma).
+**Draagbare versie**: `ngPostDeluxe-v1.1-win64.zip` / `ngPostDeluxe-v1.1-win32.zip`, zonder installatie: pak de map ergens uit en start `ngPostDeluxe.exe` (de instellingen staan in de `ngPost.conf` naast het programma).
+
+### Docker / Unraid
+De opdrachtregelversie is ook beschikbaar als Docker-image dat een map bewaakt en alles post wat daar binnenkomt (voor een NAS of server), met een sjabloon voor Unraid: `ghcr.io/thenormal/ngpost-deluxe`. Zie [docker/README.md](docker/README.md) (in het Engels).
 
 ### Schermafbeeldingen
 | Quick Post (licht thema) | Geschiedenis |
@@ -20,6 +23,7 @@ Windows kan "Windows heeft uw pc beschermd" tonen omdat het installatieprogramma
 | ![Instellingen (donker thema)](docs/screenshots/settings-dark.png) | ![Servers (donker thema)](docs/screenshots/servers-dark.png) |
 
 ### Wat is er anders in deze fork
+-   **ngPost Deluxe v1.1**: **Docker-image** van de opdrachtregelversie (bewaakt een map en post alles wat daar binnenkomt, met een sjabloon voor **Unraid**), de knop Post staat gecentreerd in Quick Post en Auto Posting, tabpictogrammen en voltooide tabs zijn leesbaar in het donkere thema
 -   **Beveiligingsfix**: mogelijke heap-overflow in de yEnc-codeerbuffer (bij bepaalde gegevens kon de uitvoer groter zijn dan de buffer)
 -   **yEnc-fix**: een spatie of tab aan het einde van een regel wordt nu correct geëscaped (sommige servers verwijderden die, waardoor de gegevens beschadigd raakten)
 -   **Veiligere wachtwoorden**: de gegenereerde archiefwachtwoorden en -namen gebruiken de cryptografische willekeurige generator van het besturingssysteem (Qt >= 5.10) in plaats van `std::rand()`

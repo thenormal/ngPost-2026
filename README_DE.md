@@ -8,9 +8,12 @@
 Es ist ein Fork von [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, Lizenz GPL v3). Das Verdienst für das ursprüngliche Programm gebührt seinem Autor, Matthieu Bruel.<br/>
 
 ### Download
-**Installer**: Lade `ngPostDeluxe-v1.0-win64-setup.exe` (Windows 64 Bit) oder `ngPostDeluxe-v1.0-win32-setup.exe` (Windows 32 Bit) von der Seite [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) herunter und folge den Schritten. [7-Zip](https://www.7-zip.org/) ist enthalten: Es muss nichts weiter installiert werden. Deine Einstellungen und der Verlauf liegen in `%APPDATA%\ngPost Deluxe` und bleiben bei Updates und Deinstallation erhalten.<br/>
+**Installer**: Lade `ngPostDeluxe-v1.1-win64-setup.exe` (Windows 64 Bit) oder `ngPostDeluxe-v1.1-win32-setup.exe` (Windows 32 Bit) von der Seite [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) herunter und folge den Schritten. [7-Zip](https://www.7-zip.org/) ist enthalten: Es muss nichts weiter installiert werden. Deine Einstellungen und der Verlauf liegen in `%APPDATA%\ngPost Deluxe` und bleiben bei Updates und Deinstallation erhalten.<br/>
 Windows zeigt eventuell „Der Computer wurde durch Windows geschützt“, weil der Installer nicht digital signiert ist: Klicke auf **Weitere Informationen**, dann auf **Trotzdem ausführen**.<br/>
-**Portable Version**: `ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`, ohne Installation: Ordner irgendwo entpacken und `ngPostDeluxe.exe` starten (die Einstellungen liegen in der `ngPost.conf` neben dem Programm).
+**Portable Version**: `ngPostDeluxe-v1.1-win64.zip` / `ngPostDeluxe-v1.1-win32.zip`, ohne Installation: Ordner irgendwo entpacken und `ngPostDeluxe.exe` starten (die Einstellungen liegen in der `ngPost.conf` neben dem Programm).
+
+### Docker / Unraid
+Die Kommandozeilenversion gibt es auch als Docker-Image, das einen Ordner überwacht und alles postet, was dort ankommt (für NAS oder Server), mit einer Vorlage für Unraid: `ghcr.io/thenormal/ngpost-deluxe`. Siehe [docker/README.md](docker/README.md) (auf Englisch).
 
 ### Screenshots
 | Quick Post (helles Design) | Verlauf |
@@ -20,6 +23,7 @@ Windows zeigt eventuell „Der Computer wurde durch Windows geschützt“, weil 
 | ![Einstellungen (dunkles Design)](docs/screenshots/settings-dark.png) | ![Server (dunkles Design)](docs/screenshots/servers-dark.png) |
 
 ### Was in diesem Fork anders ist
+-   **ngPost Deluxe v1.1**: **Docker-Image** der Kommandozeilenversion (überwacht einen Ordner und postet alles, was dort ankommt, mit einer Vorlage für **Unraid**), die Schaltfläche Post ist in Quick Post und Auto Posting zentriert, Tab-Symbole und beendete Tabs sind im dunklen Design lesbar
 -   **Sicherheitskorrektur**: möglicher Heap-Überlauf im yEnc-Kodierungspuffer (die Ausgabe konnte bei bestimmten Daten größer als der Puffer sein)
 -   **yEnc-Fix**: Ein Leerzeichen oder Tabulator am Zeilenende wird jetzt korrekt maskiert (manche Server entfernen ihn, wodurch die Daten beschädigt wurden)
 -   **Sicherere Passwörter**: die erzeugten Archiv-Passwörter und -Namen verwenden den kryptografischen Zufallsgenerator des Betriebssystems (Qt >= 5.10) statt `std::rand()`
