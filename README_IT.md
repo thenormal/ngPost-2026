@@ -12,6 +12,10 @@
 Windows può mostrare "Il PC è stato protetto da Windows" perché l'installer non è firmato digitalmente: clicca su **Ulteriori informazioni**, poi su **Esegui comunque**.<br/>
 **Versione portatile**: `ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`, senza installazione: decomprimi la cartella dove vuoi e avvia `ngPostDeluxe.exe` (le impostazioni stanno nel file `ngPost.conf` accanto al programma).
 
+### Docker / Unraid
+La versione a riga di comando è disponibile anche come immagine Docker che controlla una cartella e posta tutto quello che ci arriva
+(per NAS o server), con un template per Unraid: `ghcr.io/thenormal/ngpost-deluxe`. Vedi [docker/README.md](docker/README.md) (in inglese).
+
 ### Screenshot
 | Quick Post (tema chiaro) | Cronologia |
 |---|---|

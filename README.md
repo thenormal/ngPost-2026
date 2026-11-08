@@ -12,6 +12,10 @@ It is a fork of [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licenc
 Windows may show "Windows protected your PC" because the installer is not digitally signed: click **More info**, then **Run anyway**.<br/>
 **Portable version**: `ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`, no installation: unzip the folder anywhere and start `ngPostDeluxe.exe` (the settings are in the `ngPost.conf` next to the program).
 
+### Docker / Unraid
+The command line version is also available as a Docker image that watches a folder and posts everything that arrives in it
+(for a NAS or a server), with a template for Unraid: `ghcr.io/thenormal/ngpost-deluxe`. See [docker/README.md](docker/README.md).
+
 ### Screenshots
 | Quick Post (light theme) | History |
 |---|---|
