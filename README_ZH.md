@@ -45,7 +45,7 @@
 -   **历史记录页面**：每次上传都会被记录（配置文件旁边的 `ngPost_history.csv`，或 `POST_HISTORY`），包括状态、文件数和耗时。该页面提供搜索、按时间段筛选、汇总、默认隐藏的密码、复制、导出以及打开 NZB 所在文件夹。注意：该文件以明文保存压缩包密码
 -   **快速发布**：提示列表中的所有项目会作为一个发布一起发布（一个 NZB，一个压缩包）
 
-本分支尚未发布正式版本。每次修改后，GitHub Actions 都会自动构建可直接运行的 **Windows 64 位** 安装包（*Actions* 标签页 > *Build Windows (x64)* 运行 > *Artifacts*，需要 GitHub 账号）。其他系统请从源码编译（见下文）。<br/>
+Windows 安装程序、便携包和 Docker 镜像在 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面。其他系统请从源码编译（见下文）。<br/>
 
 ### 主要功能
 -   面向二进制文件的**命令行 Usenet 上传工具，并带有美观的图形界面**，使用 **C++11/Qt5** 开发
@@ -65,29 +65,38 @@
 
 - **NZB_POST_CMD**：每次发布后执行的命令。占位符可以包含空格，命令在后台运行（不记录其退出码）
 - **RAR_EXTRA**：用于自定义 rar 命令（无需指定 'a'、'-idp' 或 '-r'）。7-zip 不需要，除非你想更改压缩级别。
-- **PAR2_CMD**：用于更改 par2 生成器，以便使用 [Parpar](https://github.com/animetosho/ParPar) 或 [Multipar](http://hp.vector.co.jp/authors/VA021385/)。（par2cmdline 是默认附带的生成器；在 64 位 Windows 上，如果 ngPost 文件夹中有 `parpar.exe`，则自动使用 ParPar）
+- **PAR2_PATH**：用于更改 par2 生成器，以便使用 [Parpar](https://github.com/animetosho/ParPar) 或 [Multipar](http://hp.vector.co.jp/authors/VA021385/)。（par2cmdline 是默认附带的生成器；在 64 位 Windows 上，如果 ngPost 文件夹中有 `parpar.exe`，则自动使用 ParPar）
 - **PAR2_ARGS**：用于自定义 par2 命令，特别是在选择了不同于默认 par2cmdline 的程序时
 - **theme**：界面主题，`AUTO`（跟随 Windows）、`LIGHT` 或 `DARK`
 - **history**：`ON`（默认）或 `OFF`，上传历史记录显示在历史记录页面。未设置 **POST_HISTORY** 时，文件为配置文件旁边的 `ngPost_history.csv`。每行末尾新增列：状态、文件数、耗时和 NZB 文件
 
 ### 编译
-#### 依赖项：
-- build-essential（C++ 编译器、libstdc++、make 等）
-- qt5-default（Qt5 库和头文件）
-- qt5-qmake（用于生成 moc 文件并创建 Makefile）
-- libssl（v1.0.2 或 v1.1），但系统中应该已经有了
+#### Linux
+依赖（Ubuntu / Debian）：
+```
+sudo apt install build-essential qtbase5-dev qt5-qmake libssl-dev
+```
+编译图形界面版本，或只编译命令行版本（不需要 Qt 图形库）：
+```
+# GUI
+cd src && qmake ngPost.pro && make -j$(nproc)
 
-#### 构建：
-- 进入 src 文件夹
-- qmake
-- make
+# command line only, in its own folder
+mkdir build-cmd && cd build-cmd && qmake ../src/ngPost_cmd.pro && make -j$(nproc)
+```
+可执行文件 **ngPost** 会生成在你编译的文件夹中：把它复制到 PATH 中的某个文件夹即可。
 
-很简单！这样应该会生成可执行文件 **ngPost**</br>
-你可以把它复制到 PATH 中的某个文件夹，以便在任何地方使用
+#### Windows
+安装带 MinGW 的 [Qt 5.15](https://www.qt.io/download)，然后在 Qt Creator 中打开 `src/ngPost.pro`，或在 Qt 命令提示符中执行：`mkdir build && cd build && qmake ../src/ngPost.pro CONFIG+=release && mingw32-make`。程序名为 `ngPostDeluxe.exe`。安装程序使用 [Inno Setup](https://jrsoftware.org/isinfo.php) 制作（`installer/ngPostDeluxe.iss`）；正式包的所有步骤都在 `.github/workflows/build-windows.yml` 中。
 
+#### Docker
+容器中的命令行版本（见 [docker/README.md](docker/README.md)）：
+```
+docker build -t ngpost-deluxe .
+```
 
-由于使用 C++/Qt 编写，你可以在任何操作系统（Linux / Windows / MacOS / Android）上编译和运行。<br/>
-要在其他操作系统上编译，最简单的方法是[安装 Qt](https://www.qt.io/download)，并在 QtCreator 中加载项目<br/>
+#### 其他系统
+由于使用 C++/Qt 编写，它可以在任何系统（macOS、Android……）上编译和运行：最简单的方法是[安装 Qt](https://www.qt.io/download)，并在 Qt Creator 中加载 `src/ngPost.pro`。
 
 ### 完整文档
 命令行选项、完整的配置关键字列表和安装指南与原始项目相同：请参阅 [ngPost 的 README](https://github.com/mbruel/ngPost#readme)。其中的安装指南针对的是原始二进制文件，而不是本分支。
