@@ -1,0 +1,8 @@
+7-Zip 26.05 installers (Windows 64 bit and 32 bit), used to ship 7z.exe, 7z.dll and License.txt with ngPost Deluxe
+Source: https://www.7-zip.org/ (also https://github.com/ip7z/7zip/releases/tag/26.05)
+License: GNU LGPL (+ unRAR restriction), see the License.txt installed with 7-Zip
+
+7z2605-x64.exe  (64 bit)  sha256: FD99E86F57D8F429EF5ED045BF98315AF962E2309B0F1BA87A147A44C71647D0
+7z2605.exe      (32 bit)  sha256: 6435A470FE7C4769962DBED8A60C641EE21401C833CED06077C80E33E7845A5E
+
+They are kept in the repository so that the build does not depend on a download (the workflow checks the SHA256).

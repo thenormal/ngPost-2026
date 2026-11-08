@@ -104,27 +104,11 @@ jobs:
             Copy-Item (Get-ChildItem -Path par2_tmp -Recurse -Filter par2.exe | Select-Object -First 1).FullName dist/
           }
           # 7-Zip (7z.exe + 7z.dll + its licence), used by default when no other path is defined (GNU LGPL, see 7-Zip/License.txt)
-          # the download is retried (GitHub sometimes answers 504) and, if it keeps failing, 7-zip.org is used;
-          # in both cases the file must have the expected SHA256
-          $sevenZipUrls = @('https://github.com/ip7z/7zip/releases/download/26.05/${{ matrix.sevenzip }}',
-                            'https://www.7-zip.org/a/${{ matrix.sevenzip }}')
-          $sevenZipOk = $false
-          foreach ($url in $sevenZipUrls) {
-            foreach ($attempt in 1..4) {
-              try {
-                Invoke-WebRequest -Uri $url -OutFile 7zip-setup.exe -TimeoutSec 120
-                $hash = (Get-FileHash 7zip-setup.exe -Algorithm SHA256).Hash
-                if ($hash -eq '${{ matrix.sevenzip_sha256 }}') { $sevenZipOk = $true; break }
-                Write-Warning "$url : unexpected SHA256 $hash"
-                break   # a different file: no point in retrying this address
-              } catch {
-                Write-Warning "$url : attempt $attempt failed: $_"
-                Start-Sleep -Seconds (10 * $attempt)
-              }
-            }
-            if ($sevenZipOk) { Write-Host "7-Zip downloaded from $url"; break }
-          }
-          if (-not $sevenZipOk) { throw "7-Zip could not be downloaded (see the warnings above)" }
+          # the 7-Zip installer is in the repository (release/libs): no download that can fail (GitHub answered 504 for hours).
+          # Its SHA256 must be the one of the official file of 7-zip.org
+          Copy-Item release/libs/${{ matrix.sevenzip }} 7zip-setup.exe
+          $hash = (Get-FileHash 7zip-setup.exe -Algorithm SHA256).Hash
+          if ($hash -ne '${{ matrix.sevenzip_sha256 }}') { throw "release/libs/${{ matrix.sevenzip }} has an unexpected SHA256: $hash" }
           Write-Host "${{ matrix.sevenzip }} SHA256: $((Get-FileHash 7zip-setup.exe -Algorithm SHA256).Hash)"
           7z x 7zip-setup.exe -o7zip_tmp -y | Out-Null
           New-Item -ItemType Directory dist/7-Zip | Out-Null
