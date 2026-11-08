@@ -2,7 +2,7 @@
 
 # ngPost Deluxe
 
-
+[English](README.md) | [Français](README_FR.md) | **Deutsch** | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
 **Ein schneller, kostenloser und moderner Usenet-Poster für Windows, Linux und Docker.**<br/>
 Komprimieren, par2 hinzufügen, verschleiern und Dateien posten: über eine übersichtliche Oberfläche (helles und dunkles Design) oder über die Kommandozeile.

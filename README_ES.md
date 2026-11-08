@@ -2,7 +2,7 @@
 
 # ngPost Deluxe
 
-
+[English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | **Español** | [Nederlands](README_NL.md) | [Português](README_PT.md) | [中文](README_ZH.md)
 
 **Un cargador de Usenet rápido, gratuito y moderno para Windows, Linux y Docker.**<br/>
 Comprime, añade par2, ofusca y publica tus archivos desde una interfaz limpia (temas claro y oscuro) o desde la línea de comandos.

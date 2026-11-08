@@ -2,7 +2,7 @@
 
 # ngPost Deluxe
 
-
+[English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | **中文**
 
 **适用于 Windows、Linux 和 Docker 的快速、免费、现代的 Usenet 上传工具。**<br/>
 通过简洁的界面（浅色和深色主题）或命令行，压缩、添加 par2、混淆并发布你的文件。
