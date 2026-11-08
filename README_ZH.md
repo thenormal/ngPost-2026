@@ -2,18 +2,34 @@
 
 # ngPost Deluxe
 
-[English](README.md) | [Français](README_FR.md) | [Deutsch](README_DE.md) | [Italiano](README_IT.md) | [Español](README_ES.md) | [Nederlands](README_NL.md) | [Português](README_PT.md) | **中文**
+
+
+**适用于 Windows、Linux 和 Docker 的快速、免费、现代的 Usenet 上传工具。**<br/>
+通过简洁的界面（浅色和深色主题）或命令行，压缩、添加 par2、混淆并发布你的文件。
+
+[![Latest release](https://img.shields.io/github/v/release/thenormal/ngPost-Deluxe)](https://github.com/thenormal/ngPost-Deluxe/releases/latest)
+[![Build](https://github.com/thenormal/ngPost-Deluxe/actions/workflows/build-windows.yml/badge.svg)](https://github.com/thenormal/ngPost-Deluxe/actions)
+[![Licence: GPL v3](https://img.shields.io/badge/licence-GPL%20v3-blue)](LICENSE)
+
+[![Download](https://img.shields.io/badge/Download-latest%20release-2ea44f?style=for-the-badge)](https://github.com/thenormal/ngPost-Deluxe/releases/latest)
 
 **ngPost Deluxe** 是著名 Usenet 上传工具 **ngPost** 的重新审视与重新设计版本。<br/>
 它是 [mbruel/ngPost](https://github.com/mbruel/ngPost)（v4.16，GPL v3 许可证）的分支（fork）。原始程序的全部功劳归于其作者 Matthieu Bruel。<br/>
 
-### 下载
-**安装程序**：在 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面下载 `ngPostDeluxe-v1.1-win64-setup.exe`（Windows 64 位）或 `ngPostDeluxe-v1.1-win32-setup.exe`（Windows 32 位），按提示操作即可。已内置 [7-Zip](https://www.7-zip.org/)，无需另外安装。您的设置和历史记录保存在 `%APPDATA%\ngPost Deluxe`，更新和卸载后仍会保留。<br/>
-由于安装程序没有数字签名，Windows 可能会显示“Windows 已保护你的电脑”：点击**更多信息**，然后点击**仍要运行**。<br/>
-**便携版**：`ngPostDeluxe-v1.1-win64.zip` / `ngPostDeluxe-v1.1-win32.zip`，无需安装：将文件夹解压到任意位置，运行 `ngPostDeluxe.exe`（设置保存在程序旁边的 `ngPost.conf` 中）。
+### 开始使用
+| Windows 安装程序 | Windows 便携版 | Docker / Unraid |
+|---|---|---|
+| 从 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面下载 `ngPostDeluxe-v…-win64-setup.exe`（或 `win32`）。已包含 7-Zip。 | 将 `ngPostDeluxe-v…-win64.zip`（或 `win32`）解压到任意位置，启动 `ngPostDeluxe.exe`。设置保存在程序旁边的 `ngPost.conf` 中。 | 镜像 `ghcr.io/thenormal/ngpost-deluxe`，附带 Unraid 模板。见 [docker/README.md](docker/README.md)。 |
 
-### Docker / Unraid
-命令行版本也提供 Docker 镜像，可监视一个文件夹并发布其中出现的所有内容（适用于 NAS 或服务器），并附带 Unraid 模板：`ghcr.io/thenormal/ngpost-deluxe`。参见 [docker/README.md](docker/README.md)（英文）。
+> 由于安装程序没有数字签名，Windows 可能会显示“Windows 已保护你的电脑”：点击**更多信息**，然后点击**仍要运行**。
+
+### 快速开始
+1. 安装并启动 ngPost Deluxe。
+2. 打开 **Servers**，添加你的 Usenet 服务器并点击 **Test connection**。
+3. 打开 **Quick Post**，把文件或文件夹拖进窗口。
+4. 点击 **Post Files**。NZB 文件会写入在设置中选择的文件夹，每次上传都会显示在 **History** 中。
+
+已经在使用 ngPost？把你的 `ngPost.conf` 复制到 `%APPDATA%\ngPost Deluxe`，你的服务器和设置就都在了。
 
 ### 截图
 | Quick Post（浅色主题） | 历史记录 |
@@ -23,27 +39,37 @@
 | ![设置（深色主题）](docs/screenshots/settings-dark.png) | ![服务器（深色主题）](docs/screenshots/servers-dark.png) |
 
 ### 本分支的不同之处
+
+**界面**
+-   **全新界面**：侧边栏（快速发布、自动发布、服务器、设置、历史记录），卡片式页面，高级选项在需要时才显示，新图标，以及说明操作方法的空白页面。**浅色和深色主题**，或跟随 Windows 自动切换（`theme` 键）。设置环境变量 `NGPOST_NO_THEME` 可恢复原生外观
+-   **意大利语界面**：图形界面/命令行现在也已翻译为意大利语（此前已有中文、荷兰语、英语、法语、德语、葡萄牙语和西班牙语）
+-   **ngPost Deluxe v1.0**：新名称和新版本（Windows 程序现在名为 `ngPostDeluxe.exe`；配置文件不变），重新设计的“关于”窗口，原来的捐赠按钮已替换为本分支的 **Ko-fi** 按钮（在“关于”窗口和设置中）
+-   **全新的服务器区域**：服务器列表带状态指示点和启用/禁用复选框，详情表单（密码可按需显示），以及检查登录的 **测试连接** 按钮。发布过程中修改服务器不会再导致 ngPost 崩溃
+-   **Auto Posting 标签页**：新增 **移除已完成**、**全部移除** 和 **关闭已完成的标签页** 按钮
+-   **历史记录页面**：每次上传都会被记录（配置文件旁边的 `ngPost_history.csv`，或 `POST_HISTORY`），包括状态、文件数和耗时。该页面提供搜索、按时间段筛选、汇总、默认隐藏的密码、复制、导出以及打开 NZB 所在文件夹。注意：该文件以明文保存压缩包密码
+-   **快速发布**：提示列表中的所有项目会作为一个发布一起发布（一个 NZB，一个压缩包）
+
+**速度**
+-   为 64 位 Windows 附带 **ParPar**（快得多的 par2 生成器，v0.4.6，公有领域），当 ngPost 文件夹中存在 `parpar.exe` 时自动使用。已从软件包中移除 64 位 par2cmdline，32 位版本仍保留给 32 位 Windows
+-   **Windows 上压缩更快**：现在会随时读取 7-Zip / rar 的输出（115 MB 的帖子以前要等 200 秒，现在 1 秒）
+
+**Windows 软件包和 Docker**
 -   **ngPost Deluxe v1.1**：命令行版本的 **Docker 镜像**（监视一个文件夹并发布其中出现的所有内容，附带 **Unraid** 模板），Quick Post 和 Auto Posting 中的 Post 按钮居中，深色主题下标签图标和已完成的标签清晰可读
+-   **Windows 安装程序**（64 位和 32 位，**内置 7-Zip**）和便携 ZIP 软件包，在 GitHub 上自动构建并发布在 Releases 中（`ngPostDeluxe.exe`）
+-   **Windows**：双击启动 ngPost 时控制台窗口会自动关闭；安装包附带 OpenSSL 1.1.1w（Qt 5 支持的最新版本）
+
+**安全与修复**
 -   **安全修复**：修复 yEnc 编码缓冲区中可能的堆溢出（对于某些数据，输出可能超出缓冲区大小）
 -   **yEnc 修复**：行尾的空格或制表符现在会被正确转义（某些服务器会将其去除，导致数据损坏）
 -   **更安全的密码**：生成的压缩包密码和名称使用操作系统的加密级随机数生成器（Qt >= 5.10），而不是 `std::rand()`
+-   **压缩包密码不再出现在命令行中**：7-Zip 通过标准输入接收密码，rar 通过 `RAR` 环境变量接收，因此进程列表中不再可见
+
+**设置与工具**
 -   **NZB_POST_CMD**：占位符可以包含空格（例如 `C:\我的文件夹\文件.nzb` 这样的路径仍然是同一个参数），并且命令在后台启动（ngPost 不再等待它结束，因此不再记录其退出码）
 -   **RAR_EXTRA 和 PAR2_ARGS**：解析时遵循双引号。7-Zip 通过程序名称而不是完整路径来识别
--   为 64 位 Windows 附带 **ParPar**（快得多的 par2 生成器，v0.4.6，公有领域），当 ngPost 文件夹中存在 `parpar.exe` 时自动使用。已从软件包中移除 64 位 par2cmdline，32 位版本仍保留给 32 位 Windows
--   **全新界面**：侧边栏（快速发布、自动发布、服务器、设置、历史记录），卡片式页面，高级选项在需要时才显示，新图标，以及说明操作方法的空白页面。**浅色和深色主题**，或跟随 Windows 自动切换（`theme` 键）。设置环境变量 `NGPOST_NO_THEME` 可恢复原生外观
--   **意大利语界面**：图形界面/命令行现在也已翻译为意大利语（此前已有中文、荷兰语、英语、法语、德语、葡萄牙语和西班牙语）
 -   **新的 README**：为本分支重写，提供 8 种语言（英语、法语、德语、意大利语、西班牙语、荷兰语、葡萄牙语、中文）
--   **ngPost Deluxe v1.0**：新名称和新版本（Windows 程序现在名为 `ngPostDeluxe.exe`；配置文件不变），重新设计的“关于”窗口，原来的捐赠按钮已替换为本分支的 **Ko-fi** 按钮（在“关于”窗口和设置中）
--   **Windows 安装程序**（64 位和 32 位，**内置 7-Zip**）和便携 ZIP 软件包，在 GitHub 上自动构建并发布在 Releases 中（`ngPostDeluxe.exe`）
--   **Windows 上压缩更快**：现在会随时读取 7-Zip / rar 的输出（115 MB 的帖子以前要等 200 秒，现在 1 秒）
--   **全新的服务器区域**：服务器列表带状态指示点和启用/禁用复选框，详情表单（密码可按需显示），以及检查登录的 **测试连接** 按钮。发布过程中修改服务器不会再导致 ngPost 崩溃
 -   **自动保存**：每次修改设置都会自动保存（之前的文件保留为 `ngPost.conf.bak`）
--   **Auto Posting 标签页**：新增 **移除已完成**、**全部移除** 和 **关闭已完成的标签页** 按钮
--   **压缩包密码不再出现在命令行中**：7-Zip 通过标准输入接收密码，rar 通过 `RAR` 环境变量接收，因此进程列表中不再可见
 -   **诊断**：ngPost 会记录每个阶段（压缩、par2、上传）的耗时和速度、错误和界面卡顿，**诊断报告** 按钮可保存报告用于分析问题。密码、用户名和文件名都会被隐藏，不会发送任何内容
--   **Windows**：双击启动 ngPost 时控制台窗口会自动关闭；安装包附带 OpenSSL 1.1.1w（Qt 5 支持的最新版本）
--   **历史记录页面**：每次上传都会被记录（配置文件旁边的 `ngPost_history.csv`，或 `POST_HISTORY`），包括状态、文件数和耗时。该页面提供搜索、按时间段筛选、汇总、默认隐藏的密码、复制、导出以及打开 NZB 所在文件夹。注意：该文件以明文保存压缩包密码
--   **快速发布**：提示列表中的所有项目会作为一个发布一起发布（一个 NZB，一个压缩包）
 
 Windows 安装程序、便携包和 Docker 镜像在 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面。其他系统请从源码编译（见下文）。<br/>
 
