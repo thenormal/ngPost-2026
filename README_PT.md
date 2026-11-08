@@ -8,9 +8,12 @@
 É um fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licença GPL v3). Todo o mérito do programa original pertence ao autor, Matthieu Bruel.<br/>
 
 ### Transferência
-**Instalador**: transfira `ngPostDeluxe-v1.0-win64-setup.exe` (Windows 64 bits) ou `ngPostDeluxe-v1.0-win32-setup.exe` (Windows 32 bits) a partir da página [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) e siga os passos. O [7-Zip](https://www.7-zip.org/) está incluído: não é preciso instalar mais nada. As suas definições e o histórico ficam em `%APPDATA%\ngPost Deluxe` e mantêm-se nas atualizações e na desinstalação.<br/>
+**Instalador**: transfira `ngPostDeluxe-v1.1-win64-setup.exe` (Windows 64 bits) ou `ngPostDeluxe-v1.1-win32-setup.exe` (Windows 32 bits) a partir da página [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) e siga os passos. O [7-Zip](https://www.7-zip.org/) está incluído: não é preciso instalar mais nada. As suas definições e o histórico ficam em `%APPDATA%\ngPost Deluxe` e mantêm-se nas atualizações e na desinstalação.<br/>
 O Windows pode mostrar "O Windows protegeu o seu PC" porque o instalador não está assinado digitalmente: clique em **Mais informações** e depois em **Executar mesmo assim**.<br/>
-**Versão portátil**: `ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`, sem instalação: descomprima a pasta onde quiser e inicie `ngPostDeluxe.exe` (as definições estão no `ngPost.conf` junto ao programa).
+**Versão portátil**: `ngPostDeluxe-v1.1-win64.zip` / `ngPostDeluxe-v1.1-win32.zip`, sem instalação: descomprima a pasta onde quiser e inicie `ngPostDeluxe.exe` (as definições estão no `ngPost.conf` junto ao programa).
+
+### Docker / Unraid
+A versão de linha de comandos também está disponível como imagem Docker que vigia uma pasta e publica tudo o que lá chega (para NAS ou servidor), com um modelo para Unraid: `ghcr.io/thenormal/ngpost-deluxe`. Ver [docker/README.md](docker/README.md) (em inglês).
 
 ### Capturas de ecrã
 | Quick Post (tema claro) | Histórico |
@@ -20,6 +23,7 @@ O Windows pode mostrar "O Windows protegeu o seu PC" porque o instalador não es
 | ![Definições (tema escuro)](docs/screenshots/settings-dark.png) | ![Servidores (tema escuro)](docs/screenshots/servers-dark.png) |
 
 ### O que muda neste fork
+-   **ngPost Deluxe v1.1**: **imagem Docker** da versão de linha de comandos (vigia uma pasta e publica tudo o que lá chega, com um modelo para **Unraid**), o botão Post está centrado em Quick Post e Auto Posting, os ícones dos separadores e os separadores terminados ficam legíveis no tema escuro
 -   **Correção de segurança**: possível estouro de heap no buffer de codificação yEnc (com certos dados, a saída podia exceder o buffer)
 -   **Correção yEnc**: um espaço ou tab no fim de uma linha agora é escapado corretamente (alguns servidores o removiam, corrompendo os dados)
 -   **Senhas mais seguras**: as senhas e nomes de arquivo gerados usam o gerador aleatório criptográfico do sistema operacional (Qt >= 5.10) em vez de `std::rand()`

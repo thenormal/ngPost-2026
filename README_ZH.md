@@ -8,9 +8,12 @@
 它是 [mbruel/ngPost](https://github.com/mbruel/ngPost)（v4.16，GPL v3 许可证）的分支（fork）。原始程序的全部功劳归于其作者 Matthieu Bruel。<br/>
 
 ### 下载
-**安装程序**：在 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面下载 `ngPostDeluxe-v1.0-win64-setup.exe`（Windows 64 位）或 `ngPostDeluxe-v1.0-win32-setup.exe`（Windows 32 位），按提示操作即可。已内置 [7-Zip](https://www.7-zip.org/)，无需另外安装。您的设置和历史记录保存在 `%APPDATA%\ngPost Deluxe`，更新和卸载后仍会保留。<br/>
+**安装程序**：在 [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) 页面下载 `ngPostDeluxe-v1.1-win64-setup.exe`（Windows 64 位）或 `ngPostDeluxe-v1.1-win32-setup.exe`（Windows 32 位），按提示操作即可。已内置 [7-Zip](https://www.7-zip.org/)，无需另外安装。您的设置和历史记录保存在 `%APPDATA%\ngPost Deluxe`，更新和卸载后仍会保留。<br/>
 由于安装程序没有数字签名，Windows 可能会显示“Windows 已保护你的电脑”：点击**更多信息**，然后点击**仍要运行**。<br/>
-**便携版**：`ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`，无需安装：将文件夹解压到任意位置，运行 `ngPostDeluxe.exe`（设置保存在程序旁边的 `ngPost.conf` 中）。
+**便携版**：`ngPostDeluxe-v1.1-win64.zip` / `ngPostDeluxe-v1.1-win32.zip`，无需安装：将文件夹解压到任意位置，运行 `ngPostDeluxe.exe`（设置保存在程序旁边的 `ngPost.conf` 中）。
+
+### Docker / Unraid
+命令行版本也提供 Docker 镜像，可监视一个文件夹并发布其中出现的所有内容（适用于 NAS 或服务器），并附带 Unraid 模板：`ghcr.io/thenormal/ngpost-deluxe`。参见 [docker/README.md](docker/README.md)（英文）。
 
 ### 截图
 | Quick Post（浅色主题） | 历史记录 |
@@ -20,6 +23,7 @@
 | ![设置（深色主题）](docs/screenshots/settings-dark.png) | ![服务器（深色主题）](docs/screenshots/servers-dark.png) |
 
 ### 本分支的不同之处
+-   **ngPost Deluxe v1.1**：命令行版本的 **Docker 镜像**（监视一个文件夹并发布其中出现的所有内容，附带 **Unraid** 模板），Quick Post 和 Auto Posting 中的 Post 按钮居中，深色主题下标签图标和已完成的标签清晰可读
 -   **安全修复**：修复 yEnc 编码缓冲区中可能的堆溢出（对于某些数据，输出可能超出缓冲区大小）
 -   **yEnc 修复**：行尾的空格或制表符现在会被正确转义（某些服务器会将其去除，导致数据损坏）
 -   **更安全的密码**：生成的压缩包密码和名称使用操作系统的加密级随机数生成器（Qt >= 5.10），而不是 `std::rand()`

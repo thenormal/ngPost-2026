@@ -1,29 +1,28 @@
-## ngPost Deluxe 1.0
+## ngPost Deluxe 1.1
 
-First stable release of **ngPost Deluxe**, a revisited and redesigned version of the Usenet poster [ngPost](https://github.com/mbruel/ngPost) by Matthieu Bruel (GPL v3).
+Second release of **ngPost Deluxe**, a revisited and redesigned version of the Usenet poster [ngPost](https://github.com/mbruel/ngPost) by Matthieu Bruel (GPL v3).
 
 ### What's new
-- **New interface**: side bar (Quick Post, Auto Posting, Servers, Settings, History), pages made of cards, advanced options hidden until needed, a new icon and an empty screen that explains what to do
-- **Light and dark themes**, or automatic like Windows
-- **History page**: all your uploads in one sortable and searchable table (date, name, size, speed, status, files, duration, archive, password, groups), with totals, hidden passwords, copy and export. It reads the old `ngPost_history.csv` files too
-- **Servers page** with a **Test connection** button
-- **Support the project** button (Ko-fi) in the About window and in the Settings
-- **Faster compression on Windows** (the output of 7-Zip / rar is now read as it arrives), faster par2 with **ParPar** (64 bit), security and yEnc fixes inherited from the previous beta
-- **Diagnostic report** button in the log to help to find problems
-- Interface translated in 8 languages: English, French, German, Italian, Spanish, Dutch, Portuguese, Chinese
+- **Docker image** of the command line version, for a NAS or a server: it watches a folder and posts everything that arrives in it (7-Zip and ParPar included), with a **template for Unraid**. See [docker/README.md](https://github.com/thenormal/ngPost-Deluxe/blob/master/docker/README.md)
+- The **Post Files / Generate Posts button is now centered** in Quick Post and Auto Posting
+- **Dark theme**: the icons of the Quick Post, Auto Posting and New tabs are visible again, and finished tabs keep a readable text colour
+- Behind the scenes: the release is attached to GitHub automatically (installers and ZIP files), and the build no longer depends on a download of 7-Zip
 
 ### Download
 | File | For |
 |---|---|
-| `ngPostDeluxe-v1.0-win64-setup.exe` | **Installer** for Windows 64 bit (Windows 10 / 11), 7-Zip included |
-| `ngPostDeluxe-v1.0-win32-setup.exe` | **Installer** for Windows 32 bit (par2cmdline instead of ParPar), 7-Zip included |
-| `ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip` | Portable version, no installation |
+| `ngPostDeluxe-v1.1-win64-setup.exe` | **Installer** for Windows 64 bit (Windows 10 / 11), 7-Zip included |
+| `ngPostDeluxe-v1.1-win32-setup.exe` | **Installer** for Windows 32 bit (par2cmdline instead of ParPar), 7-Zip included |
+| `ngPostDeluxe-v1.1-win64.zip` / `ngPostDeluxe-v1.1-win32.zip` | Portable version, no installation |
+| `ghcr.io/thenormal/ngpost-deluxe` | **Docker** image (Linux amd64), see [docker/README.md](https://github.com/thenormal/ngPost-Deluxe/blob/master/docker/README.md) |
 
-Run the installer and follow the steps. Windows may show "Windows protected your PC" because the installer is not digitally signed: click **More info**, then **Run anyway**. Your settings and the history are kept in `%APPDATA%\ngPost Deluxe` (they survive updates and uninstall).
+**Updating from 1.0**: run the new installer, it replaces the old version. Your settings and history stay in `%APPDATA%\ngPost Deluxe`.
 
-[7-Zip](https://www.7-zip.org/) (GNU LGPL, licence in the `7-Zip` folder) is included and used by default to compress the posts: there is nothing else to install. You can still choose another 7-Zip or WinRAR in the Settings.
+Windows may show "Windows protected your PC" because the installer is not digitally signed: click **More info**, then **Run anyway**.
 
 If you already use ngPost: copy your `ngPost.conf` into `%APPDATA%\ngPost Deluxe` (the folder is created at the first start) to keep your servers and settings with the installed version. The portable version, started from the folder that contains `ngPost.conf`, keeps using it.
 
-### Version number
-ngPost Deluxe starts its own numbering at 1.0 (the fork was v5.0 beta). Copies of the 5.0 beta will not be told about this release: download it from this page.
+Please test it and report what does not work, or suggest improvements, on the [GitHub page](https://github.com/thenormal/ngPost-Deluxe/issues). If you like the program, there is also a small optional [Ko-fi](https://ko-fi.com/thenormal) page.
+
+### Also in version 1.0
+New interface (side bar, light and dark themes), History page, Servers page with **Test connection**, much faster compression on Windows, faster par2 with ParPar, Windows installer with 7-Zip included, diagnostic report, interface in 8 languages.

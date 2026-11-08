@@ -8,9 +8,9 @@
 It is a fork of [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licence GPL v3). All the credit for the original program goes to its author, Matthieu Bruel.<br/>
 
 ### Download
-**Installer**: download `ngPostDeluxe-v1.0-win64-setup.exe` (Windows 64 bit) or `ngPostDeluxe-v1.0-win32-setup.exe` (Windows 32 bit) from the [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) page and follow the steps. [7-Zip](https://www.7-zip.org/) is included: there is nothing else to install. Your settings and the history are kept in `%APPDATA%\ngPost Deluxe` and survive updates and uninstall.<br/>
+**Installer**: download `ngPostDeluxe-v1.1-win64-setup.exe` (Windows 64 bit) or `ngPostDeluxe-v1.1-win32-setup.exe` (Windows 32 bit) from the [Releases](https://github.com/thenormal/ngPost-Deluxe/releases/latest) page and follow the steps. [7-Zip](https://www.7-zip.org/) is included: there is nothing else to install. Your settings and the history are kept in `%APPDATA%\ngPost Deluxe` and survive updates and uninstall.<br/>
 Windows may show "Windows protected your PC" because the installer is not digitally signed: click **More info**, then **Run anyway**.<br/>
-**Portable version**: `ngPostDeluxe-v1.0-win64.zip` / `ngPostDeluxe-v1.0-win32.zip`, no installation: unzip the folder anywhere and start `ngPostDeluxe.exe` (the settings are in the `ngPost.conf` next to the program).
+**Portable version**: `ngPostDeluxe-v1.1-win64.zip` / `ngPostDeluxe-v1.1-win32.zip`, no installation: unzip the folder anywhere and start `ngPostDeluxe.exe` (the settings are in the `ngPost.conf` next to the program).
 
 ### Docker / Unraid
 The command line version is also available as a Docker image that watches a folder and posts everything that arrives in it
@@ -24,6 +24,7 @@ The command line version is also available as a Docker image that watches a fold
 | ![Settings (dark theme)](docs/screenshots/settings-dark.png) | ![Servers (dark theme)](docs/screenshots/servers-dark.png) |
 
 ### What is different in this fork
+-   **ngPost Deluxe v1.1**: **Docker image** of the command line version (it watches a folder and posts everything that arrives in it, with a template for **Unraid**), the Post button is centered in Quick Post and Auto Posting, tab icons and finished tabs are readable in the dark theme
 -   **Security fix**: possible heap overflow in the yEnc encoding buffer (the output could be bigger than the buffer with specific data)
 -   **yEnc fix**: a space or tab at the end of a line is now escaped correctly (some servers strip it, which corrupted the data)
 -   **Safer passwords**: the generated archive passwords and names use the cryptographic random generator of the OS (Qt >= 5.10) instead of `std::rand()`
