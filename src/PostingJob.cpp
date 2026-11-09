@@ -35,6 +35,9 @@
 #include <QCoreApplication>
 #include <QDir>
 
+//! how long we wait for the queued 'file posted' signals once all the connections are closed
+static const int sLastFilesTimeoutMs = 10000;
+
 PostingJob::PostingJob(NgPost *ngPost,
                        const QString &nzbFilePath,
                        const QFileInfoList &files,
@@ -477,14 +480,31 @@ void PostingJob::onDisconnectedConnection(NntpConnection *con)
         {
             if (con->hasNoMoreFiles())
             {
-                // the last connection is closed while the signal of the last file posted is still queued:
-                // _finishPosting will be called again when it arrives, with the final numbers.
-                // Printing the stats now would print them twice (the first time with a smaller size).
-                _statsDeferred = (!_postFinished && _filesToUpload.isEmpty() && _filesFailed.isEmpty() && _nbPosted < _nbFiles);
-                _finishPosting();
-                _statsDeferred = false;
-                if (!_postFinished)
-                    emit noMoreConnection();
+                if (!_postFinished && _filesToUpload.isEmpty() && _filesFailed.isEmpty() && _nbPosted < _nbFiles)
+                {
+                    // Every Article has been sent but the 'all articles posted' signals of the last files
+                    // are still queued: they go through their NntpFile first, so they can arrive after this
+                    // disconnection. Finishing now would close (and delete) the nzb before those files are
+                    // written in it: they would be missing from the nzb, or ngPost would crash when they arrive.
+                    // onNntpFilePosted finishes the job when the last one arrives.
+                    // Safety net: if they never come, we close the job as before.
+                    _waitingLastFiles = true;
+                    QTimer::singleShot(sLastFilesTimeoutMs, this, [this]() {
+                        if (!_waitingLastFiles || MB_LoadAtomic(_stopPosting))
+                            return;
+                        _waitingLastFiles = false;
+                        _error(tr("Error: the last files were never confirmed as posted, closing the Post"));
+                        _finishPosting();
+                        if (!_postFinished)
+                            emit noMoreConnection();
+                    });
+                }
+                else
+                {
+                    _finishPosting();
+                    if (!_postFinished)
+                        emit noMoreConnection();
+                }
             }
             else
             {
@@ -517,6 +537,14 @@ void PostingJob::onNntpFileStartPosting()
 void PostingJob::onNntpFilePosted()
 {
     NntpFile *nntpFile = static_cast<NntpFile*>(sender());
+    if (MB_LoadAtomic(_stopPosting))
+    {
+        // the Post is already closed (stopped, or all the connections were lost): the nzb is closed,
+        // _finishPosting has listed this file as not posted. Nothing to write, just free it.
+        _filesInProgress.remove(nntpFile);
+        emit nntpFile->scheduleDeletion();
+        return;
+    }
     _totalSize += static_cast<quint64>(nntpFile->fileSize());
     ++_nbPosted;
     if (_postWidget)
@@ -525,11 +553,15 @@ void PostingJob::onNntpFilePosted()
     if (_ngPost->_dispFilesPosting && !_ngPost->useHMI())
         _log(QString("[%1][%2: %3] <<<<< %4").arg(timestamp()).arg(tr("avg. speed")).arg(avgSpeed()).arg(nntpFile->name()));
 
-    nntpFile->writeToNZB(_nzbStream, QString::fromStdString(_from));
+    if (_nzb && _nzb->isOpen())
+        nntpFile->writeToNZB(_nzbStream, QString::fromStdString(_from));
+    else
+        _error(tr("Error: the nzb is already closed, %1 is not in it").arg(nntpFile->name()));
     _filesInProgress.remove(nntpFile);
     emit nntpFile->scheduleDeletion();
     if (_nbPosted == _nbFiles)
     {
+        _waitingLastFiles = false;
 #ifdef __DEBUG__
         _log(QString("All files have been posted => closing Job (nb article uploaded: %1, failed: %2)").arg(
                  _nbArticlesUploaded).arg(_nbArticlesFailed));
@@ -791,7 +823,7 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
     _ngPost->_finishPosting(); // to update progress bar
 
     // 1.: print stats
-    if (_timeStart.isValid() && !_statsDeferred)
+    if (_timeStart.isValid())
         _printStats();
 
 
@@ -860,9 +892,11 @@ void PostingJob::_closeNzb()
         if (_nzb->isOpen())
         {
             _nzbStream << "</nzb>\n";
+            _nzbStream.flush();
             _nzb->close();
             _ngPost->doNzbPostCMD(this);
         }
+        _nzbStream.setDevice(nullptr); // the stream must never write into the deleted file
         delete _nzb;
         _nzb = nullptr;
     }

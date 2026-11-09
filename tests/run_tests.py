@@ -44,8 +44,8 @@ def run_ngpost(stub, work, inputs, nzb, extra=(), conns=3, timeout=120, password
         cmd += ["-i", i]
     r = subprocess.run(cmd, env=env, cwd=work, capture_output=True,
                        text=True, timeout=timeout)
-    if r.returncode == -11:
-        raise KnownCrash()
+    if r.returncode < 0:
+        raise AssertionError("ngPost crashed (signal %d)\n%s%s" % (-r.returncode, r.stdout, r.stderr))
     return r
 
 
@@ -167,16 +167,6 @@ def test_wrong_password(work):
         stub.stop()
 
 
-KNOWN_CRASH = ("intermittent crash (SIGSEGV) at the end of the upload: the nzb file is closed and "
-               "deleted before the last queued 'file posted' event writes into it. Not fixed yet: "
-               "a run that crashes is repeated (up to MAX_ATTEMPTS times) and reported as a warning.")
-MAX_ATTEMPTS = 6
-
-
-class KnownCrash(Exception):
-    pass
-
-
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password]
 
@@ -186,30 +176,18 @@ def main():
     if len(sys.argv) != 2 or not os.access(sys.argv[1], os.X_OK):
         sys.exit(__doc__)
     NGPOST = os.path.abspath(sys.argv[1])
-    failed = crashes = 0
+    failed = 0
     for t in TESTS:
-        for attempt in range(1, MAX_ATTEMPTS + 1):
-            with tempfile.TemporaryDirectory(prefix="ngpost-test-") as work:
-                try:
-                    t(work)
-                    note = "" if attempt == 1 else "  (after %d known crash(es))" % (attempt - 1)
-                    print("PASS  %s%s" % (t.__name__, note))
-                    break
-                except KnownCrash:
-                    crashes += 1
-                    if attempt == MAX_ATTEMPTS:
-                        failed += 1
-                        print("FAIL  %s: ngPost crashed %d times in a row" % (t.__name__, attempt))
-                    continue
-                except Exception as e:  # noqa: BLE001
-                    failed += 1
-                    print("FAIL  %s: %s" % (t.__name__, e))
-                    if not isinstance(e, AssertionError):
-                        traceback.print_exc()
-                    break
+        with tempfile.TemporaryDirectory(prefix="ngpost-test-") as work:
+            try:
+                t(work)
+                print("PASS  %s" % t.__name__)
+            except Exception as e:  # noqa: BLE001
+                failed += 1
+                print("FAIL  %s: %s" % (t.__name__, e))
+                if not isinstance(e, AssertionError):
+                    traceback.print_exc()
     print("\n%d/%d tests passed" % (len(TESTS) - failed, len(TESTS)))
-    if crashes:
-        print("WARNING: known issue hit %d time(s): %s" % (crashes, KNOWN_CRASH))
     sys.exit(1 if failed else 0)
 
 
