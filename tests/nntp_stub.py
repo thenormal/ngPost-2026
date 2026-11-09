@@ -110,16 +110,26 @@ class NntpStub:
         self.refused = 0
         self.bad_auth = 0
         self._lock = threading.Lock()
+        self.events = []            # (seconds, connection number, text) to understand a failed test
+        self._t0 = __import__('time').time()
+        self._nconn = 0
         stub = self
 
         class Handler(socketserver.StreamRequestHandler):
             def handle(self):
                 w = self.wfile
+                with stub._lock:
+                    stub._nconn += 1
+                    me = stub._nconn
+                def ev(text):
+                    stub.events.append((round(__import__('time').time() - stub._t0, 3), me, text))
+                ev('connected')
                 w.write(b"200 stub news server ready\r\n")
                 user_ok = False
                 while True:
                     line = self.rfile.readline()
                     if not line:
+                        ev('closed by ngPost')
                         return
                     parts = line.decode("latin-1").strip().split(" ", 2)
                     cmd = parts[0].upper()
@@ -132,10 +142,12 @@ class NntpStub:
                             if refuse:
                                 stub.refuse_logins -= 1
                         if user_ok and parts[2] == stub.password and not refuse:
+                            ev('login ok')
                             w.write(b"281 Ok\r\n")
                         else:
                             with stub._lock:
                                 stub.bad_auth += 1
+                            ev('login refused')
                             w.write(b"481 Authentication failed\r\n")
                     elif cmd == "POST":
                         w.write(b"340 send article\r\n")
@@ -155,9 +167,11 @@ class NntpStub:
                                 stub.accepted[art.msg_id] = art
                             else:
                                 stub.refused += 1
+                        ev('article %s part %s %s' % (art.name, art.part, 'accepted' if verdict is None else 'refused'))
                         w.write(b"240 article posted\r\n" if verdict is None
                                 else verdict + b"\r\n")
                     elif cmd == "QUIT":
+                        ev('QUIT')
                         w.write(b"205 bye\r\n")
                         return
                     else:

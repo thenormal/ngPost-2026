@@ -215,7 +215,7 @@ void NntpConnection::onDisconnected()
 
         deleteSocket();
     }
-    if (_poster->isPosting() && !_authFailed && _postingState != PostingState::NO_MORE_FILES && _nbDisconnected++ < NntpArticle::nbMaxTrySending())
+    if (_poster->isPosting() && _postingState != PostingState::NO_MORE_FILES && _nbDisconnected++ < NntpArticle::nbMaxTrySending())
     {
         // Let's try to reconnect
         _error(tr("Connection lost, trying to reconnect! (nb disconnected: %1)").arg(_nbDisconnected));

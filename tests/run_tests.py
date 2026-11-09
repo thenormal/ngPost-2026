@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from nntp_stub import NntpStub  # noqa: E402
 
 NGPOST = None
+LAST_OUTPUT = ""            # output of the last ngPost run, printed when a test fails
 ARTICLE_SIZE = 50000        # small articles => many articles for small files
 
 
@@ -44,6 +45,8 @@ def run_ngpost(stub, work, inputs, nzb, extra=(), conns=3, timeout=120, password
         cmd += ["-i", i]
     r = subprocess.run(cmd, env=env, cwd=work, capture_output=True,
                        text=True, timeout=timeout)
+    global LAST_OUTPUT
+    LAST_OUTPUT = "exit code %d\n%s%s" % (r.returncode, r.stdout, r.stderr)
     if r.returncode < 0:
         raise AssertionError("ngPost crashed (signal %d)\n%s%s" % (-r.returncode, r.stdout, r.stderr))
     return r
@@ -175,7 +178,11 @@ def test_some_logins_refused(work):
         nzb = os.path.join(work, "out.nzb")
         run_ngpost(stub, work, [src], nzb, conns=4, timeout=60)
         check(stub.bad_auth >= 1, "no login was refused")
-        common_checks(stub, nzb, {"partial.bin": data})
+        try:
+            common_checks(stub, nzb, {"partial.bin": data})
+        except AssertionError as e:
+            raise AssertionError("%s\nserver events (s, connection, event):\n%s" % (
+                e, "\n".join("  %s" % (x,) for x in stub.events)))
     finally:
         stub.stop()
 
@@ -200,6 +207,7 @@ def main():
                 print("FAIL  %s: %s" % (t.__name__, e))
                 if not isinstance(e, AssertionError):
                     traceback.print_exc()
+                print("---- output of the last ngPost run ----\n%s----" % LAST_OUTPUT[-9000:])
     print("\n%d/%d tests passed" % (len(TESTS) - failed, len(TESTS)))
     sys.exit(1 if failed else 0)
 
