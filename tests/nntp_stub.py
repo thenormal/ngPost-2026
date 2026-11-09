@@ -96,14 +96,19 @@ def parse_article(raw_lines):
 
 
 class NntpStub:
-    """policy(article, attempt) -> None to accept, or a response line to refuse.
+    """policy(article, attempt[, connection]) -> None to accept, or a response line to refuse.
+    connection is the number of the TCP connection (1, 2...) in the order the server accepted them.
+    die_after: once this number of articles is accepted, the server closes every connection
+    and refuses the new ones (a server that goes down).
 
     attempt counts the tries received for the same (file name, part), because ngPost
     may give a new message id to an article it sends again."""
 
-    def __init__(self, user="user", password="pass", policy=None, refuse_logins=0):
+    def __init__(self, user="user", password="pass", policy=None, refuse_logins=0, die_after=None):
         self.user, self.password = user, password
         self.refuse_logins = refuse_logins   # the first N logins are refused (like a connection limit)
+        self.die_after = die_after
+        self.dead = False
         self.policy = policy or (lambda article, attempt: None)
         self.accepted = {}          # msg_id -> Article
         self.attempts = {}          # (name, part) -> number of tries received
@@ -118,6 +123,8 @@ class NntpStub:
         class Handler(socketserver.StreamRequestHandler):
             def handle(self):
                 w = self.wfile
+                if stub.dead:
+                    return                      # server down: close at once
                 with stub._lock:
                     stub._nconn += 1
                     me = stub._nconn
@@ -162,7 +169,10 @@ class NntpStub:
                             key = (art.name, art.part)
                             n = stub.attempts.get(key, 0) + 1
                             stub.attempts[key] = n
-                            verdict = stub.policy(art, n)
+                            try:
+                                verdict = stub.policy(art, n, me)
+                            except TypeError:
+                                verdict = stub.policy(art, n)
                             if verdict is None:
                                 stub.accepted[art.msg_id] = art
                             else:
@@ -170,6 +180,11 @@ class NntpStub:
                         ev('article %s part %s %s' % (art.name, art.part, 'accepted' if verdict is None else 'refused'))
                         w.write(b"240 article posted\r\n" if verdict is None
                                 else verdict + b"\r\n")
+                        if stub.die_after is not None and len(stub.accepted) >= stub.die_after:
+                            stub.dead = True
+                        if stub.dead:
+                            ev('server down')
+                            return
                     elif cmd == "QUIT":
                         ev('QUIT')
                         w.write(b"205 bye\r\n")
@@ -180,6 +195,9 @@ class NntpStub:
         class Server(socketserver.ThreadingTCPServer):
             allow_reuse_address = True
             daemon_threads = True
+
+            def handle_error(self, request, client_address):
+                pass                    # ngPost closing a connection abruptly is not an error here
 
         self._srv = Server(("127.0.0.1", 0), Handler)
         self.port = self._srv.server_address[1]

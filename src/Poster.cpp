@@ -73,7 +73,7 @@ uint Poster::nbActiveConnections() const
 }
 #endif
 
-NntpArticle *Poster::getNextArticle(const QString &conPrefix)
+NntpArticle *Poster::getNextArticle(const QString &conPrefix, const NntpServerParams *server)
 {
 
     QMutexLocker lock(&_secureArticles); // thread safety (coming from a posting thread)
@@ -81,10 +81,20 @@ NntpArticle *Poster::getNextArticle(const QString &conPrefix)
     if (MB_LoadAtomic(_job->_stopPosting))
         return nullptr;
 
+    // 1.: an Article that failed elsewhere (another connection or another server) and was never tried
+    //     on our server, or an Article given back by a Poster that lost all its connections
+    NntpArticle *article = _job->takeRecoveryArticle(server, true);
+    if (article)
+    {
+        if (_ngPost->debugMode())
+            _job->_log(QString("[%1] taking back Article: %2").arg(conPrefix).arg(article->str()));
+        return article;
+    }
+
     if (_ngPost->debugFull())
         _job->_log(QString("[%1][Poster::getNextArticle] _articles.size() = %2").arg(conPrefix).arg(_articles.size()));
 
-    NntpArticle *article = nullptr;
+    // 2.: our own Articles
     if (_articles.size())
         article = _articles.dequeue();
     else
@@ -100,32 +110,39 @@ NntpArticle *Poster::getNextArticle(const QString &conPrefix)
     }
 
     if (article)
+    {
         emit _articleBuilder->scheduleNextArticle(); // schedule the preparation of another Article in the _builderThread
+        return article;
+    }
 
+    // 3.: nothing else to do: an Article waiting for a recovery, even if it already failed on our server
+    //     (only when it failed on every server, otherwise we leave it to the other servers)
+    article = _job->takeRecoveryArticle(server, false);
+    if (article && _ngPost->debugMode())
+        _job->_log(QString("[%1] trying again Article: %2").arg(conPrefix).arg(article->str()));
     return article;
+}
 
+void Poster::moveArticlesToRecovery()
+{
+    QMutexLocker lock(&_secureArticles);
+    _forwardToRecovery = true; // the ones the builder is preparing will follow
+    if (_articles.size())
+    {
+        _job->addToRecovery(_articles);
+        _articles.clear();
+    }
 }
 
 #ifdef __RELEASE_ARTICLES_WHEN_CON_FAILS__
-void Poster::releaseArticle(const QString &conPrefix, NntpArticle *article)
+void Poster::releaseArticle(const QString &conPrefix, NntpArticle *article, const NntpServerParams *server)
 {
-    QMutexLocker lock(&_secureArticles); // thread safety (coming from a posting thread)
     if (_ngPost->debugMode())
         _job->_log(QString("[%1] releasing Article: %2").arg(conPrefix).arg(article->str()));
 
-    // the current NntpConnection releasing the Article will close
-    // so we need at least another one that would try to post the Article
-    if (nbActiveConnections() > 2)
-    {
-        article->resetNbTrySending();
-        _articles.prepend(article);
-    }
-    else
-    {
-        _job->_error(QString("give up on Article: %1").arg(article->str()));
-        emit article->failed(article->size());
-    }
-
+    // the PostingJob gives it to another connection (preferably on another server),
+    // keeps it for a second round, or declares it failed
+    _job->recoverArticle(article, server, conPrefix);
 }
 #endif
 

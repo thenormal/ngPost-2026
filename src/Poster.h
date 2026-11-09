@@ -29,6 +29,7 @@ class ArticleBuilder;
 class NntpConnection;
 class NntpArticle;
 class PostingJob;
+struct NntpServerParams;
 
 /*!
  * \brief Poster is a container class that has 2 Threads
@@ -58,6 +59,7 @@ private:
 
     QQueue<NntpArticle*> _articles;
     QMutex               _secureArticles;
+    bool                 _forwardToRecovery = false; //!< no connection left: new Articles go to the PostingJob recovery queue
 
 public:
     Poster(PostingJob *job, ushort id);
@@ -68,9 +70,10 @@ public:
     uint nbActiveConnections() const;
 #endif
 
-    NntpArticle *getNextArticle(const QString &conPrefix);
+    NntpArticle *getNextArticle(const QString &conPrefix, const NntpServerParams *server);
+    void moveArticlesToRecovery(); //!< all our connections are lost: give our Articles to the other Posters
 #ifdef __RELEASE_ARTICLES_WHEN_CON_FAILS__
-    void releaseArticle(const QString &conPrefix, NntpArticle *article);
+    void releaseArticle(const QString &conPrefix, NntpArticle *article, const NntpServerParams *server);
 #endif
 
     inline void lockQueue();

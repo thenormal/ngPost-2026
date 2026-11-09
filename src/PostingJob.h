@@ -35,6 +35,7 @@ class NgPost;
 class NntpConnection;
 class NntpFile;
 class NntpArticle;
+struct NntpServerParams;
 class PostingWidget;
 class Poster;
 
@@ -163,6 +164,14 @@ private:
 
     QTimer _resumeTimer;
 
+    // ---- recovery of the failed Articles (shared by all the Posters, used from their threads)
+    QMutex               _secureRecovery;   //!< protects the members below
+    QQueue<NntpArticle*> _recoveryArticles; //!< Articles to post again (by any connection)
+    QVector<NntpArticle*> _heldArticles;    //!< Articles that failed everywhere, kept for the second round
+    bool                 _secondRoundDone   = false; //!< the second round has started (only one)
+    bool                 _heldOverflow      = false; //!< too many failed Articles: no second round
+    int                  _nbEnabledServers  = 1;
+
     bool _isActiveJob;
 
 
@@ -203,6 +212,11 @@ public:
     void resume();
 
     inline QString avgSpeed() const;
+
+    // recovery of failed Articles (thread safe: called from the connection threads)
+    void recoverArticle(NntpArticle *article, const NntpServerParams *server, const QString &conPrefix);
+    NntpArticle *takeRecoveryArticle(const NntpServerParams *server, bool onlyIfNotFailedThere);
+    void addToRecovery(const QQueue<NntpArticle*> &articles); //!< not failed, just stranded
 
     inline void articlePosted(quint64 size);
     inline void articleFailed(quint64 size);
@@ -310,6 +324,9 @@ private:
     void _finishPosting();
 
     void _closeNzb();
+    bool _startSecondRoundIfNeeded();   //!< all the connections are done: post again the failed Articles (once)
+    void _failRecoveryArticles();       //!< give up the Articles still waiting for a recovery
+    void _restartConnectionsForSecondRound();
     void _printStats() const;    
 
 

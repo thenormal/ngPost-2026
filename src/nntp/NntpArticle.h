@@ -22,8 +22,10 @@
 #include <QtGlobal>
 #include <QUuid>
 #include <QObject>
+#include <QVector>
 class NntpFile;
 class NntpConnection;
+struct NntpServerParams;
 
 
 /*!
@@ -55,6 +57,10 @@ private:
     const qint64 _fileBytes; //!< bytes of the original file that are encoded
 
     ushort _nbTrySending;
+
+    // recovery of failed Articles (protected by PostingJob::_secureRecovery)
+    ushort _nbReleases = 0;                          //!< times the Article was given up by a connection
+    QVector<const NntpServerParams*> _failedServers; //!< servers on which it failed
 
     mutable QString _msgId; //!< using the UUID but the server could rewrite it...
 
@@ -97,6 +103,12 @@ public:
 
     inline void genNewId();
 
+    inline ushort nbReleases() const;
+    inline void   addRelease(const NntpServerParams *server);
+    inline bool   hasFailedOn(const NntpServerParams *server) const;
+    inline void   resetReleases(); //!< keeps the list of servers where it failed
+    inline int    nbFailedServers() const;
+
     inline void overwriteMsgId(const QString &serverMsgID);
 
     inline static ushort nbMaxTrySending();
@@ -132,6 +144,17 @@ bool NntpArticle::isFirstArticle() const { return _part == 1; }
 
 quint64 NntpArticle::size() const { return static_cast<quint64>(_fileBytes); }
 void NntpArticle::genNewId() { _id = QUuid::createUuid(); }
+
+ushort NntpArticle::nbReleases() const { return _nbReleases; }
+void NntpArticle::addRelease(const NntpServerParams *server)
+{
+    ++_nbReleases;
+    if (server && !_failedServers.contains(server))
+        _failedServers.append(server);
+}
+bool NntpArticle::hasFailedOn(const NntpServerParams *server) const { return _failedServers.contains(server); }
+void NntpArticle::resetReleases() { _nbReleases = 0; }
+int NntpArticle::nbFailedServers() const { return _failedServers.size(); }
 
 void NntpArticle::overwriteMsgId(const QString &serverMsgID){ _msgId = serverMsgID; }
 
