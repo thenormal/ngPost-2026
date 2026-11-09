@@ -150,25 +150,38 @@ def test_retry_after_refusals(work):
 
 
 def test_wrong_password(work):
-    # known behaviour: with a wrong password ngPost pauses, waits 30 s and retries
-    # for ever, so we let it run a few seconds and then stop it
+    # a refused login must stop the post (exit code != 0), not wait and retry for ever,
+    # and the password must never be written in the output
     stub = NntpStub(password="good").start()
     try:
         src = os.path.join(work, "x.bin")
         make_file(src, 60_000, 8)
         nzb = os.path.join(work, "out.nzb")
-        try:
-            run_ngpost(stub, work, [src], nzb, timeout=8, password="WRONG")
-        except subprocess.TimeoutExpired:
-            pass
+        r = run_ngpost(stub, work, [src], nzb, timeout=40, password="WRONGpass42")
+        check(r.returncode != 0, "ngPost exited with 0 although the login was refused")
         check(stub.bad_auth > 0, "the server never saw a bad password")
         check(len(stub.accepted) == 0, "articles were accepted with a wrong password")
+        check("WRONGpass42" not in r.stdout + r.stderr, "the password appears in the output")
+    finally:
+        stub.stop()
+
+
+def test_some_logins_refused(work):
+    # only some connections are refused (like a connection limit): the others must finish the post
+    stub = NntpStub(refuse_logins=2).start()
+    try:
+        src = os.path.join(work, "partial.bin")
+        data = make_file(src, 300_000, 9)
+        nzb = os.path.join(work, "out.nzb")
+        run_ngpost(stub, work, [src], nzb, conns=4, timeout=60)
+        check(stub.bad_auth >= 1, "no login was refused")
+        common_checks(stub, nzb, {"partial.bin": data})
     finally:
         stub.stop()
 
 
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
-         test_retry_after_refusals, test_wrong_password]
+         test_retry_after_refusals, test_wrong_password, test_some_logins_refused]
 
 
 def main():

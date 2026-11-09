@@ -60,6 +60,7 @@ private:
     PostingState   _postingState;
     NntpArticle   *_currentArticle;
     ushort         _nbDisconnected;
+    bool           _authFailed;    //!< the server refused the user / password (retrying would be useless)
 
     NgPost        *_ngPost;
     Poster        *_poster;
@@ -94,6 +95,7 @@ public:
     void setPoster(Poster *poster);
 
     inline bool hasNoMoreFiles() const;
+    inline bool hasAuthFailed() const;
 
     static QString sslSupportInfo();
     static bool supportsSsl();
@@ -154,6 +156,7 @@ void NntpConnection::resetErrorCount() { _nbDisconnected = 0; }
 bool NntpConnection::isConnected() const { return _isConnected; }
 
 bool NntpConnection::hasNoMoreFiles() const { return _postingState == PostingState::NO_MORE_FILES; }
+bool NntpConnection::hasAuthFailed() const { return _authFailed; }
 
 void NntpConnection::_log(const char *aMsg) const
 {

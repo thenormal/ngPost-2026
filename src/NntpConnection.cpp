@@ -44,6 +44,7 @@ NntpConnection::NntpConnection(NgPost *ngPost, int id, const NntpServerParams &s
     _postingState(PostingState::NOT_CONNECTED),
     _currentArticle(nullptr),
     _nbDisconnected(0),
+    _authFailed(false),
     _ngPost(ngPost),
     _poster(nullptr)
 #ifdef __USE_CONNECTION_TIMEOUT__
@@ -214,7 +215,7 @@ void NntpConnection::onDisconnected()
 
         deleteSocket();
     }
-    if (_poster->isPosting() && _postingState != PostingState::NO_MORE_FILES && _nbDisconnected++ < NntpArticle::nbMaxTrySending())
+    if (_poster->isPosting() && !_authFailed && _postingState != PostingState::NO_MORE_FILES && _nbDisconnected++ < NntpArticle::nbMaxTrySending())
     {
         // Let's try to reconnect
         _error(tr("Connection lost, trying to reconnect! (nb disconnected: %1)").arg(_nbDisconnected));
@@ -462,6 +463,7 @@ void NntpConnection::onReadyRead()
 //#if defined(__DEBUG__) && defined(LOG_CONNECTION_ERRORS_BEFORE_EMIT_SIGNALS)
 //                _error(err);
 //#endif
+                _authFailed = true;
                 emit errorConnecting(tr("[Connection #%1] Error sending user '%4' to server %2:%3").arg(
                                          _id).arg(_srvParams.host).arg(_srvParams.port).arg(_srvParams.user.c_str()));
                 _closeConnection();
@@ -493,9 +495,11 @@ void NntpConnection::onReadyRead()
 //#if defined(__DEBUG__) && defined(LOG_CONNECTION_ERRORS_BEFORE_EMIT_SIGNALS)
 //                _error(err);
 //#endif
-                emit errorConnecting(tr("[Connection #%1] Error authentication to server %2:%3 with user '%4' and pass '%5'").arg(
+                _authFailed = true;
+                // the password is never written in the log
+                emit errorConnecting(tr("[Connection #%1] Authentication refused by server %2:%3 for user '%4': check your user name and password").arg(
                                          _id).arg(_srvParams.host).arg(_srvParams.port).arg(
-                                         _srvParams.user.c_str()).arg(_srvParams.pass.c_str()));
+                                         _srvParams.user.c_str()));
                 _closeConnection();
             }
             else
@@ -503,6 +507,7 @@ void NntpConnection::onReadyRead()
 #if defined(__DEBUG__) && defined(LOG_CONNECTION_STEPS)
                 _log("> AUTHINFO_PASS succeed => ready to POST \\o/");
 #endif
+                _authFailed = false;
                 _postingState = PostingState::IDLE;
                 _sendNextArticle();
             }
