@@ -96,6 +96,7 @@ public:
 
     inline bool hasNoMoreFiles() const;
     inline bool hasAuthFailed() const;
+    inline Poster *poster() const;
 
     static QString sslSupportInfo();
     static bool supportsSsl();
@@ -157,6 +158,7 @@ bool NntpConnection::isConnected() const { return _isConnected; }
 
 bool NntpConnection::hasNoMoreFiles() const { return _postingState == PostingState::NO_MORE_FILES; }
 bool NntpConnection::hasAuthFailed() const { return _authFailed; }
+Poster *NntpConnection::poster() const { return _poster; }
 
 void NntpConnection::_log(const char *aMsg) const
 {

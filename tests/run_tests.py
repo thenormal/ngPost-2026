@@ -36,7 +36,8 @@ def make_file(path, size, seed):
 
 
 def run_ngpost(stub, work, inputs, nzb, extra=(), conns=3, timeout=120, password=None):
-    env = dict(os.environ, HOME=work)          # no user config can interfere
+    env = dict(os.environ, HOME=work,          # no user config can interfere
+               NGPOST_SECOND_ROUND_DELAY_MS="2000")
     cmd = [NGPOST, "-h", "127.0.0.1", "-P", str(stub.port), "-u", stub.user,
            "-p", password or stub.password, "-n", str(conns), "-g", "alt.binaries.test",
            "-a", str(ARTICLE_SIZE), "-o", nzb, "-q"]
@@ -50,6 +51,41 @@ def run_ngpost(stub, work, inputs, nzb, extra=(), conns=3, timeout=120, password
     if r.returncode < 0:
         raise AssertionError("ngPost crashed (signal %d)\n%s%s" % (-r.returncode, r.stdout, r.stderr))
     return r
+
+
+def run_ngpost_conf(stubs, work, inputs, nzb, conns=2, threads=None, extra=(), timeout=180, env_extra=None):
+    """post with a configuration file declaring one server per stub"""
+    conf = os.path.join(work, "test.conf")
+    with open(conf, "w") as f:
+        f.write("GROUPS = alt.binaries.test\nARTICLE_SIZE = %d\nRESUME_WAIT = 2\nSOCK_TIMEOUT = 10\n" % ARTICLE_SIZE)
+        if threads:
+            f.write("THREAD = %d\n" % threads)
+        for st in stubs:
+            f.write("\n[server]\nhost = 127.0.0.1\nport = %d\nssl = false\nuser = %s\npass = %s\n"
+                    "connection = %d\nenabled = true\n" % (st.port, st.user, st.password, conns))
+    env = dict(os.environ, HOME=work, NGPOST_SECOND_ROUND_DELAY_MS="2000")
+    env.update(env_extra or {})
+    cmd = [NGPOST, "--conf", conf, "-o", nzb, "-q"] + list(extra)
+    for i in inputs:
+        cmd += ["-i", i]
+    r = subprocess.run(cmd, env=env, cwd=work, capture_output=True, text=True, timeout=timeout)
+    global LAST_OUTPUT
+    LAST_OUTPUT = "exit code %d\n%s%s" % (r.returncode, r.stdout, r.stderr)
+    if r.returncode < 0:
+        raise AssertionError("ngPost crashed (signal %d)\n%s%s" % (-r.returncode, r.stdout, r.stderr))
+    return r
+
+
+def merged_accepted(stubs):
+    """the articles accepted by all the stubs, as if it was one server"""
+    class All:
+        pass
+    a = All()
+    a.accepted = {}
+    for st in stubs:
+        a.accepted.update(st.accepted)
+    a.rebuild_files = lambda: NntpStub.rebuild_files(a)
+    return a
 
 
 def read_nzb(path):
@@ -187,8 +223,114 @@ def test_some_logins_refused(work):
         stub.stop()
 
 
+def test_article_always_refused_on_one_connection(work):
+    # connection #1 refuses every article: the others must post them
+    def policy(article, attempt, connection):
+        return b"441 posting failed" if connection == 1 else None
+
+    stub = NntpStub(policy=policy).start()
+    try:
+        src = os.path.join(work, "onecon.bin")
+        data = make_file(src, 500_000, 10)
+        nzb = os.path.join(work, "out.nzb")
+        r = run_ngpost(stub, work, [src], nzb, conns=3)
+        check(stub.refused > 0, "connection #1 did not refuse anything")
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        common_checks(stub, nzb, {"onecon.bin": data})
+    finally:
+        stub.stop()
+
+
+def test_server_going_down(work):
+    # 2 servers, 2 threads: the second server goes down after 2 articles, so one Poster loses all its
+    # connections; its Articles must be posted by the other one
+    good = NntpStub().start()
+    bad = NntpStub(die_after=2).start()
+    try:
+        src = os.path.join(work, "down.bin")
+        data = make_file(src, 1_500_000, 11)
+        nzb = os.path.join(work, "out.nzb")
+        r = run_ngpost_conf([good, bad], work, [src], nzb, conns=2, threads=2)
+        check(bad.dead, "the second server never went down")
+        # exit code 1 is fine here (the lost connections are reported as errors), what matters is the content
+        common_checks(merged_accepted([good, bad]), nzb, {"down.bin": data})
+    finally:
+        good.stop()
+        bad.stop()
+
+
+def test_other_server_used(work):
+    # the first server refuses every article: they must go to the second one
+    refusing = NntpStub(policy=lambda article, attempt: b"441 posting failed").start()
+    good = NntpStub().start()
+    try:
+        src = os.path.join(work, "other.bin")
+        data = make_file(src, 400_000, 12)
+        nzb = os.path.join(work, "out.nzb")
+        r = run_ngpost_conf([refusing, good], work, [src], nzb, conns=2, threads=1)
+        check(refusing.refused > 0, "the first server did not refuse anything")
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        common_checks(good, nzb, {"other.bin": data})
+    finally:
+        refusing.stop()
+        good.stop()
+
+
+def test_second_round(work):
+    # the server refuses everything during 3 seconds after the first article: the articles that
+    # failed everywhere must be posted by the second round
+    import time
+    state = {"start": None}
+
+    def policy(article, attempt):
+        if article.part == 1:
+            state["start"] = state["start"] or time.time()
+            return None
+        if state["start"] and time.time() - state["start"] < 3:
+            return b"441 posting failed"
+        return None
+
+    stub = NntpStub(policy=policy).start()
+    try:
+        src = os.path.join(work, "round2.bin")
+        data = make_file(src, 300_000, 13)
+        nzb = os.path.join(work, "out.nzb")
+        r = run_ngpost_conf([stub], work, [src], nzb, conns=2, threads=1,
+                            env_extra={"NGPOST_SECOND_ROUND_DELAY_MS": "4000"})
+        out = r.stdout + r.stderr
+        check("new attempt" in out, "no second round announced")
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        common_checks(stub, nzb, {"round2.bin": data})
+    finally:
+        stub.stop()
+
+
+def test_too_many_failures(work):
+    # more than 200 articles fail everywhere: no second round, the post ends with errors
+    global ARTICLE_SIZE
+    stub = NntpStub(policy=lambda article, attempt: b"441 posting failed" if article.part > 1 else None).start()
+    saved = ARTICLE_SIZE
+    ARTICLE_SIZE = 2000
+    try:
+        src = os.path.join(work, "many.bin")
+        make_file(src, 2000 * 230, 14)
+        nzb = os.path.join(work, "out.nzb")
+        r = run_ngpost_conf([stub], work, [src], nzb, conns=2, threads=1,
+                            env_extra={"NGPOST_SECOND_ROUND_DELAY_MS": "500"}, timeout=240)
+        out = r.stdout + r.stderr
+        check("there won't be a second attempt" in out, "the limit of 200 failed articles was not applied")
+        check("new attempt" not in out, "a second round was started anyway")
+        check(r.returncode != 0, "exit code 0 although articles failed")
+        check(len(stub.accepted) == 1, "%d articles accepted, expected 1" % len(stub.accepted))
+    finally:
+        ARTICLE_SIZE = saved
+        stub.stop()
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
-         test_retry_after_refusals, test_wrong_password, test_some_logins_refused]
+         test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
+         test_article_always_refused_on_one_connection, test_server_going_down,
+         test_other_server_used, test_second_round, test_too_many_failures]
 
 
 def main():

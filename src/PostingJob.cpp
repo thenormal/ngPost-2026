@@ -38,6 +38,17 @@
 //! how long we wait for the queued 'file posted' signals once all the connections are closed
 static const int sLastFilesTimeoutMs = 10000;
 
+//! Articles that failed on every connection / server are kept (in memory) for a second round, up to this number
+static const int sMaxHeldArticles = 200;
+
+//! pause before the second round (30 s; the tests shorten it with NGPOST_SECOND_ROUND_DELAY_MS)
+static int secondRoundDelayMs()
+{
+    bool ok = false;
+    int delay = qEnvironmentVariableIntValue("NGPOST_SECOND_ROUND_DELAY_MS", &ok);
+    return (ok && delay >= 0) ? delay : 30000;
+}
+
 PostingJob::PostingJob(NgPost *ngPost,
                        const QString &nzbFilePath,
                        const QFileInfoList &files,
@@ -476,10 +487,31 @@ void PostingJob::onDisconnectedConnection(NntpConnection *con)
         con->resetErrorCount(); // In case we will resume if we loose all
         _closedConnections.append(con);
 
+        // a Poster that lost all its connections gives its prepared Articles to the other ones
+        Poster *poster = con->poster();
+        if (poster && !con->hasNoMoreFiles())
+        {
+            bool posterHasConnection = false;
+            for (NntpConnection *other : _nntpConnections)
+            {
+                if (other->poster() == poster)
+                {
+                    posterHasConnection = true;
+                    break;
+                }
+            }
+            if (!posterHasConnection)
+                poster->moveArticlesToRecovery();
+        }
+
         if (_nntpConnections.isEmpty())
         {
             if (con->hasNoMoreFiles())
             {
+                // some Articles failed: post them again once (the connections are restarted after a pause)
+                if (!_postFinished && _startSecondRoundIfNeeded())
+                    return;
+
                 if (!_postFinished && _filesToUpload.isEmpty() && _filesFailed.isEmpty() && _nbPosted < _nbFiles)
                 {
                     // Every Article has been sent but the 'all articles posted' signals of the last files
@@ -539,6 +571,138 @@ void PostingJob::onDisconnectedConnection(NntpConnection *con)
             }
         }
     }
+}
+
+void PostingJob::recoverArticle(NntpArticle *article, const NntpServerParams *server, const QString &conPrefix)
+{
+    QMutexLocker lock(&_secureRecovery); // called from the connection threads
+    article->addRelease(server);
+    article->resetNbTrySending();
+    article->genNewId();
+
+    // with 1 server: 3 connections can try it, with N servers: at least one connection of each server
+    const int maxReleases = qMax(2, _nbEnabledServers);
+    if (article->nbReleases() <= maxReleases)
+    {
+        _recoveryArticles.enqueue(article);
+        if (_ngPost->debugMode())
+            _log(tr("[%1] Article given to another connection: %2").arg(conPrefix).arg(article->str()));
+        return;
+    }
+
+    // it failed everywhere: keep it for the second round (if not too many)
+    if (!_secondRoundDone && !_heldOverflow)
+    {
+        if (_heldArticles.size() < sMaxHeldArticles)
+        {
+            _heldArticles.append(article);
+            if (_ngPost->debugMode())
+                _log(tr("[%1] Article kept for a second attempt: %2").arg(conPrefix).arg(article->str()));
+            return;
+        }
+        _heldOverflow = true;
+        _error(tr("More than %1 Articles failed: there won't be a second attempt, they are counted as failed").arg(
+                   sMaxHeldArticles));
+        for (NntpArticle *held : _heldArticles)
+            emit held->failed(held->size());
+        _heldArticles.clear();
+    }
+    _error(tr("give up on Article: %1").arg(article->str()));
+    emit article->failed(article->size());
+}
+
+NntpArticle *PostingJob::takeRecoveryArticle(const NntpServerParams *server, bool onlyIfNotFailedThere)
+{
+    QMutexLocker lock(&_secureRecovery); // called from the connection threads
+    for (int i = 0 ; i < _recoveryArticles.size() ; ++i)
+    {
+        NntpArticle *article = _recoveryArticles.at(i);
+        // never on a server where it failed while another server could still take it
+        bool canTake = !article->hasFailedOn(server)
+                || (!onlyIfNotFailedThere && article->nbFailedServers() >= _nbEnabledServers);
+        if (canTake)
+        {
+            _recoveryArticles.removeAt(i);
+            return article;
+        }
+    }
+    return nullptr;
+}
+
+void PostingJob::addToRecovery(const QQueue<NntpArticle*> &articles)
+{
+    QMutexLocker lock(&_secureRecovery);
+    for (NntpArticle *article : articles)
+        _recoveryArticles.enqueue(article);
+}
+
+bool PostingJob::_startSecondRoundIfNeeded()
+{
+    int nbArticles = 0;
+    {
+        QMutexLocker lock(&_secureRecovery);
+        if (_recoveryArticles.isEmpty() && _heldArticles.isEmpty())
+            return false;
+
+        if (_secondRoundDone || _heldOverflow)
+        {
+            lock.unlock();
+            _failRecoveryArticles();
+            return false;
+        }
+
+        _secondRoundDone = true;
+        for (NntpArticle *held : _heldArticles)
+            _recoveryArticles.enqueue(held);
+        _heldArticles.clear();
+        for (NntpArticle *article : _recoveryArticles)
+        {
+            article->resetReleases(); // the servers where it failed are remembered: the others go first
+            article->resetNbTrySending();
+            article->genNewId();
+        }
+        nbArticles = _recoveryArticles.size();
+    }
+
+    int delayMs = secondRoundDelayMs();
+    _log(tr("%1 Article(s) could not be posted: new attempt in %2 seconds").arg(nbArticles).arg(delayMs / 1000));
+    QTimer::singleShot(delayMs, this, [this]() { _restartConnectionsForSecondRound(); });
+    return true;
+}
+
+void PostingJob::_restartConnectionsForSecondRound()
+{
+    if (MB_LoadAtomic(_stopPosting) || _postFinished)
+        return;
+
+    _log(tr("Second attempt for the Articles that could not be posted"));
+    _nntpConnections.append(_closedConnections);
+    _closedConnections.clear();
+    if (_isPaused)
+        return; // they will be started by the resume
+
+    for (NntpConnection *con : _nntpConnections)
+    {
+        con->resetErrorCount();
+        emit con->startConnection();
+    }
+}
+
+void PostingJob::_failRecoveryArticles()
+{
+    QMutexLocker lock(&_secureRecovery);
+    for (NntpArticle *article : _recoveryArticles)
+    {
+        _error(tr("give up on Article: %1").arg(article->str()));
+        emit article->failed(article->size());
+    }
+    _recoveryArticles.clear();
+    for (NntpArticle *article : _heldArticles)
+    {
+        _error(tr("give up on Article: %1").arg(article->str()));
+        emit article->failed(article->size());
+    }
+    _heldArticles.clear();
 }
 
 void PostingJob::onNntpFileStartPosting()
@@ -626,12 +790,18 @@ void PostingJob::_error(const QString &error) const
 
 int PostingJob::_createNntpConnections()
 {
-    _nbConnections = 0;
+    _nbConnections    = 0;
+    _nbEnabledServers = 0;
     for (NntpServerParams *srvParams : _ngPost->_nntpServers)
     {
         if (srvParams->enabled)
+        {
             _nbConnections += srvParams->nbCons;
+            ++_nbEnabledServers;
+        }
     }
+    if (_nbEnabledServers == 0)
+        _nbEnabledServers = 1;
 
     _nntpConnections.reserve(_nbConnections);
     int conIdx = 0;

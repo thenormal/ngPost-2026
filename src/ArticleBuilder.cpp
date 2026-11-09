@@ -60,5 +60,14 @@ void ArticleBuilder::onPrepareNextArticle()
 
     NntpArticle *article = getNextArticle(_poster->_builderThread.objectName());
     if (article)
-        _poster->_articles.enqueue(article);
+    {
+        if (_poster->_forwardToRecovery)
+        {
+            QQueue<NntpArticle*> one;
+            one.enqueue(article);
+            _job->addToRecovery(one); // our Poster has no connection left
+        }
+        else
+            _poster->_articles.enqueue(article);
+    }
 }

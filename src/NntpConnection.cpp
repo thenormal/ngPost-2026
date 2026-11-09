@@ -186,14 +186,15 @@ void NntpConnection::_closeConnection(){
         if (_socket)        
             deleteSocket();
 
-        if (_currentArticle && !_ngPost->tryResumePostWhenConnectionLost())
+        // give the Article to another connection (before, it stayed blocked here until a resume)
+        if (_currentArticle)
         {
 #ifdef __DISP_ARTICLE_SERVER__
                 if (_ngPost->debugMode())
                     _log(tr("Article FAIL2: %1 (on %2)").arg(_currentArticle->id()).arg(_srvParams.host));
 #endif
 #ifdef __RELEASE_ARTICLES_WHEN_CON_FAILS__
-                _poster->releaseArticle(_logPrefix, _currentArticle);
+                _poster->releaseArticle(_logPrefix, _currentArticle, &_srvParams);
 #else
                 emit _currentArticle->failed(_currentArticle->size());
 #endif
@@ -233,7 +234,7 @@ void NntpConnection::onDisconnected()
                 _log(tr("Article FAIL3: %1 (on %2)").arg(_currentArticle->id()).arg(_srvParams.host));
 #endif
 #ifdef __RELEASE_ARTICLES_WHEN_CON_FAILS__
-            _poster->releaseArticle(_logPrefix, _currentArticle);
+            _poster->releaseArticle(_logPrefix, _currentArticle, &_srvParams);
 #else
             emit _currentArticle->failed(_currentArticle->size());
 #endif
@@ -392,14 +393,20 @@ void NntpConnection::onReadyRead()
                 else
                 {
                     _postingState = PostingState::IDLE;
+#ifdef __RELEASE_ARTICLES_WHEN_CON_FAILS__
+                    // not an error yet: the Article is given to another connection (or kept for a second round)
+                    _log(tr("Article refused %1 times on this connection, it will be posted again: %2 (Error: '%3')").arg(
+                             NntpArticle::nbMaxTrySending()).arg(_currentArticle->str()).arg(QString(line.constData()).trimmed()));
+#else
                     _error(tr("FAIL posting %1 (Error: '%2')").arg(_currentArticle->str()).arg(line.constData()));
+#endif
 #ifdef __DISP_ARTICLE_SERVER__
                     if (_ngPost->debugMode())
                         _log(tr("Article FAIL: %1 (on %2) %3").arg(_currentArticle->id()).arg(_srvParams.host).arg(line.constData()));
 #endif
 
 #ifdef __RELEASE_ARTICLES_WHEN_CON_FAILS__
-                    _poster->releaseArticle(_logPrefix, _currentArticle);
+                    _poster->releaseArticle(_logPrefix, _currentArticle, &_srvParams);
 #else
                     emit _currentArticle->failed(_currentArticle->size());
 #endif
@@ -519,7 +526,7 @@ void NntpConnection::onReadyRead()
 void NntpConnection::_sendNextArticle()
 {
     if (!_currentArticle) // in case of error and reconnection, we repost the _currentArticle
-        _currentArticle = _poster->getNextArticle(_logPrefix);
+        _currentArticle = _poster->getNextArticle(_logPrefix, &_srvParams);
 
     if (_currentArticle)
     {
