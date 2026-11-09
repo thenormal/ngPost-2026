@@ -101,8 +101,9 @@ class NntpStub:
     attempt counts the tries received for the same (file name, part), because ngPost
     may give a new message id to an article it sends again."""
 
-    def __init__(self, user="user", password="pass", policy=None):
+    def __init__(self, user="user", password="pass", policy=None, refuse_logins=0):
         self.user, self.password = user, password
+        self.refuse_logins = refuse_logins   # the first N logins are refused (like a connection limit)
         self.policy = policy or (lambda article, attempt: None)
         self.accepted = {}          # msg_id -> Article
         self.attempts = {}          # (name, part) -> number of tries received
@@ -126,7 +127,11 @@ class NntpStub:
                         user_ok = parts[2] == stub.user
                         w.write(b"381 PASS required\r\n")
                     elif cmd == "AUTHINFO" and parts[1].upper() == "PASS":
-                        if user_ok and parts[2] == stub.password:
+                        with stub._lock:
+                            refuse = stub.refuse_logins > 0
+                            if refuse:
+                                stub.refuse_logins -= 1
+                        if user_ok and parts[2] == stub.password and not refuse:
                             w.write(b"281 Ok\r\n")
                         else:
                             with stub._lock:

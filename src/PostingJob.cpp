@@ -508,6 +508,20 @@ void PostingJob::onDisconnectedConnection(NntpConnection *con)
             }
             else
             {
+                // every connection was refused by the server because of the user / password:
+                // waiting and retrying would loop for ever, so we stop here
+                bool allRefused = !_closedConnections.isEmpty();
+                for (NntpConnection *closed : _closedConnections)
+                    allRefused = allRefused && closed->hasAuthFailed();
+                if (allRefused)
+                {
+                    _error(tr("Authentication failed on all the connections: the server refused the user name or password. Post stopped."));
+                    _finishPosting();
+                    if (!_postFinished)
+                        emit noMoreConnection();
+                    return;
+                }
+
                 _error(tr("we lost all the connections..."));
                 if (_ngPost->_tryResumePostWhenConnectionLost)
                 {
