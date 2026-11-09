@@ -1,0 +1,38 @@
+name: Tests
+
+# Builds the command line version of ngPost Deluxe on Linux and posts files to a fake NNTP server
+# (tests/nntp_stub.py) to check that the articles, the yEnc data, the nzb and the retries are correct.
+# Runs on every pull request and on every push to master. You can run it by hand too
+# (Actions > Tests > Run workflow), and locally with:  python3 tests/run_tests.py path/to/ngPost
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/tests.yml'
+  workflow_dispatch:
+
+jobs:
+  posting:
+    name: Post to a fake NNTP server
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential qtbase5-dev qt5-qmake libssl-dev
+
+      - name: Build ngPost (command line)
+        run: |
+          mkdir build-cmd
+          cd build-cmd
+          qmake ../src/ngPost_cmd.pro CONFIG+=release
+          make -j"$(nproc)"
+
+      - name: Run the tests
+        run: python3 tests/run_tests.py build-cmd/ngPost
