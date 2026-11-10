@@ -102,7 +102,9 @@ class NntpStub:
     and refuses the new ones (a server that goes down).
 
     attempt counts the tries received for the same (file name, part), because ngPost
-    may give a new message id to an article it sends again."""
+    may give a new message id to an article it sends again.
+    gaps counts the times the server had no connection at all after having had some:
+    it tells the phases of a post apart (first round: 0, second round: 1, post again the missing articles: 2)."""
 
     def __init__(self, user="user", password="pass", policy=None, refuse_logins=0, die_after=None):
         self.user, self.password = user, password
@@ -118,10 +120,23 @@ class NntpStub:
         self.events = []            # (seconds, connection number, text) to understand a failed test
         self._t0 = __import__('time').time()
         self._nconn = 0
+        self._open = 0
+        self.gaps = 0
         stub = self
 
         class Handler(socketserver.StreamRequestHandler):
             def handle(self):
+                with stub._lock:
+                    stub._open += 1
+                try:
+                    self._serve()
+                finally:
+                    with stub._lock:
+                        stub._open -= 1
+                        if stub._open == 0:
+                            stub.gaps += 1
+
+            def _serve(self):
                 w = self.wfile
                 if stub.dead:
                     return                      # server down: close at once

@@ -1464,6 +1464,20 @@ Wachtwoorden, gebruikersnamen en bestandsnamen zijn gemaskeerd.</translation>
         <source>CSV files (*.csv)</source>
         <translation>CSV-bestanden (*.csv)</translation>
     </message>
+    <message>
+        <source>Articles are missing</source>
+        <translation>Er ontbreken artikelen</translation>
+    </message>
+    <message>
+        <source>%1 Article(s) of this post couldn&apos;t be posted and the nzb file points to them.
+If you close this tab you won&apos;t be able to post them again from here.
+
+Close the tab anyway?</source>
+        <translation>%1 artikel(en) van deze post konden niet worden gepost en het nzb-bestand verwijst ernaar.
+Als u dit tabblad sluit, kunt u ze vanaf hier niet meer opnieuw posten.
+
+Tabblad toch sluiten?</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2182,8 +2196,8 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
     </message>
     <message>
         <location filename="../NgPost.cpp" line="2710"/>
-        <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH</source>
-        <translation>## Taal voor de app. Momenteel ondersteund: EN, FR, ES, DE, NL, PT, ZH</translation>
+        <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH, IT</source>
+        <translation>## Taal voor de app. Momenteel ondersteund: EN, FR, ES, DE, NL, PT, ZH, IT</translation>
     </message>
     <message>
         <location filename="../NgPost.cpp" line="2716"/>
@@ -3233,6 +3247,50 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>ERROR: par2 is not available...</source>
         <translation>FOUT: par2 is niet beschikbaar ...</translation>
     </message>
+    <message>
+        <source>&lt;h3&gt;Post again the missing Articles #%1: %2&lt;/h3&gt;</source>
+        <translation>&lt;h3&gt;Ontbrekende artikelen opnieuw posten #%1: %2&lt;/h3&gt;</translation>
+    </message>
+    <message>
+        <source>Post again the missing Articles</source>
+        <translation>Ontbrekende artikelen opnieuw posten</translation>
+    </message>
+    <message>
+        <source>Error: couldn&apos;t read the Article %1 of %2 (has the file been modified or the Article size changed?)</source>
+        <translation>Fout: kon artikel %1 van %2 niet lezen (is het bestand gewijzigd of is de artikelgrootte veranderd?)</translation>
+    </message>
+    <message>
+        <source>The original files have NOT been deleted because some Articles couldn&apos;t be posted.</source>
+        <translation>De originele bestanden zijn NIET verwijderd omdat sommige artikelen niet konden worden gepost.</translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t read the nzb file to fix it: %1</source>
+        <translation>Fout: kan het nzb-bestand niet lezen om het te herstellen: %1</translation>
+    </message>
+    <message>
+        <source>Error: the Message-ID of an Article is not in the nzb file: %1</source>
+        <translation>Fout: het Message-ID van een artikel staat niet in het nzb-bestand: %1</translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t write the fixed nzb file: %1</source>
+        <translation>Fout: kan het herstelde nzb-bestand niet schrijven: %1</translation>
+    </message>
+    <message>
+        <source>%1 missing Articles posted, the nzb file has been updated: %2</source>
+        <translation>%1 ontbrekende artikelen gepost, het nzb-bestand is bijgewerkt: %2</translation>
+    </message>
+    <message>
+        <source>%1 Articles are still missing: they can be posted again.</source>
+        <translation>Er ontbreken nog %1 artikelen: ze kunnen opnieuw worden gepost.</translation>
+    </message>
+    <message>
+        <source>All the Articles are now posted.</source>
+        <translation>Alle artikelen zijn nu gepost.</translation>
+    </message>
+    <message>
+        <source>Temporary files deleted.</source>
+        <translation>Tijdelijke bestanden verwijderd.</translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>
@@ -3633,6 +3691,14 @@ Wil je het overschrijven?</translation>
         <location filename="../hmi/PostingWidget.cpp" line="827"/>
         <source>limit the number of volumes</source>
         <translation>het aantal volumes beperken</translation>
+    </message>
+    <message>
+        <source>Repost missing Articles (%1)</source>
+        <translation>Ontbrekende artikelen opnieuw (%1)</translation>
+    </message>
+    <message>
+        <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
+        <translation>Sommige artikelen konden niet worden gepost. Dit post alleen die opnieuw en herstelt het nzb-bestand.</translation>
     </message>
 </context>
 <context>

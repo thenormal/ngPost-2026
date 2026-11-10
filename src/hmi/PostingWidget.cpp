@@ -46,7 +46,7 @@ PostingWidget::PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber) :
     _state(STATE::IDLE),
     _postingFinished(false),
     _filesTitle(nullptr), _releaseInfo(nullptr), _nzbTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
-    _advancedCard(nullptr), _advancedToggle(nullptr)
+    _advancedCard(nullptr), _advancedToggle(nullptr), _repostButton(nullptr), _repostInfo()
 {
     _ui->setupUi(this);
     _buildLayout();
@@ -124,6 +124,10 @@ void PostingWidget::onPostingJobDone()
 
     bool uploadedOk = _postingJob->nbArticlesTotal() > 0 && _postingJob->nbArticlesFailed() == 0
                       && _postingJob->nbArticlesUploaded() > 0;
+    RepostInfo previousInfo = _repostInfo;
+    _repostInfo = _postingJob->repostInfo(); // the job will be deleted, we keep what is needed to post the missing Articles again
+    if (_postingJob->isRepost())
+        _refreshFileItems(previousInfo);
     disconnect(_postingJob);
     _postingJob = nullptr; //!< we don't own it, NgPost will delete it
     _postingFinished = true;
@@ -187,6 +191,7 @@ void PostingWidget::postFiles(bool updateMainParams)
 
         _postingFinished = false;
         _state = STATE::POSTING;
+        _repostInfo = RepostInfo(); // a new post: the missing Articles of the previous one are forgotten
         _postingJob = new PostingJob(_ngPost, nzbPath, files, this,
                                      _ngPost->getPostingGroups(),
                                      _ngPost->from(),
@@ -197,25 +202,7 @@ void PostingWidget::postFiles(bool updateMainParams)
                                      _ngPost->_rarName, _ngPost->_rarPass,
                                      _ngPost->_keepRar);
 
-        bool hasStarted = _ngPost->startPostingJob(_postingJob);
-
-        QString buttonTxt;
-        QColor  tabColor;
-        QString tabIcon;
-        if (hasStarted)
-        {
-            buttonTxt = tr("Stop Posting");
-            tabColor  = _hmi->sPostingColor;
-            tabIcon   = _hmi->sPostingIcon;
-        }
-        else
-        {
-            buttonTxt = tr("Cancel Posting");
-            tabColor  = _hmi->sPendingColor;
-            tabIcon   = _hmi->sPendingIcon;
-        }
-        _ui->postButton->setText(buttonTxt);
-        _hmi->updateJobTab(this, tabColor, QIcon(tabIcon), _postingJob->nzbName());
+        _showJobStarted(_ngPost->startPostingJob(_postingJob));
     }
     else  if (_state == STATE::POSTING)
     {
@@ -224,6 +211,80 @@ void PostingWidget::postFiles(bool updateMainParams)
     }
 }
 
+
+void PostingWidget::_refreshFileItems(const RepostInfo &postedAgain)
+{
+    // the list shows "[x err / n]" for the files that had failed Articles: update it after the repost
+    for (const RepostFile &file : postedAgain.files)
+    {
+        int missing = 0;
+        for (const RepostFile &left : _repostInfo.files)
+            if (left.path == file.path)
+                missing = left.parts.size();
+
+        for (int i = 0 ; i < _ui->filesList->count() ; ++i)
+        {
+            QListWidgetItem *item = _ui->filesList->item(i);
+            if (!item->text().startsWith(file.path + " ["))
+                continue;
+            if (missing == 0)
+            {
+                item->setText(QString("%1 [%2 ok]").arg(file.path).arg(file.nbArticles));
+                item->setForeground(QColor(_hmi->sDoneOKColor));
+            }
+            else
+            {
+                item->setText(QString("%1 [%2 err / %3]").arg(file.path).arg(missing).arg(file.nbArticles));
+                item->setForeground(QColor(missing == static_cast<int>(file.nbArticles) ? _hmi->sDoneKOColor
+                                                                                         : _hmi->sArticlesFailedColor));
+            }
+            break;
+        }
+    }
+}
+
+void PostingWidget::_showJobStarted(bool hasStarted)
+{
+    QString buttonTxt;
+    QColor  tabColor;
+    QString tabIcon;
+    if (hasStarted)
+    {
+        buttonTxt = tr("Stop Posting");
+        tabColor  = _hmi->sPostingColor;
+        tabIcon   = _hmi->sPostingIcon;
+    }
+    else
+    {
+        buttonTxt = tr("Cancel Posting");
+        tabColor  = _hmi->sPendingColor;
+        tabIcon   = _hmi->sPendingIcon;
+    }
+    _ui->postButton->setText(buttonTxt);
+    _hmi->updateJobTab(this, tabColor, QIcon(tabIcon), _postingJob->nzbName());
+    _updateRepostButton();
+}
+
+void PostingWidget::onRepostMissing()
+{
+    if (_state != STATE::IDLE || _repostInfo.isEmpty())
+        return;
+
+    _postingFinished = false;
+    _state = STATE::POSTING;
+    _postingJob = PostingJob::createRepostJob(_ngPost, _repostInfo, this);
+    _showJobStarted(_ngPost->startPostingJob(_postingJob));
+}
+
+void PostingWidget::_updateRepostButton()
+{
+    if (!_repostButton)
+        return;
+    bool show = _state == STATE::IDLE && !_repostInfo.isEmpty();
+    _repostButton->setVisible(show);
+    if (show)
+        _repostButton->setText(tr("Repost missing Articles (%1)").arg(_repostInfo.nbArticles()));
+}
 
 void PostingWidget::onNzbPassToggled(bool checked)
 {
@@ -628,6 +689,7 @@ void PostingWidget::setIDLE()
 {
     _ui->postButton->setText(tr("Post Files"));
     _state = STATE::IDLE;
+    _updateRepostButton();
 }
 
 void PostingWidget::setPosting()
@@ -761,6 +823,13 @@ void PostingWidget::_buildLayout()
     _ui->postButton->setIcon(QIcon());
     _ui->postButton->setMinimumSize(170, 38);
     bottom->addWidget(_ui->postButton, 0, 1, Qt::AlignCenter);
+    _repostButton = new QPushButton(page);
+    _repostButton->setMinimumHeight(38);
+    _repostButton->setCursor(Qt::PointingHandCursor);
+    _repostButton->setToolTip(tr("Some Articles couldn't be posted. This posts only those ones again and fixes the nzb file."));
+    _repostButton->hide();
+    connect(_repostButton, &QAbstractButton::clicked, this, &PostingWidget::onRepostMissing);
+    bottom->addWidget(_repostButton, 0, 2, Qt::AlignRight | Qt::AlignVCenter);
     bottom->setHorizontalSpacing(0); // nothing in the right column: no spacing, so the button is really in the middle
     bottom->setColumnStretch(0, 1);
     bottom->setColumnStretch(1, 0);
@@ -830,4 +899,6 @@ void PostingWidget::_retranslateLayout()
     _ui->rarMaxCB->setText(tr("limit the number of volumes"));
     _ui->clearFilesButton->setText(tr("Remove All"));
     _ui->postButton->setText(isPosting() ? _ui->postButton->text() : tr("Post Files"));
+    _repostButton->setToolTip(tr("Some Articles couldn't be posted. This posts only those ones again and fixes the nzb file."));
+    _updateRepostButton();
 }

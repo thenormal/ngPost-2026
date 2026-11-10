@@ -27,13 +27,16 @@
 
 NntpFile::NntpFile(PostingJob *postingJob, const QFileInfo &file,
                    uint num, uint nbFiles, int padding,
-                   const QList<QString> &grpList):
+                   const QList<QString> &grpList,
+                   uint forceNbArticles, uint nbToPost):
     QObject(),
     _postingJob(postingJob),
     _file(file), _num(num), _nbFiles(nbFiles), _padding(padding),
     _grpList(grpList), _groups(grpList.join(",").toStdString()),
-    _nbAticles(static_cast<uint>(std::ceil(static_cast<float>(file.size())/NgPost::articleSize()))),
-    _articles(),
+    _nbAticles(forceNbArticles ? forceNbArticles :
+                               static_cast<uint>(std::ceil(static_cast<float>(file.size())/NgPost::articleSize()))),
+    _nbExpected(nbToPost ? nbToPost : _nbAticles),
+    _articles(), _repostParts(),
     _posted(), _failed()
 {
 #if defined(__DEBUG__) && defined(LOG_CONSTRUCTORS)
@@ -73,7 +76,7 @@ void NntpFile::onArticlePosted(quint64 size)
     _posted.insert(part);
     article->freeMemory(); // free resources
 
-    if (_posted.size() + _failed.size() == static_cast<int>(_nbAticles))
+    if (_posted.size() + _failed.size() == static_cast<int>(_nbExpected))
         emit allArticlesArePosted();
 }
 
@@ -96,7 +99,7 @@ void NntpFile::onArticleFailed(quint64 size)
     _failed.insert(part);
     article->freeMemory(); // free resources
 
-    if (_posted.size() + _failed.size() == static_cast<int>(_nbAticles))
+    if (_posted.size() + _failed.size() == static_cast<int>(_nbExpected))
         emit allArticlesArePosted();
 }
 
@@ -156,6 +159,42 @@ void NntpFile::writeToNZB(QTextStream &stream, const QString &from)
 
 
         stream << tab << "</file>\n" << MB_FLUSH;
+    }
+}
+
+bool NntpFile::collectRepost(RepostFile &out) const
+{
+    if (_failed.isEmpty())
+        return false;
+
+    out.path       = path();
+    out.num        = _num;
+    out.nbFiles    = _nbFiles;
+    out.padding    = _padding;
+    out.groups     = _grpList;
+    out.nbArticles = _nbAticles;
+    out.parts.clear();
+    for (const NntpArticle *article : _articles)
+    {
+        if (_failed.contains(article->_part))
+        {
+            RepostPart part;
+            part.part     = article->_part;
+            part.pos      = article->_filePos;
+            part.bytes    = article->_fileBytes;
+            part.oldMsgId = article->_msgId;
+            out.parts.append(part);
+        }
+    }
+    return !out.parts.isEmpty();
+}
+
+void NntpFile::postedMsgIds(QHash<uint, QString> &out) const
+{
+    for (const NntpArticle *article : _articles)
+    {
+        if (_posted.contains(article->_part))
+            out.insert(article->_part, article->_msgId);
     }
 }
 

@@ -25,7 +25,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential qtbase5-dev qt5-qmake libssl-dev
+          sudo apt-get install -y --no-install-recommends build-essential qtbase5-dev qt5-qmake libssl-dev p7zip-full
 
       - name: Build ngPost (command line)
         run: |

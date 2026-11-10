@@ -109,6 +109,7 @@ HEADERS += \
     NzbCheck.h \
     Poster.h \
     PostingJob.h \
+    RepostInfo.h \
     nntp/Nntp.h \
     nntp/NntpArticle.h \
     nntp/NntpFile.h \

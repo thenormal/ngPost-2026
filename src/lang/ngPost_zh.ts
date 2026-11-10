@@ -1462,6 +1462,20 @@ Passwords, usernames and file names are masked.</source>
         <source>CSV files (*.csv)</source>
         <translation>CSV 文件 (*.csv)</translation>
     </message>
+    <message>
+        <source>Articles are missing</source>
+        <translation>有文章缺失</translation>
+    </message>
+    <message>
+        <source>%1 Article(s) of this post couldn&apos;t be posted and the nzb file points to them.
+If you close this tab you won&apos;t be able to post them again from here.
+
+Close the tab anyway?</source>
+        <translation>此次发布中有%1篇文章未能发布, nzb文件引用了它们.
+关闭此标签页后, 将无法从这里重新发布它们.
+
+仍要关闭标签页吗?</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2112,8 +2126,8 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     </message>
     <message>
         <location filename="../NgPost.cpp" line="2710"/>
-        <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH</source>
-        <translation>## 程序界面语言. 当前支持: 英语, 法语, 西班牙语, 德语, 荷兰语, 葡萄牙语以及简体中文</translation>
+        <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH, IT</source>
+        <translation>## 程序界面语言. 当前支持: 英语, 法语, 西班牙语, 德语, 荷兰语, 葡萄牙语, 意大利语以及简体中文</translation>
     </message>
     <message>
         <location filename="../NgPost.cpp" line="2716"/>
@@ -3228,6 +3242,50 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>ERROR: par2 is not available...</source>
         <translation>错误: par2不可用...</translation>
     </message>
+    <message>
+        <source>&lt;h3&gt;Post again the missing Articles #%1: %2&lt;/h3&gt;</source>
+        <translation>&lt;h3&gt;重新发布缺失的文章 #%1: %2&lt;/h3&gt;</translation>
+    </message>
+    <message>
+        <source>Post again the missing Articles</source>
+        <translation>重新发布缺失的文章</translation>
+    </message>
+    <message>
+        <source>Error: couldn&apos;t read the Article %1 of %2 (has the file been modified or the Article size changed?)</source>
+        <translation>错误: 无法读取%2的第%1篇文章 (文件是否已被修改, 或文章大小已更改?)</translation>
+    </message>
+    <message>
+        <source>The original files have NOT been deleted because some Articles couldn&apos;t be posted.</source>
+        <translation>原始文件未被删除, 因为有些文章未能发布.</translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t read the nzb file to fix it: %1</source>
+        <translation>错误: 无法读取要修复的nzb文件: %1</translation>
+    </message>
+    <message>
+        <source>Error: the Message-ID of an Article is not in the nzb file: %1</source>
+        <translation>错误: 某篇文章的Message-ID不在nzb文件中: %1</translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t write the fixed nzb file: %1</source>
+        <translation>错误: 无法写入修复后的nzb文件: %1</translation>
+    </message>
+    <message>
+        <source>%1 missing Articles posted, the nzb file has been updated: %2</source>
+        <translation>已发布%1篇缺失的文章, nzb文件已更新: %2</translation>
+    </message>
+    <message>
+        <source>%1 Articles are still missing: they can be posted again.</source>
+        <translation>仍有%1篇文章缺失: 可以重新发布.</translation>
+    </message>
+    <message>
+        <source>All the Articles are now posted.</source>
+        <translation>所有文章现已发布.</translation>
+    </message>
+    <message>
+        <source>Temporary files deleted.</source>
+        <translation>临时文件已删除.</translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>
@@ -3628,6 +3686,14 @@ Would you like to overwrite it ?</source>
         <location filename="../hmi/PostingWidget.cpp" line="827"/>
         <source>limit the number of volumes</source>
         <translation>限制分卷数量</translation>
+    </message>
+    <message>
+        <source>Repost missing Articles (%1)</source>
+        <translation>重发缺失文章 (%1)</translation>
+    </message>
+    <message>
+        <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
+        <translation>有些文章未能发布. 此操作只重新发布这些文章并修复nzb文件.</translation>
     </message>
 </context>
 <context>

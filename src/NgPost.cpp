@@ -1083,7 +1083,7 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
 #endif
 
         QString historyPath = historyFile();
-        if (_activeJob->hasPostFinished() && !historyPath.isEmpty())
+        if (_activeJob->hasPostFinished() && !_activeJob->isRepost() && !historyPath.isEmpty())
         {
             QFile hist(historyPath);
             bool newFile = !hist.exists() || hist.size() == 0;
@@ -1128,8 +1128,17 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
             _hmi->closeTab(_activeJob->widget());
 #endif
 
+        // command line only: post again the Articles that failed (used by the tests, the GUI has a button)
+        PostingJob *repostJob = nullptr;
+        if (!_activeJob->widget() && !_activeJob->isRepost() && !_activeJob->repostInfo().isEmpty()
+                && !qgetenv("NGPOST_REPOST_MISSING").isEmpty())
+            repostJob = PostingJob::createRepostJob(this, _activeJob->repostInfo(), nullptr);
+
         _activeJob->deleteLater();
         _activeJob = nullptr;
+
+        if (repostJob)
+            _pendingJobs.prepend(repostJob);
 
         if (_pendingJobs.size())
         {
@@ -2736,7 +2745,7 @@ void NgPost::saveConfig(bool quiet)
                << "#\n"
                << "#\n"
                << "\n"
-               << tr("## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH") << "\n"
+               << tr("## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH, IT") << "\n"
                << "lang = " << _lang.toUpper() << "\n"
                << "\n"
                << tr("## interface theme: AUTO (same as Windows), LIGHT or DARK") << "\n"

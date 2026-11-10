@@ -28,6 +28,7 @@ class PostingJob;
 class QLabel;
 class QPushButton;
 #include <QFileInfoList>
+#include "RepostInfo.h"
 
 namespace Ui {
 class PostingWidget;
@@ -56,11 +57,16 @@ private:
     QLabel            *_advancedTitle;
     QWidget           *_advancedCard;
     QPushButton       *_advancedToggle;
+    QPushButton       *_repostButton;  //!< post again the Articles that failed (only after a post with errors)
+    RepostInfo         _repostInfo;    //!< what is missing after the last post (kept even if the PostingJob is deleted)
     static bool        sShowAdvanced; //!< same state for all the Quick Post tabs
     void _buildLayout();
     void _retranslateLayout();
     void _showAdvanced(bool show);
     void _updateReleaseInfo();
+    void _updateRepostButton();
+    void _refreshFileItems(const RepostInfo &postedAgain);
+    void _showJobStarted(bool hasStarted); //!< texts of the button and of the tab once the job is created
 
 public:
     explicit PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber);
@@ -91,6 +97,10 @@ public:
 
     void postFiles(bool updateMainParams);
 
+    //! true if some Articles couldn't be posted and can still be posted again
+    inline bool hasMissingArticles() const;
+    inline int  nbMissingArticles() const;
+
 
 signals:
     void postingDone(bool uploadedWithoutError); //!< emitted when the post is finished (used by the Auto Posting tab)
@@ -102,6 +112,7 @@ public slots: // for PostingJob
     void onPostingJobDone();
 
     void onPostFiles(); //!< for the post button but also can be used by the AutoPostWidget
+    void onRepostMissing(); //!< post again the Articles that failed and fix the nzb
 
 private slots: // for the HMI
 
@@ -128,6 +139,8 @@ private:
 
 uint PostingWidget::jobNumber() const { return _jobNumber; }
 bool PostingWidget::isPosting() const { return _postingJob != nullptr; }
+bool PostingWidget::hasMissingArticles() const { return !_repostInfo.isEmpty(); }
+int  PostingWidget::nbMissingArticles() const { return _repostInfo.nbArticles(); }
 bool PostingWidget::isPostingFinished() const { return _postingFinished; }
 
 MainWindow *PostingWidget::hmi() const { return _hmi; }
