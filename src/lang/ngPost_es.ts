@@ -2935,6 +2935,38 @@ O bien usa --par2_pct o establece PAR2_PCT o PAR2_ARGS en el fichero de configur
         <source>the nzb file is not there anymore: %1</source>
         <translation>el fichero nzb ya no está: %1</translation>
     </message>
+    <message>
+        <source>Compression</source>
+        <translation>Compresión</translation>
+    </message>
+    <message>
+        <source>par2</source>
+        <translation>par2</translation>
+    </message>
+    <message>
+        <source>Paused</source>
+        <translation>En pausa</translation>
+    </message>
+    <message>
+        <source>Upload</source>
+        <translation>Subida</translation>
+    </message>
+    <message>
+        <source>Completed</source>
+        <translation>Completado</translation>
+    </message>
+    <message>
+        <source>Completed, %1 Article(s) failed</source>
+        <translation>Completado, %1 artículo(s) fallido(s)</translation>
+    </message>
+    <message>
+        <source>Stopped</source>
+        <translation>Detenido</translation>
+    </message>
+    <message>
+        <source>ETA %1</source>
+        <translation>Faltan %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>

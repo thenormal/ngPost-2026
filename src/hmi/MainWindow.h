@@ -21,6 +21,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ProgressInfo.h"
 #include <QFileInfoList>
 #include <QMap>
 class QTimer;
@@ -105,11 +106,7 @@ public:
 
     void init(NgPost *ngPost);
 
-    void updateProgressBar(uint nbArticlesTotal, uint nbArticlesUploaded, const QString &avgSpeed = "0 B/s"
-                       #ifdef __COMPUTE_IMMEDIATE_SPEED__
-                           , const QString &immediateSpeed = "0 B/s"
-                       #endif
-                           );
+    void updateProgress(const ProgressInfo &info); //!< progress bar, text under it and title of the window
 
     void updateServers();
     void updateParams();

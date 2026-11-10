@@ -32,6 +32,7 @@
 #include <QMutex>
 #include <QQueue>
 #include <QCommandLineOption>
+#include "ProgressInfo.h"
 #include <QProcess>
 #include <QNetworkAccessManager>
 #include <QNetworkProxy>
@@ -295,6 +296,11 @@ private:
 
 
     static const int sprogressbarBarWidth = 50;
+
+public:
+    ProgressInfo progressInfo() const; //!< state of the active post for the progress bar
+    static QStringList progressParts(const ProgressInfo &info); //!< texts of the progress, the most important first
+private:
     static const int sDefaultRefreshRate = 500; //!< how often shall we refresh the progressbar bar?
 
     static const QString sNgPostASCII;

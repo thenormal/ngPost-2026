@@ -112,6 +112,7 @@ HEADERS += \
     PostingJob.h \
     RepostInfo.h \
     PostQueue.h \
+    ProgressInfo.h \
     nntp/Nntp.h \
     nntp/NntpArticle.h \
     nntp/NntpFile.h \

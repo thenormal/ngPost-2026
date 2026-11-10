@@ -2935,6 +2935,38 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>the nzb file is not there anymore: %1</source>
         <translation>die NZB-Datei ist nicht mehr vorhanden: %1</translation>
     </message>
+    <message>
+        <source>Compression</source>
+        <translation>Komprimierung</translation>
+    </message>
+    <message>
+        <source>par2</source>
+        <translation>par2</translation>
+    </message>
+    <message>
+        <source>Paused</source>
+        <translation>Pausiert</translation>
+    </message>
+    <message>
+        <source>Upload</source>
+        <translation>Upload</translation>
+    </message>
+    <message>
+        <source>Completed</source>
+        <translation>Abgeschlossen</translation>
+    </message>
+    <message>
+        <source>Completed, %1 Article(s) failed</source>
+        <translation>Abgeschlossen, %1 Artikel fehlgeschlagen</translation>
+    </message>
+    <message>
+        <source>Stopped</source>
+        <translation>Gestoppt</translation>
+    </message>
+    <message>
+        <source>ETA %1</source>
+        <translation>Noch %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
