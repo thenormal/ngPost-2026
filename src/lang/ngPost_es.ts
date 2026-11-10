@@ -1461,6 +1461,20 @@ Are you sure you want to quit?</source>
         <source>CSV files (*.csv)</source>
         <translation>Archivos CSV (*.csv)</translation>
     </message>
+    <message>
+        <source>Articles are missing</source>
+        <translation>Faltan artículos</translation>
+    </message>
+    <message>
+        <source>%1 Article(s) of this post couldn&apos;t be posted and the nzb file points to them.
+If you close this tab you won&apos;t be able to post them again from here.
+
+Close the tab anyway?</source>
+        <translation>%1 artículo(s) de esta publicación no se pudieron publicar y el fichero nzb apunta a ellos.
+Si cierras esta pestaña no podrás volver a publicarlos desde aquí.
+
+¿Cerrar la pestaña de todos modos?</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2142,8 +2156,8 @@ O bien usa --par2_pct o establece PAR2_PCT o PAR2_ARGS en el fichero de configur
     </message>
     <message>
         <location filename="../NgPost.cpp" line="2710"/>
-        <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH</source>
-        <translation>## Lang para la aplicación. Actualmente soportado: EN, FR, ES, DE, NL, PT, ZH</translation>
+        <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH, IT</source>
+        <translation>## Lang para la aplicación. Actualmente soportado: EN, FR, ES, DE, NL, PT, ZH, IT</translation>
     </message>
     <message>
         <location filename="../NgPost.cpp" line="2716"/>
@@ -3228,6 +3242,50 @@ O bien usa --par2_pct o establece PAR2_PCT o PAR2_ARGS en el fichero de configur
         <source>ERROR: par2 is not available...</source>
         <translation>ERROR: El par 2 no está disponible...</translation>
     </message>
+    <message>
+        <source>&lt;h3&gt;Post again the missing Articles #%1: %2&lt;/h3&gt;</source>
+        <translation>&lt;h3&gt;Volver a publicar los artículos que faltan #%1: %2&lt;/h3&gt;</translation>
+    </message>
+    <message>
+        <source>Post again the missing Articles</source>
+        <translation>Volver a publicar los artículos que faltan</translation>
+    </message>
+    <message>
+        <source>Error: couldn&apos;t read the Article %1 of %2 (has the file been modified or the Article size changed?)</source>
+        <translation>Error: no se pudo leer el artículo %1 de %2 (¿se ha modificado el fichero o ha cambiado el tamaño del artículo?)</translation>
+    </message>
+    <message>
+        <source>The original files have NOT been deleted because some Articles couldn&apos;t be posted.</source>
+        <translation>Los ficheros originales NO se han borrado porque algunos artículos no se pudieron publicar.</translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t read the nzb file to fix it: %1</source>
+        <translation>Error: no se puede leer el fichero nzb para corregirlo: %1</translation>
+    </message>
+    <message>
+        <source>Error: the Message-ID of an Article is not in the nzb file: %1</source>
+        <translation>Error: el Message-ID de un artículo no está en el fichero nzb: %1</translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t write the fixed nzb file: %1</source>
+        <translation>Error: no se puede escribir el fichero nzb corregido: %1</translation>
+    </message>
+    <message>
+        <source>%1 missing Articles posted, the nzb file has been updated: %2</source>
+        <translation>%1 artículos que faltaban publicados, el fichero nzb se ha actualizado: %2</translation>
+    </message>
+    <message>
+        <source>%1 Articles are still missing: they can be posted again.</source>
+        <translation>Aún faltan %1 artículos: se pueden volver a publicar.</translation>
+    </message>
+    <message>
+        <source>All the Articles are now posted.</source>
+        <translation>Todos los artículos están ya publicados.</translation>
+    </message>
+    <message>
+        <source>Temporary files deleted.</source>
+        <translation>Ficheros temporales borrados.</translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>
@@ -3628,6 +3686,14 @@ Would you like to overwrite it ?</source>
         <location filename="../hmi/PostingWidget.cpp" line="827"/>
         <source>limit the number of volumes</source>
         <translation>limitar el número de volúmenes</translation>
+    </message>
+    <message>
+        <source>Repost missing Articles (%1)</source>
+        <translation>Reponer artículos que faltan (%1)</translation>
+    </message>
+    <message>
+        <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
+        <translation>Algunos artículos no se pudieron publicar. Esto publica solo esos de nuevo y corrige el fichero nzb.</translation>
     </message>
 </context>
 <context>

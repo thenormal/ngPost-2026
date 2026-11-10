@@ -20,11 +20,14 @@
 #ifndef POSTINGJOB_H
 #define POSTINGJOB_H
 #include "utils/Macros.h"
+#include "RepostInfo.h"
 
 #include <QFileInfoList>
 #include <QVector>
 #include <QSet>
 #include <QQueue>
+#include <QPair>
+#include <QHash>
 #include <QTextStream>
 #include <QMutex>
 #include <QTime>
@@ -143,7 +146,7 @@ private:
 
 
     AtomicBool  _delFilesAfterPost;
-    const QFileInfoList _originalFiles;
+    QFileInfoList       _originalFiles;
     const int           _nbInputFiles; //!< number of files and folders given to post (for the history)
 
 
@@ -173,6 +176,12 @@ private:
     int                  _nbEnabledServers  = 1;
 
     bool _isActiveJob;
+
+    // ---- post again the Articles that failed (and fix the nzb)
+    bool       _isRepost = false;      //!< this job only posts again the missing Articles of an earlier post
+    RepostInfo _repostSource;          //!< (repost job) what we have to post again
+    QVector<QPair<QString, QString>> _repostIds; //!< (repost job) old Message-ID => new Message-ID of the Articles posted
+    RepostInfo _repostInfo;            //!< what is still missing at the end of this job (for the "Repost missing" button)
 
 
 #ifdef __COMPUTE_IMMEDIATE_SPEED__
@@ -251,6 +260,12 @@ public:
 
     inline bool isPosting() const;
 
+    //! job that posts again the Articles listed in info (same nzb, groups, ...) and fixes the nzb
+    static PostingJob *createRepostJob(NgPost *ngPost, const RepostInfo &info, PostingWidget *postWidget);
+    inline bool isRepost() const { return _isRepost; }
+    //! Articles that couldn't be posted (valid once the job is finished)
+    inline const RepostInfo &repostInfo() const { return _repostInfo; }
+
     inline bool isPaused() const;
 
     inline const QString &nzbFilePath() const;
@@ -324,6 +339,10 @@ private:
     void _finishPosting();
 
     void _closeNzb();
+    void _fillRepostMeta();                    //!< (end of a post) fills _repostInfo with the settings of this post
+    void _collectRepostIds(NntpFile *nntpFile); //!< (repost job) keeps the new Message-IDs of a file
+    void _applyRepost();                       //!< (repost job) fixes the nzb and cleans when everything is posted
+    bool _patchNzb(const QVector<QPair<QString, QString>> &ids, QSet<QString> &fixed);
     bool _startSecondRoundIfNeeded();   //!< all the connections are done: post again the failed Articles (once)
     void _failRecoveryArticles();       //!< give up the Articles still waiting for a recovery
     void _restartConnectionsForSecondRound();

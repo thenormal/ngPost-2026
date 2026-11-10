@@ -3,7 +3,9 @@
 
 usage: python3 tests/run_tests.py /path/to/ngPost
 """
+import glob
 import hashlib
+import shutil
 import os
 import subprocess
 import sys
@@ -53,13 +55,15 @@ def run_ngpost(stub, work, inputs, nzb, extra=(), conns=3, timeout=120, password
     return r
 
 
-def run_ngpost_conf(stubs, work, inputs, nzb, conns=2, threads=None, extra=(), timeout=180, env_extra=None):
+def run_ngpost_conf(stubs, work, inputs, nzb, conns=2, threads=None, extra=(), timeout=180, env_extra=None,
+                    conf_extra=""):
     """post with a configuration file declaring one server per stub"""
     conf = os.path.join(work, "test.conf")
     with open(conf, "w") as f:
         f.write("GROUPS = alt.binaries.test\nARTICLE_SIZE = %d\nRESUME_WAIT = 2\nSOCK_TIMEOUT = 10\n" % ARTICLE_SIZE)
         if threads:
             f.write("THREAD = %d\n" % threads)
+        f.write(conf_extra)
         for st in stubs:
             f.write("\n[server]\nhost = 127.0.0.1\nport = %d\nssl = false\nuser = %s\npass = %s\n"
                     "connection = %d\nenabled = true\n" % (st.port, st.user, st.password, conns))
@@ -327,10 +331,117 @@ def test_too_many_failures(work):
         stub.stop()
 
 
+def test_repost_missing(work):
+    # two articles fail even in the second round: the post ends with errors and its nzb lists
+    # two Message-IDs that don't exist. Posting them again must fix the nzb.
+    stub = NntpStub(policy=lambda article, attempt: b"441 posting failed"
+                    if article.part in (3, 5) and stub.gaps < 2 else None).start()
+    try:
+        src = os.path.join(work, "repost.bin")
+        data = make_file(src, 420_000, 21)
+        nzb = os.path.join(work, "out.nzb")
+        r = run_ngpost_conf([stub], work, [src], nzb, conns=2, threads=1,
+                            env_extra={"NGPOST_SECOND_ROUND_DELAY_MS": "1000", "NGPOST_REPOST_MISSING": "1"})
+        out = r.stdout + r.stderr
+        check("new attempt" in out, "no second round announced")
+        check("give up on Article" in out, "the 2 articles were not given up before the repost")
+        check("2 missing Articles posted" in out, "the missing Articles were not posted again:\n" + out[-1500:])
+        check("All the Articles are now posted" in out, "the repost did not finish cleanly")
+        common_checks(stub, nzb, {"repost.bin": data})
+        check(len(stub.accepted) == 9, "%d articles accepted, expected 9" % len(stub.accepted))
+        check(sum(len(ids) for ids in read_nzb(nzb).values()) == 9, "the nzb has not 9 segments")
+    finally:
+        stub.stop()
+
+
+def test_repost_nothing_to_do(work):
+    # a post without failures must not start any repost
+    stub = NntpStub().start()
+    try:
+        src = os.path.join(work, "fine.bin")
+        data = make_file(src, 150_000, 22)
+        nzb = os.path.join(work, "out.nzb")
+        r = run_ngpost_conf([stub], work, [src], nzb, conns=2, threads=1,
+                            env_extra={"NGPOST_REPOST_MISSING": "1"})
+        out = r.stdout + r.stderr
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        check("missing Articles" not in out, "a repost was started for nothing")
+        common_checks(stub, nzb, {"fine.bin": data})
+    finally:
+        stub.stop()
+
+
+def test_repost_still_failing(work):
+    # the server still refuses the articles when we post them again: the nzb must stay valid and the
+    # post must say that articles are still missing
+    stub = NntpStub(policy=lambda article, attempt: b"441 posting failed" if article.part == 2 else None).start()
+    try:
+        src = os.path.join(work, "still.bin")
+        make_file(src, 200_000, 23)
+        nzb = os.path.join(work, "out.nzb")
+        r = run_ngpost_conf([stub], work, [src], nzb, conns=2, threads=1,
+                            env_extra={"NGPOST_SECOND_ROUND_DELAY_MS": "500", "NGPOST_REPOST_MISSING": "1"})
+        out = r.stdout + r.stderr
+        check("1 Articles are still missing" in out, "the missing Article was not reported:\n" + out[-1500:])
+        check(r.returncode != 0, "exit code 0 although an article is missing")
+        check(sum(len(ids) for ids in read_nzb(nzb).values()) == 4, "the nzb has not 4 segments")
+    finally:
+        stub.stop()
+
+
+def _post_and_delete(work, repost):
+    """--auto --compress --rm_posted with an article that fails everywhere (until the repost if repost is on)"""
+    stub = NntpStub(policy=lambda article, attempt: b"441 posting failed"
+                    if article.part == 2 and (not repost or stub.gaps < 2) else None).start()
+    try:
+        folder = os.path.join(work, "in")
+        tmp = os.path.join(work, "tmp")
+        os.makedirs(folder)
+        os.makedirs(tmp)
+        src = os.path.join(folder, "del.bin")
+        make_file(src, 200_000, 31)
+        env = {"NGPOST_SECOND_ROUND_DELAY_MS": "500"}
+        if repost:
+            env["NGPOST_REPOST_MISSING"] = "1"
+        r = run_ngpost_conf([stub], work, [], os.path.join(work, "out"), conns=2, threads=1,
+                            extra=["--auto", folder, "--compress", "--rm_posted"], env_extra=env,
+                            conf_extra="TMP_DIR = %s\nRAR_PATH = %s\nRAR_SIZE = 0\n" % (tmp, shutil.which("7z")))
+        return r, src, tmp
+    finally:
+        stub.stop()
+
+
+def test_originals_kept_when_articles_failed(work):
+    # "delete the files once posted" must not delete anything when some articles couldn't be posted,
+    # and the archives must stay so the missing articles can be posted again
+    if not shutil.which("7z"):
+        print("SKIP  (7z is not installed)")
+        return
+    r, src, tmp = _post_and_delete(work, repost=False)
+    out = r.stdout + r.stderr
+    check(os.path.exists(src), "the original file was deleted although an article failed:\n" + out[-1500:])
+    check(glob.glob(os.path.join(tmp, "*", "*.7z")), "the archive was deleted although an article failed")
+    check("have NOT been deleted" in out, "no message about the files that were kept")
+
+
+def test_repost_cleans_and_deletes_originals(work):
+    # once the missing articles are posted: archives removed and (as asked) the original file deleted
+    if not shutil.which("7z"):
+        print("SKIP  (7z is not installed)")
+        return
+    r, src, tmp = _post_and_delete(work, repost=True)
+    out = r.stdout + r.stderr
+    check("All the Articles are now posted" in out, "the repost did not finish cleanly:\n" + out[-1500:])
+    check(not os.path.exists(src), "the original file was not deleted after the repost")
+    check(not glob.glob(os.path.join(tmp, "*", "*")), "the archive was not deleted after the repost")
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
-         test_other_server_used, test_second_round, test_too_many_failures]
+         test_other_server_used, test_second_round, test_too_many_failures,
+         test_repost_missing, test_repost_nothing_to_do, test_repost_still_failing,
+         test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals]
 
 
 def main():

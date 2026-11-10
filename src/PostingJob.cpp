@@ -18,6 +18,7 @@
 //========================================================================
 
 #include "PostingJob.h"
+#include <QSaveFile>
 #include "NgPost.h"
 #include "NntpConnection.h"
 #include "nntp/NntpServerParams.h"
@@ -250,10 +251,15 @@ qDebug() << "[MB_TRACE][Issue#82][PostingJob::onStartPosting] job: " << this
 #endif
 #ifdef __USE_HMI__
     if (_postWidget)
-        _log(tr("<h3>Start Post #%1: %2</h3>").arg(_postWidget->jobNumber()).arg(_nzbName));
+    {
+        if (_isRepost)
+            _log(tr("<h3>Post again the missing Articles #%1: %2</h3>").arg(_postWidget->jobNumber()).arg(_nzbName));
+        else
+            _log(tr("<h3>Start Post #%1: %2</h3>").arg(_postWidget->jobNumber()).arg(_nzbName));
+    }
     else
 #endif
-        _log(QString("\n\n[%1] %2: %3").arg(timestamp()).arg(tr("Start posting")).arg(_nzbName));
+        _log(QString("\n\n[%1] %2: %3").arg(timestamp()).arg(_isRepost ? tr("Post again the missing Articles") : tr("Start posting")).arg(_nzbName));
 
     if (_doCompress)
     {
@@ -378,7 +384,11 @@ void PostingJob::_postFiles()
         return;
     }
 
-    if (!_nzb->open(QIODevice::WriteOnly))
+    if (_isRepost)
+    {
+        // nothing to write: the Message-IDs are fixed in the existing nzb when everything is posted
+    }
+    else if (!_nzb->open(QIODevice::WriteOnly))
     {
         _error(tr("Error: Can't create nzb output file: %1").arg(_nzbFilePath));
         emit postingFinished();
@@ -723,18 +733,34 @@ void PostingJob::onNntpFilePosted()
         emit nntpFile->scheduleDeletion();
         return;
     }
-    _totalSize += static_cast<quint64>(nntpFile->fileSize());
+    if (nntpFile->isRepost())
+    {
+        for (const RepostPart &repostPart : nntpFile->repostParts())
+            _totalSize += static_cast<quint64>(repostPart.bytes);
+    }
+    else
+        _totalSize += static_cast<quint64>(nntpFile->fileSize());
     ++_nbPosted;
-    if (_postWidget)
+    if (_postWidget && !_isRepost)
         emit filePosted(nntpFile->path(), nntpFile->nbArticles(), nntpFile->nbFailedArticles());
 
     if (_ngPost->_dispFilesPosting && !_ngPost->useHMI())
         _log(QString("[%1][%2: %3] <<<<< %4").arg(timestamp()).arg(tr("avg. speed")).arg(avgSpeed()).arg(nntpFile->name()));
 
-    if (_nzb && _nzb->isOpen())
-        nntpFile->writeToNZB(_nzbStream, QString::fromStdString(_from));
+    if (_isRepost)
+        _collectRepostIds(nntpFile);
     else
-        _error(tr("Error: the nzb is already closed, %1 is not in it").arg(nntpFile->name()));
+    {
+        if (_nzb && _nzb->isOpen())
+            nntpFile->writeToNZB(_nzbStream, QString::fromStdString(_from));
+        else
+            _error(tr("Error: the nzb is already closed, %1 is not in it").arg(nntpFile->name()));
+
+        // keep what we need to post again its failed Articles (the Articles are deleted with the file)
+        RepostFile repostFile;
+        if (nntpFile->collectRepost(repostFile))
+            _repostInfo.files.append(repostFile);
+    }
     _filesInProgress.remove(nntpFile);
     emit nntpFile->scheduleDeletion();
     if (_nbPosted == _nbFiles)
@@ -904,6 +930,39 @@ NntpArticle *PostingJob::_readNextArticleIntoBufferPtr(const QString &threadName
     }
 
 
+    if (_file && _nntpFile->isRepost())
+    {
+        // posting again only the Articles that failed: we read exactly their part of the file
+        const QVector<RepostPart> &parts = _nntpFile->repostParts();
+        if (static_cast<int>(_part) < parts.size())
+        {
+            const RepostPart &repostPart = parts.at(static_cast<int>(_part++));
+            qint64 bytesRead = 0;
+            if (repostPart.bytes > 0 && repostPart.bytes <= static_cast<qint64>(_ngPost->articleSize())
+                    && _file->seek(repostPart.pos))
+                bytesRead = _file->read(*bufferPtr, repostPart.bytes);
+            if (bytesRead != repostPart.bytes)
+            {
+                _error(tr("Error: couldn't read the Article %1 of %2 (has the file been modified or the Article size changed?)").arg(
+                           repostPart.part).arg(_nntpFile->path()));
+                emit _nntpFile->errorReadingFile();
+                _file->close();
+                delete _file;
+                _file = nullptr;
+                _nntpFile = nullptr;
+                return _readNextArticleIntoBufferPtr(threadName, bufferPtr);
+            }
+            (*bufferPtr)[bytesRead] = '\0';
+            return new NntpArticle(_nntpFile, repostPart.part, repostPart.pos, bytesRead,
+                                   _obfuscateArticles ? nullptr : &_from, _obfuscateArticles);
+        }
+        _file->close();
+        delete _file;
+        _file = nullptr;
+        _nntpFile = nullptr;
+        return _readNextArticleIntoBufferPtr(threadName, bufferPtr); // all the Articles of this file are read
+    }
+
     if (_file)
     {
         qint64 pos       = _file->pos();
@@ -938,7 +997,7 @@ NntpArticle *PostingJob::_readNextArticleIntoBufferPtr(const QString &threadName
 void PostingJob::_initPosting()
 {
     // initialize buffer and nzb file
-    if (!_overwriteNzb)
+    if (!_overwriteNzb && !_isRepost)
     {
         QFileInfo fi(_nzbFilePath);
         if (fi.exists())
@@ -953,7 +1012,7 @@ void PostingJob::_initPosting()
             _nzbFilePath = fi.absoluteFilePath();
         }
     }
-    _nzb     = new QFile(_nzbFilePath);
+    _nzb     = _isRepost ? nullptr : new QFile(_nzbFilePath);
     _nbFiles = static_cast<uint>(_files.size());
 
     int numPadding = 1;
@@ -962,6 +1021,26 @@ void PostingJob::_initPosting()
     {
         ++numPadding;
         padding /= 10.;
+    }
+
+    if (_isRepost)
+    {
+        // only the Articles that failed: same numbers, groups and total of Articles as the first time
+        _filesToUpload.reserve(static_cast<int>(_nbFiles));
+        for (const RepostFile &repostFile : _repostSource.files)
+        {
+            NntpFile *nntpFile = new NntpFile(this, QFileInfo(repostFile.path),
+                                              repostFile.num, repostFile.nbFiles, repostFile.padding,
+                                              repostFile.groups,
+                                              repostFile.nbArticles, static_cast<uint>(repostFile.parts.size()));
+            nntpFile->setRepostParts(repostFile.parts);
+            connect(nntpFile, &NntpFile::allArticlesArePosted, this, &PostingJob::onNntpFilePosted, Qt::QueuedConnection);
+            connect(nntpFile, &NntpFile::errorReadingFile,     this, &PostingJob::onNntpErrorReading, Qt::QueuedConnection);
+            _filesToUpload.enqueue(nntpFile);
+            _nbArticlesTotal += nntpFile->nbExpectedArticles();
+        }
+        emit articlesNumber(_nbArticlesTotal);
+        return;
     }
 
     // initialize the NntpFiles (active objects)
@@ -983,7 +1062,7 @@ void PostingJob::_initPosting()
             connect(nntpFile, &NntpFile::startPosting, this, &PostingJob::onNntpFileStartPosting, Qt::QueuedConnection);
 
         _filesToUpload.enqueue(nntpFile);
-        _nbArticlesTotal += nntpFile->nbArticles();
+        _nbArticlesTotal += nntpFile->nbExpectedArticles();
     }
     emit articlesNumber(_nbArticlesTotal);
 }
@@ -1020,6 +1099,7 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
     // 4.: stop and wait for all threads
     // 2.: close nzb file
     _closeNzb();
+    _fillRepostMeta();
 
 
     // 3.: close all the connections (they're living in the _threadPool)
@@ -1065,7 +1145,149 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
         }
         _error(tr("you can try to repost only those and concatenate the nzb with the current one ;)"));
     }
-    else if (_postFinished && MB_LoadAtomic(_delFilesAfterPost))
+    else if (_postFinished && MB_LoadAtomic(_delFilesAfterPost) && !_isRepost)
+    {
+        if (_nbArticlesFailed == 0 && _repostInfo.isEmpty())
+            _delOriginalFiles();
+        else
+            _log(tr("The original files have NOT been deleted because some Articles couldn't be posted."));
+    }
+
+    if (_isRepost)
+        _applyRepost();
+}
+
+PostingJob *PostingJob::createRepostJob(NgPost *ngPost, const RepostInfo &info, PostingWidget *postWidget)
+{
+    QFileInfoList files;
+    for (const RepostFile &file : info.files)
+        files << QFileInfo(file.path);
+
+    PostingJob *job = new PostingJob(ngPost, info.nzbPath, files, postWidget,
+                                     info.grpList, info.from,
+                                     info.obfuscateArticles, false,
+                                     QString(), QString(), QString(), 0, false, 0,
+                                     false, false, QString(), QString(),
+                                     info.keepRar, false, true);
+    job->_isRepost       = true;
+    job->_repostSource   = info;
+    job->_originalFiles  = info.originals;
+    job->_delFilesAfterPost = info.delOriginals ? 0x1 : 0x0;
+    job->_packed         = true; // the archives already exist
+    return job;
+}
+
+void PostingJob::_fillRepostMeta()
+{
+    if (_isRepost || _repostInfo.isEmpty())
+        return;
+    _repostInfo.nzbPath           = _nzbFilePath;
+    _repostInfo.grpList           = _grpList;
+    _repostInfo.from              = _from;
+    _repostInfo.obfuscateArticles = _obfuscateArticles;
+    _repostInfo.compressDir       = _compressDir ? _compressDir->absolutePath() : QString();
+    _repostInfo.keepRar           = _keepRar;
+    _repostInfo.delOriginals      = MB_LoadAtomic(_delFilesAfterPost);
+    _repostInfo.originals         = _originalFiles;
+}
+
+void PostingJob::_collectRepostIds(NntpFile *nntpFile)
+{
+    QHash<uint, QString> postedIds;
+    nntpFile->postedMsgIds(postedIds);
+    for (const RepostFile &repostFile : _repostSource.files)
+    {
+        if (repostFile.path != nntpFile->path())
+            continue;
+        for (const RepostPart &repostPart : repostFile.parts)
+        {
+            auto it = postedIds.constFind(repostPart.part);
+            if (it != postedIds.constEnd() && !it.value().isEmpty())
+                _repostIds.append(qMakePair(repostPart.oldMsgId, it.value()));
+        }
+        break;
+    }
+}
+
+bool PostingJob::_patchNzb(const QVector<QPair<QString, QString>> &ids, QSet<QString> &fixed)
+{
+    const QString &nzbPath = _repostSource.nzbPath;
+    QFile nzb(nzbPath);
+    if (!nzb.open(QIODevice::ReadOnly))
+    {
+        _error(tr("Error: can't read the nzb file to fix it: %1").arg(nzbPath));
+        return false;
+    }
+    QString content = QString::fromUtf8(nzb.readAll());
+    nzb.close();
+
+    for (const QPair<QString, QString> &id : ids)
+    {
+        const QString oldSegment = QString(">%1</segment>").arg(id.first);
+        if (id.first.isEmpty() || !content.contains(oldSegment))
+        {
+            _error(tr("Error: the Message-ID of an Article is not in the nzb file: %1").arg(id.first));
+            continue;
+        }
+        content.replace(oldSegment, QString(">%1</segment>").arg(id.second));
+        fixed.insert(id.first);
+    }
+
+    if (fixed.isEmpty())
+        return true; // nothing to write
+
+    QSaveFile out(nzbPath);
+    if (!out.open(QIODevice::WriteOnly) || out.write(content.toUtf8()) < 0 || !out.commit())
+    {
+        _error(tr("Error: can't write the fixed nzb file: %1").arg(nzbPath));
+        fixed.clear();
+        return false;
+    }
+    return true;
+}
+
+void PostingJob::_applyRepost()
+{
+    QSet<QString> fixed;
+    if (!_repostIds.isEmpty())
+        _patchNzb(_repostIds, fixed);
+
+    // what is still missing: the Articles that are not posted, or posted but not fixed in the nzb
+    RepostInfo remaining = _repostSource;
+    remaining.files.clear();
+    int nbFixed = 0;
+    for (const RepostFile &repostFile : _repostSource.files)
+    {
+        RepostFile left = repostFile;
+        left.parts.clear();
+        for (const RepostPart &repostPart : repostFile.parts)
+        {
+            if (fixed.contains(repostPart.oldMsgId))
+                ++nbFixed;
+            else
+                left.parts.append(repostPart);
+        }
+        if (!left.parts.isEmpty())
+            remaining.files.append(left);
+    }
+
+    if (nbFixed)
+        _log(tr("%1 missing Articles posted, the nzb file has been updated: %2").arg(nbFixed).arg(_repostSource.nzbPath));
+
+    if (!remaining.isEmpty())
+    {
+        _repostInfo = remaining;
+        _error(tr("%1 Articles are still missing: they can be posted again.").arg(remaining.nbArticles()));
+        return;
+    }
+
+    _log(tr("All the Articles are now posted."));
+    if (!_repostSource.compressDir.isEmpty() && !_repostSource.keepRar)
+    {
+        QDir(_repostSource.compressDir).removeRecursively();
+        _log(tr("Temporary files deleted."));
+    }
+    if (MB_LoadAtomic(_delFilesAfterPost))
         _delOriginalFiles();
 }
 

@@ -1010,6 +1010,17 @@ void MainWindow::onCloseJob(int index)
                                  tr("Quick Post is working.."),
                                  tr("The Quick post is currentling uploading.\n Please Stop it before closing it.."));
         }
+        else if (postWidget->hasMissingArticles()
+                 && QMessageBox::question(this,
+                                          tr("Articles are missing"),
+                                          tr("%1 Article(s) of this post couldn't be posted and the nzb file points to them.\n"
+                                             "If you close this tab you won't be able to post them again from here.\n\n"
+                                             "Close the tab anyway?").arg(postWidget->nbMissingArticles()),
+                                          QMessageBox::Yes | QMessageBox::No,
+                                          QMessageBox::No) == QMessageBox::No)
+        {
+            // the user keeps the tab to post the missing Articles again
+        }
         else
         {
             _ui->postTabWidget->removeTab(index);

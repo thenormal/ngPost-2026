@@ -1451,6 +1451,17 @@ Are you sure you want to quit?</source>
         <source>CSV files (*.csv)</source>
         <translation>CSV files (*.csv)</translation>
     </message>
+    <message>
+        <source>Articles are missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 Article(s) of this post couldn&apos;t be posted and the nzb file points to them.
+If you close this tab you won&apos;t be able to post them again from here.
+
+Close the tab anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2146,7 +2157,7 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     </message>
     <message>
         <location filename="../NgPost.cpp" line="2710"/>
-        <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH</source>
+        <source>## Lang for the app. Currently supported: EN, FR, ES, DE, NL, PT, ZH, IT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3200,6 +3211,50 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>ERROR: par2 is not available...</source>
         <translation></translation>
     </message>
+    <message>
+        <source>&lt;h3&gt;Post again the missing Articles #%1: %2&lt;/h3&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post again the missing Articles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: couldn&apos;t read the Article %1 of %2 (has the file been modified or the Article size changed?)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The original files have NOT been deleted because some Articles couldn&apos;t be posted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t read the nzb file to fix it: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: the Message-ID of an Article is not in the nzb file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t write the fixed nzb file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 missing Articles posted, the nzb file has been updated: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 Articles are still missing: they can be posted again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All the Articles are now posted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temporary files deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>
@@ -3599,6 +3654,14 @@ Would you like to overwrite it ?</source>
         <location filename="../hmi/PostingWidget.cpp" line="827"/>
         <source>limit the number of volumes</source>
         <translation>limit the number of volumes</translation>
+    </message>
+    <message>
+        <source>Repost missing Articles (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
