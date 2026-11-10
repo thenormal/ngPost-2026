@@ -1476,6 +1476,66 @@ Se chiudi questa scheda non potrai più ripubblicarli da qui.
 
 Chiudere comunque la scheda?</translation>
     </message>
+    <message>
+        <source>%1 post(s) were not finished the last time ngPost was closed.
+
+Resume: they are started again (a post that was being sent starts from the beginning).
+Discard: they are removed from the queue.
+Decide later: they stay in the queue and will be offered again at the next start.</source>
+        <translation>%1 post non erano terminati l&apos;ultima volta che ngPost è stato chiuso.
+
+Riprendi: vengono avviati di nuovo (un post che era in invio riparte dall&apos;inizio).
+Scarta: vengono rimossi dalla coda.
+Decidi dopo: restano in coda e verranno riproposti al prossimo avvio.</translation>
+    </message>
+    <message>
+        <source>%1: %2 Article(s) to post again</source>
+        <translation>%1: %2 articolo/i da ripubblicare</translation>
+    </message>
+    <message>
+        <source>%1: to post again from the beginning</source>
+        <translation>%1: da ripubblicare dall&apos;inizio</translation>
+    </message>
+    <message>
+        <source>Decide later</source>
+        <translation>Decidi dopo</translation>
+    </message>
+    <message>
+        <source>Discard</source>
+        <translation>Scarta</translation>
+    </message>
+    <message>
+        <source>Resume</source>
+        <translation>Riprendi</translation>
+    </message>
+    <message>
+        <source>Posts that were not finished</source>
+        <translation>Post non terminati</translation>
+    </message>
+    <message>
+        <source>Queue of the posts</source>
+        <translation>Coda dei post</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Coda: impossibile ripubblicare %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Coda: impossibile ripubblicare gli articoli mancanti di %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Coda: ripubblicazione dei %1 articoli mancanti di %2</translation>
+    </message>
+    <message>
+        <source>Save the posts that are not finished, to post them again after a restart</source>
+        <translation>Salva i post non terminati, per ripubblicarli dopo un riavvio</translation>
+    </message>
+    <message>
+        <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
+        <translation>La coda registra anche la password di ogni archivio in chiaro (come la cronologia). Disattivandola, la coda salvata viene eliminata.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2812,6 +2872,70 @@ Usa --par2_pct oppure imposta PAR2_PCT o PAR2_ARGS nel file di configurazione.</
         <source>for more details, cf %1</source>
         <translation>per maggiori dettagli, vedi %1</translation>
     </message>
+    <message>
+        <source>## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file</source>
+        <translation>## Coda dei post: i post non terminati vengono salvati in ngPost_queue.json accanto a questo file</translation>
+    </message>
+    <message>
+        <source>## command line / Docker: post again the unfinished posts at the start (same as --resume_queue)</source>
+        <translation>## riga di comando / Docker: ripubblica all&apos;avvio i post non terminati (come --resume_queue)</translation>
+    </message>
+    <message>
+        <source>## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text</source>
+        <translation>## per poterli ripubblicare dopo un riavvio (ON oppure OFF). Contiene le password degli archivi in chiaro</translation>
+    </message>
+    <message>
+        <source>Queue: %1</source>
+        <translation>Coda: %1</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) are waiting, use --resume_queue (or resume_queue = on in the config) to post them again</source>
+        <translation>Coda: %1 post non terminati in attesa, usa --resume_queue (o resume_queue = on nella configurazione) per ripubblicarli</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) to post again</source>
+        <translation>Coda: %1 post non terminati da ripubblicare</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Coda: impossibile ripubblicare %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Coda: impossibile ripubblicare gli articoli mancanti di %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again from the beginning %1</source>
+        <translation>Coda: ripubblicazione dall&apos;inizio di %1</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Coda: ripubblicazione dei %1 articoli mancanti di %2</translation>
+    </message>
+    <message>
+        <source>The post %1 stays in the queue: it can be posted again at the next start.</source>
+        <translation>Il post %1 resta in coda: potrà essere ripubblicato al prossimo avvio.</translation>
+    </message>
+    <message>
+        <source>nothing to post</source>
+        <translation>niente da pubblicare</translation>
+    </message>
+    <message>
+        <source>post again the posts that were not finished (queue saved next to the config file)</source>
+        <translation>ripubblica i post non terminati (coda salvata accanto al file di configurazione)</translation>
+    </message>
+    <message>
+        <source>the file has been modified since the post: %1</source>
+        <translation>il file è stato modificato dopo il post: %1</translation>
+    </message>
+    <message>
+        <source>the file is not there anymore: %1</source>
+        <translation>il file non c&apos;è più: %1</translation>
+    </message>
+    <message>
+        <source>the nzb file is not there anymore: %1</source>
+        <translation>il file nzb non c&apos;è più: %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3286,6 +3410,14 @@ Usa --par2_pct oppure imposta PAR2_PCT o PAR2_ARGS nel file di configurazione.</
     <message>
         <source>Temporary files deleted.</source>
         <translation>File temporanei eliminati.</translation>
+    </message>
+    <message>
+        <source>Removing the temporary folder of the interrupted post: %1</source>
+        <translation>Rimozione della cartella temporanea del post interrotto: %1</translation>
+    </message>
+    <message>
+        <source>the files to post are not there anymore: %1</source>
+        <translation>i file da pubblicare non ci sono più: %1</translation>
     </message>
 </context>
 <context>
@@ -3874,6 +4006,21 @@ Clicca su «Aggiungi» per configurare il tuo provider Usenet.</translation>
         <location filename="../hmi/ServersWidget.cpp" line="568"/>
         <source>the host is empty</source>
         <translation>l&apos;host è vuoto</translation>
+    </message>
+</context>
+<context>
+    <name>PostQueue</name>
+    <message>
+        <source>can&apos;t read the queue of the posts: %1</source>
+        <translation>impossibile leggere la coda dei post: %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is damaged, it has been renamed %1</source>
+        <translation>la coda dei post è danneggiata, è stata rinominata %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
+        <translation>la coda dei post è usata da un altro ngPost (%1): questo non salverà i suoi post</translation>
     </message>
 </context>
 </TS>

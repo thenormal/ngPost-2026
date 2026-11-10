@@ -49,6 +49,7 @@ class QStorageInfo;
 #endif
 class NzbCheck;
 class PostQueue;
+struct RepostInfo;
 
 #define NB_ARTICLES_TO_PREPARE_PER_CONNECTION 3
 
@@ -354,6 +355,10 @@ public:
     void queueSaveJob(PostingJob *job);  //!< (re)write the entry of the job (if it has one)
     void queueJobEnded(PostingJob *job); //!< remove the entry, keep it, or turn it into "missing Articles"
     int  resumeQueue();                  //!< command line: post again the posts of the queue, returns the number of jobs
+    //! why the missing Articles of the queue can't be posted again (empty if they can): nzb or files gone or modified
+    static QString queueProblemMissing(const RepostInfo &info);
+    void queueForget(const QString &id); //!< remove an entry (the user closed the tab of a post with missing Articles)
+    void queueSetEnabled(bool enabled);  //!< off: the queue is deleted (it contains the archive passwords)
     QString historyFile() const;  //!< history file used (explicit POST_HISTORY or ngPost_history.csv next to the config), empty if off
     inline QString historyFieldSeparator() const { return _historyFieldSeparator; }
     static QStringList historyHeader();

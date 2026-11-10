@@ -1476,6 +1476,66 @@ Close the tab anyway?</source>
 
 仍要关闭标签页吗?</translation>
     </message>
+    <message>
+        <source>%1 post(s) were not finished the last time ngPost was closed.
+
+Resume: they are started again (a post that was being sent starts from the beginning).
+Discard: they are removed from the queue.
+Decide later: they stay in the queue and will be offered again at the next start.</source>
+        <translation>上次关闭ngPost时有%1个发布任务未完成.
+
+恢复: 重新启动它们 (正在发送的任务将从头开始).
+放弃: 将它们从队列中移除.
+稍后决定: 它们保留在队列中, 下次启动时会再次提示.</translation>
+    </message>
+    <message>
+        <source>%1: %2 Article(s) to post again</source>
+        <translation>%1: 需要重新发布%2篇文章</translation>
+    </message>
+    <message>
+        <source>%1: to post again from the beginning</source>
+        <translation>%1: 需要从头重新发布</translation>
+    </message>
+    <message>
+        <source>Decide later</source>
+        <translation>稍后决定</translation>
+    </message>
+    <message>
+        <source>Discard</source>
+        <translation>放弃</translation>
+    </message>
+    <message>
+        <source>Resume</source>
+        <translation>恢复</translation>
+    </message>
+    <message>
+        <source>Posts that were not finished</source>
+        <translation>未完成的发布任务</translation>
+    </message>
+    <message>
+        <source>Queue of the posts</source>
+        <translation>发布队列</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>队列: 无法重新发布%1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>队列: 无法重新发布%1缺失的文章: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>队列: 正在重新发布%2缺失的%1篇文章</translation>
+    </message>
+    <message>
+        <source>Save the posts that are not finished, to post them again after a restart</source>
+        <translation>保存未完成的发布任务, 以便重启后重新发布</translation>
+    </message>
+    <message>
+        <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
+        <translation>队列也会以明文记录每个压缩包的密码 (与历史记录相同). 关闭后将删除已保存的队列.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2811,6 +2871,70 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>for more details, cf %1</source>
         <translation>更多细节请参见，配置文件%1</translation>
     </message>
+    <message>
+        <source>## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file</source>
+        <translation>## 发布队列: 未完成的发布任务保存在此文件旁边的ngPost_queue.json中</translation>
+    </message>
+    <message>
+        <source>## command line / Docker: post again the unfinished posts at the start (same as --resume_queue)</source>
+        <translation>## 命令行 / Docker: 启动时重新发布未完成的任务 (与--resume_queue相同)</translation>
+    </message>
+    <message>
+        <source>## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text</source>
+        <translation>## 以便重启后重新发布 (ON或OFF). 其中包含明文的压缩包密码</translation>
+    </message>
+    <message>
+        <source>Queue: %1</source>
+        <translation>队列: %1</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) are waiting, use --resume_queue (or resume_queue = on in the config) to post them again</source>
+        <translation>队列: 有%1个未完成的发布任务在等待, 使用--resume_queue (或在配置中设置resume_queue = on) 重新发布</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) to post again</source>
+        <translation>队列: 有%1个未完成的发布任务需要重新发布</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>队列: 无法重新发布%1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>队列: 无法重新发布%1缺失的文章: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again from the beginning %1</source>
+        <translation>队列: 正在从头重新发布%1</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>队列: 正在重新发布%2缺失的%1篇文章</translation>
+    </message>
+    <message>
+        <source>The post %1 stays in the queue: it can be posted again at the next start.</source>
+        <translation>发布任务%1保留在队列中: 下次启动时可以重新发布.</translation>
+    </message>
+    <message>
+        <source>nothing to post</source>
+        <translation>没有需要发布的内容</translation>
+    </message>
+    <message>
+        <source>post again the posts that were not finished (queue saved next to the config file)</source>
+        <translation>重新发布未完成的任务 (队列保存在配置文件旁边)</translation>
+    </message>
+    <message>
+        <source>the file has been modified since the post: %1</source>
+        <translation>文件在发布后已被修改: %1</translation>
+    </message>
+    <message>
+        <source>the file is not there anymore: %1</source>
+        <translation>文件已不存在: %1</translation>
+    </message>
+    <message>
+        <source>the nzb file is not there anymore: %1</source>
+        <translation>nzb文件已不存在: %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3285,6 +3409,14 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     <message>
         <source>Temporary files deleted.</source>
         <translation>临时文件已删除.</translation>
+    </message>
+    <message>
+        <source>Removing the temporary folder of the interrupted post: %1</source>
+        <translation>正在删除被中断发布任务的临时文件夹: %1</translation>
+    </message>
+    <message>
+        <source>the files to post are not there anymore: %1</source>
+        <translation>要发布的文件已不存在: %1</translation>
     </message>
 </context>
 <context>
@@ -3873,6 +4005,21 @@ Click on &quot;Add&quot; to configure your Usenet provider.</source>
         <location filename="../hmi/ServersWidget.cpp" line="568"/>
         <source>the host is empty</source>
         <translation>主机为空</translation>
+    </message>
+</context>
+<context>
+    <name>PostQueue</name>
+    <message>
+        <source>can&apos;t read the queue of the posts: %1</source>
+        <translation>无法读取发布队列: %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is damaged, it has been renamed %1</source>
+        <translation>发布队列已损坏, 已重命名为%1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
+        <translation>发布队列正被另一个ngPost使用 (%1): 此实例不会保存其发布任务</translation>
     </message>
 </context>
 </TS>

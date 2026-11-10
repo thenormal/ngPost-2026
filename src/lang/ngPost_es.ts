@@ -1475,6 +1475,66 @@ Si cierras esta pestaña no podrás volver a publicarlos desde aquí.
 
 ¿Cerrar la pestaña de todos modos?</translation>
     </message>
+    <message>
+        <source>%1 post(s) were not finished the last time ngPost was closed.
+
+Resume: they are started again (a post that was being sent starts from the beginning).
+Discard: they are removed from the queue.
+Decide later: they stay in the queue and will be offered again at the next start.</source>
+        <translation>%1 envío(s) no estaban terminados la última vez que se cerró ngPost.
+
+Reanudar: se inician de nuevo (un envío que estaba en curso empieza desde el principio).
+Descartar: se eliminan de la cola.
+Decidir más tarde: permanecen en la cola y se ofrecerán de nuevo en el próximo inicio.</translation>
+    </message>
+    <message>
+        <source>%1: %2 Article(s) to post again</source>
+        <translation>%1: %2 artículo(s) por publicar de nuevo</translation>
+    </message>
+    <message>
+        <source>%1: to post again from the beginning</source>
+        <translation>%1: para publicar de nuevo desde el principio</translation>
+    </message>
+    <message>
+        <source>Decide later</source>
+        <translation>Decidir más tarde</translation>
+    </message>
+    <message>
+        <source>Discard</source>
+        <translation>Descartar</translation>
+    </message>
+    <message>
+        <source>Resume</source>
+        <translation>Reanudar</translation>
+    </message>
+    <message>
+        <source>Posts that were not finished</source>
+        <translation>Envíos sin terminar</translation>
+    </message>
+    <message>
+        <source>Queue of the posts</source>
+        <translation>Cola de envíos</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Cola: no se puede publicar de nuevo %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Cola: no se pueden publicar de nuevo los artículos que faltan de %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Cola: publicando de nuevo los %1 artículos que faltan de %2</translation>
+    </message>
+    <message>
+        <source>Save the posts that are not finished, to post them again after a restart</source>
+        <translation>Guardar los envíos sin terminar para publicarlos de nuevo tras un reinicio</translation>
+    </message>
+    <message>
+        <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
+        <translation>La cola también guarda la contraseña de cada archivo en texto plano (como el historial). Al desactivarla se borra la cola guardada.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2811,6 +2871,70 @@ O bien usa --par2_pct o establece PAR2_PCT o PAR2_ARGS en el fichero de configur
         <source>for more details, cf %1</source>
         <translation>para más detalles, véase %1</translation>
     </message>
+    <message>
+        <source>## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file</source>
+        <translation>## Cola de envíos: los envíos sin terminar se guardan en ngPost_queue.json junto a este fichero</translation>
+    </message>
+    <message>
+        <source>## command line / Docker: post again the unfinished posts at the start (same as --resume_queue)</source>
+        <translation>## línea de comandos / Docker: publicar de nuevo los envíos sin terminar al iniciar (igual que --resume_queue)</translation>
+    </message>
+    <message>
+        <source>## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text</source>
+        <translation>## para poder publicarlos de nuevo tras un reinicio (ON u OFF). Contiene las contraseñas de los archivos en texto plano</translation>
+    </message>
+    <message>
+        <source>Queue: %1</source>
+        <translation>Cola: %1</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) are waiting, use --resume_queue (or resume_queue = on in the config) to post them again</source>
+        <translation>Cola: %1 envío(s) sin terminar en espera, usa --resume_queue (o resume_queue = on en la configuración) para publicarlos de nuevo</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) to post again</source>
+        <translation>Cola: %1 envío(s) sin terminar para publicar de nuevo</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Cola: no se puede publicar de nuevo %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Cola: no se pueden publicar de nuevo los artículos que faltan de %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again from the beginning %1</source>
+        <translation>Cola: publicando de nuevo desde el principio %1</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Cola: publicando de nuevo los %1 artículos que faltan de %2</translation>
+    </message>
+    <message>
+        <source>The post %1 stays in the queue: it can be posted again at the next start.</source>
+        <translation>El envío %1 permanece en la cola: se podrá publicar de nuevo en el próximo inicio.</translation>
+    </message>
+    <message>
+        <source>nothing to post</source>
+        <translation>nada que publicar</translation>
+    </message>
+    <message>
+        <source>post again the posts that were not finished (queue saved next to the config file)</source>
+        <translation>publicar de nuevo los envíos sin terminar (cola guardada junto al fichero de configuración)</translation>
+    </message>
+    <message>
+        <source>the file has been modified since the post: %1</source>
+        <translation>el fichero se ha modificado desde el envío: %1</translation>
+    </message>
+    <message>
+        <source>the file is not there anymore: %1</source>
+        <translation>el fichero ya no está: %1</translation>
+    </message>
+    <message>
+        <source>the nzb file is not there anymore: %1</source>
+        <translation>el fichero nzb ya no está: %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3285,6 +3409,14 @@ O bien usa --par2_pct o establece PAR2_PCT o PAR2_ARGS en el fichero de configur
     <message>
         <source>Temporary files deleted.</source>
         <translation>Ficheros temporales borrados.</translation>
+    </message>
+    <message>
+        <source>Removing the temporary folder of the interrupted post: %1</source>
+        <translation>Eliminando la carpeta temporal del envío interrumpido: %1</translation>
+    </message>
+    <message>
+        <source>the files to post are not there anymore: %1</source>
+        <translation>los ficheros a publicar ya no están: %1</translation>
     </message>
 </context>
 <context>
@@ -3873,6 +4005,21 @@ Haz clic en «Añadir» para configurar tu proveedor de Usenet.</translation>
         <location filename="../hmi/ServersWidget.cpp" line="568"/>
         <source>the host is empty</source>
         <translation>el host está vacío</translation>
+    </message>
+</context>
+<context>
+    <name>PostQueue</name>
+    <message>
+        <source>can&apos;t read the queue of the posts: %1</source>
+        <translation>no se puede leer la cola de envíos: %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is damaged, it has been renamed %1</source>
+        <translation>la cola de envíos está dañada, se ha renombrado a %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
+        <translation>la cola de envíos la usa otro ngPost (%1): este no guardará sus envíos</translation>
     </message>
 </context>
 </TS>

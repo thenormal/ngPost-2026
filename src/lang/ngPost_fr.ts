@@ -1466,6 +1466,66 @@ Si vous fermez cet onglet, vous ne pourrez plus les reposter d&apos;ici.
 
 Fermer l&apos;onglet quand même ?</translation>
     </message>
+    <message>
+        <source>%1 post(s) were not finished the last time ngPost was closed.
+
+Resume: they are started again (a post that was being sent starts from the beginning).
+Discard: they are removed from the queue.
+Decide later: they stay in the queue and will be offered again at the next start.</source>
+        <translation>%1 envoi(s) n&apos;étaient pas terminés lors de la dernière fermeture de ngPost.
+
+Reprendre : ils sont relancés (un envoi en cours repart du début).
+Abandonner : ils sont retirés de la file.
+Décider plus tard : ils restent dans la file et seront proposés de nouveau au prochain démarrage.</translation>
+    </message>
+    <message>
+        <source>%1: %2 Article(s) to post again</source>
+        <translation>%1 : %2 Article(s) à reposter</translation>
+    </message>
+    <message>
+        <source>%1: to post again from the beginning</source>
+        <translation>%1 : à reposter depuis le début</translation>
+    </message>
+    <message>
+        <source>Decide later</source>
+        <translation>Décider plus tard</translation>
+    </message>
+    <message>
+        <source>Discard</source>
+        <translation>Abandonner</translation>
+    </message>
+    <message>
+        <source>Resume</source>
+        <translation>Reprendre</translation>
+    </message>
+    <message>
+        <source>Posts that were not finished</source>
+        <translation>Envois non terminés</translation>
+    </message>
+    <message>
+        <source>Queue of the posts</source>
+        <translation>File des envois</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>File : impossible de reposter %1 : %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>File : impossible de reposter les Articles manquants de %1 : %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>File : repost des %1 Articles manquants de %2</translation>
+    </message>
+    <message>
+        <source>Save the posts that are not finished, to post them again after a restart</source>
+        <translation>Enregistrer les envois non terminés pour les reposter après un redémarrage</translation>
+    </message>
+    <message>
+        <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
+        <translation>La file enregistre aussi le mot de passe de chaque archive en clair (comme l&apos;historique). La désactiver supprime la file enregistrée.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2801,6 +2861,70 @@ Soit utilisez --par2_pct, soit renseignez PAR2_PCT ou PAR2_ARGS dans le fichier 
         <source>for more details, cf %1</source>
         <translation>pour plus de détails, cf %1</translation>
     </message>
+    <message>
+        <source>## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file</source>
+        <translation>## File des envois: les envois non terminés sont enregistrés dans ngPost_queue.json à côté de ce fichier</translation>
+    </message>
+    <message>
+        <source>## command line / Docker: post again the unfinished posts at the start (same as --resume_queue)</source>
+        <translation>## ligne de commande / Docker: reposter au démarrage les envois non terminés (comme --resume_queue)</translation>
+    </message>
+    <message>
+        <source>## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text</source>
+        <translation>## pour pouvoir les reposter après un redémarrage (ON ou OFF). Contient les mots de passe des archives en clair</translation>
+    </message>
+    <message>
+        <source>Queue: %1</source>
+        <translation>File : %1</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) are waiting, use --resume_queue (or resume_queue = on in the config) to post them again</source>
+        <translation>File : %1 envoi(s) non terminé(s) en attente, utilisez --resume_queue (ou resume_queue = on dans la configuration) pour les reposter</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) to post again</source>
+        <translation>File : %1 envoi(s) non terminé(s) à reposter</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>File : impossible de reposter %1 : %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>File : impossible de reposter les Articles manquants de %1 : %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again from the beginning %1</source>
+        <translation>File : repost depuis le début de %1</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>File : repost des %1 Articles manquants de %2</translation>
+    </message>
+    <message>
+        <source>The post %1 stays in the queue: it can be posted again at the next start.</source>
+        <translation>L&apos;envoi %1 reste dans la file : il pourra être reposté au prochain démarrage.</translation>
+    </message>
+    <message>
+        <source>nothing to post</source>
+        <translation>rien à poster</translation>
+    </message>
+    <message>
+        <source>post again the posts that were not finished (queue saved next to the config file)</source>
+        <translation>reposter les envois non terminés (file enregistrée à côté du fichier de configuration)</translation>
+    </message>
+    <message>
+        <source>the file has been modified since the post: %1</source>
+        <translation>le fichier a été modifié depuis l&apos;envoi : %1</translation>
+    </message>
+    <message>
+        <source>the file is not there anymore: %1</source>
+        <translation>le fichier n&apos;existe plus : %1</translation>
+    </message>
+    <message>
+        <source>the nzb file is not there anymore: %1</source>
+        <translation>le fichier nzb n&apos;existe plus : %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3275,6 +3399,14 @@ Soit utilisez --par2_pct, soit renseignez PAR2_PCT ou PAR2_ARGS dans le fichier 
     <message>
         <source>Temporary files deleted.</source>
         <translation>Fichiers temporaires supprimés.</translation>
+    </message>
+    <message>
+        <source>Removing the temporary folder of the interrupted post: %1</source>
+        <translation>Suppression du dossier temporaire de l&apos;envoi interrompu : %1</translation>
+    </message>
+    <message>
+        <source>the files to post are not there anymore: %1</source>
+        <translation>les fichiers à poster n&apos;existent plus : %1</translation>
     </message>
 </context>
 <context>
@@ -3862,6 +3994,21 @@ Cliquez sur « Ajouter » pour configurer votre fournisseur Usenet.</translation
         <location filename="../hmi/ServersWidget.cpp" line="568"/>
         <source>the host is empty</source>
         <translation>l&apos;hôte est vide</translation>
+    </message>
+</context>
+<context>
+    <name>PostQueue</name>
+    <message>
+        <source>can&apos;t read the queue of the posts: %1</source>
+        <translation>impossible de lire la file des envois: %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is damaged, it has been renamed %1</source>
+        <translation>la file des envois est endommagée, elle a été renommée en %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
+        <translation>la file des envois est utilisée par un autre ngPost (%1) : celui-ci n&apos;enregistrera pas ses envois</translation>
     </message>
 </context>
 </TS>

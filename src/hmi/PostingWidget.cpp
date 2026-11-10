@@ -33,6 +33,7 @@
 #include <QKeyEvent>
 #include <QClipboard>
 #include <QMimeData>
+#include <QJsonArray>
 
 
 
@@ -191,7 +192,8 @@ void PostingWidget::postFiles(bool updateMainParams)
 
         _postingFinished = false;
         _state = STATE::POSTING;
-        _repostInfo = RepostInfo(); // a new post: the missing Articles of the previous one are forgotten
+        forgetQueue();              // a new post: the missing Articles of the previous one are forgotten
+        _repostInfo = RepostInfo();
         _postingJob = new PostingJob(_ngPost, nzbPath, files, this,
                                      _ngPost->getPostingGroups(),
                                      _ngPost->from(),
@@ -211,6 +213,64 @@ void PostingWidget::postFiles(bool updateMainParams)
     }
 }
 
+
+bool PostingWidget::restoreFromQueue(const QJsonObject &entry, QString &error)
+{
+    PostingJob *job = PostingJob::fromQueueEntry(_ngPost, entry, this, error);
+    if (!job)
+        return false;
+
+    // show what is posted
+    _ui->filesList->clear();
+    for (const QJsonValue &val : entry.value("files").toArray())
+    {
+        QFileInfo fi(val.toString());
+        _ui->filesList->addPath(fi.absoluteFilePath(), fi.isDir());
+    }
+    _ui->nzbFileEdit->setText(entry.value("nzb").toString());
+    _ui->compressCB->setChecked(entry.value("compress").toBool());
+    _ui->par2CB->setChecked(entry.value("par2").toBool());
+    _ui->keepRarCB->setChecked(entry.value("keepRar").toBool());
+    if (entry.value("compress").toBool())
+        _ui->compressNameEdit->setText(entry.value("rarName").toString());
+    const QString pass = entry.value("rarPass").toString();
+    _ui->nzbPassCB->setChecked(!pass.isEmpty());
+    _ui->nzbPassEdit->setText(pass);
+
+    _postingFinished = false;
+    _state = STATE::POSTING;
+    _repostInfo = RepostInfo();
+    _postingJob = job;
+    _showJobStarted(_ngPost->startPostingJob(job));
+    return true;
+}
+
+void PostingWidget::restoreMissing(const RepostInfo &info)
+{
+    _repostInfo = info;
+    _ui->filesList->clear();
+    for (const RepostFile &file : info.files)
+    {
+        _ui->filesList->addPath(file.path, false);
+        QListWidgetItem *item = _ui->filesList->item(_ui->filesList->count() - 1);
+        if (item)
+        {
+            item->setText(QString("%1 [%2 err / %3]").arg(file.path).arg(file.parts.size()).arg(file.nbArticles));
+            item->setForeground(QColor(file.parts.size() == static_cast<int>(file.nbArticles) ? _hmi->sDoneKOColor
+                                                                                               : _hmi->sArticlesFailedColor));
+        }
+    }
+    _ui->nzbFileEdit->setText(info.nzbPath);
+    _postingFinished = true;
+    _hmi->updateJobTab(this, _hmi->sDoneKOColor, QIcon(_hmi->sDoneKOIcon), QFileInfo(info.nzbPath).fileName());
+    _updateRepostButton();
+}
+
+void PostingWidget::forgetQueue()
+{
+    if (hasMissingArticles())
+        _ngPost->queueForget(_repostInfo.queueId);
+}
 
 void PostingWidget::_refreshFileItems(const RepostInfo &postedAgain)
 {
