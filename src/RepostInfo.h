@@ -48,6 +48,8 @@ struct RepostFile
     int           padding  = 1;
     QList<QString> groups;      //!< groups of the file in the nzb
     uint          nbArticles = 0; //!< number of Articles of the whole file (yEnc header: total=)
+    qint64        size     = 0; //!< size and modification time of the file when it was posted:
+    qint64        mtimeMs  = 0; //!< we must not post again parts of a file that has changed since
     QVector<RepostPart> parts;
 };
 
@@ -57,6 +59,7 @@ struct RepostFile
  */
 struct RepostInfo
 {
+    QString        queueId;  //!< id of the entry in the persistent queue (PostQueue)
     QString        nzbPath;
     QList<QString> grpList;
     std::string    from;

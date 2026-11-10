@@ -19,6 +19,9 @@
 
 #include "PostingJob.h"
 #include <QSaveFile>
+#include <QJsonArray>
+#include <QDateTime>
+#include "PostQueue.h"
 #include "NgPost.h"
 #include "NntpConnection.h"
 #include "nntp/NntpServerParams.h"
@@ -104,7 +107,8 @@ PostingJob::PostingJob(NgPost *ngPost,
     _secureDiskAccess(), _posters(),
     _overwriteNzb(overwriteNzb),
     _grpList(grpList), _from(from),
-    _use7z(false), _isPaused(false), _resumeTimer(), _isActiveJob(false)
+    _use7z(false), _isPaused(false), _resumeTimer(), _isActiveJob(false),
+    _inputFiles(files)
   #ifdef __COMPUTE_IMMEDIATE_SPEED__
     ,_immediateSize(0), _immediateSpeedTimer(), _immediateSpeed("0 B/s"), _useHMI(_ngPost->useHMI())
   #endif
@@ -370,6 +374,11 @@ void PostingJob::_postFiles()
         emit archiveFileNames(archiveNames);
     }
     _initPosting();
+    if (!_isRepost)
+    {
+        _nzbPathFinal = true;          // _initPosting may have changed it (no overwrite: name_1.nzb)
+        _ngPost->queueSaveJob(this);   // so a restart overwrites this nzb and not another one
+    }
 
     if (_nbThreads > QThread::idealThreadCount())
         _nbThreads = QThread::idealThreadCount();
@@ -536,6 +545,7 @@ void PostingJob::onDisconnectedConnection(NntpConnection *con)
                             return;
                         _waitingLastFiles = false;
                         _error(tr("Error: the last files were never confirmed as posted, closing the Post"));
+                        _keepInQueue = true;
                         _finishPosting();
                         if (!_postFinished)
                             emit noMoreConnection();
@@ -574,6 +584,7 @@ void PostingJob::onDisconnectedConnection(NntpConnection *con)
                 }
                 else
                 {
+                    _keepInQueue = true; // the network may be back at the next start
                     _finishPosting();
                     if (!_postFinished)
                         emit noMoreConnection();
@@ -1155,6 +1166,8 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
 
     if (_isRepost)
         _applyRepost();
+
+    _ngPost->queueJobEnded(this);
 }
 
 PostingJob *PostingJob::createRepostJob(NgPost *ngPost, const RepostInfo &info, PostingWidget *postWidget)
@@ -1170,6 +1183,7 @@ PostingJob *PostingJob::createRepostJob(NgPost *ngPost, const RepostInfo &info, 
                                      false, false, QString(), QString(),
                                      info.keepRar, false, true);
     job->_isRepost       = true;
+    job->_queueId        = info.queueId;
     job->_repostSource   = info;
     job->_originalFiles  = info.originals;
     job->_delFilesAfterPost = info.delOriginals ? 0x1 : 0x0;
@@ -1177,10 +1191,91 @@ PostingJob *PostingJob::createRepostJob(NgPost *ngPost, const RepostInfo &info, 
     return job;
 }
 
+static QJsonArray sToJsonArray(const QList<QString> &list)
+{
+    QJsonArray arr;
+    for (const QString &str : list)
+        arr << str;
+    return arr;
+}
+
+QJsonObject PostingJob::toQueueEntry() const
+{
+    QJsonObject entry;
+    entry.insert("id", _queueId);
+    entry.insert("state", PostQueue::sStateWaiting);
+    entry.insert("added", QDateTime::currentDateTime().toString(Qt::ISODate));
+    QList<QString> files;
+    for (const QFileInfo &fi : _inputFiles)
+        files << fi.absoluteFilePath();
+    entry.insert("files", sToJsonArray(files));
+    entry.insert("nzb", _nzbFilePath);
+    entry.insert("nzbFinal", _nzbPathFinal);
+    entry.insert("overwriteNzb", _overwriteNzb);
+    entry.insert("groups", sToJsonArray(_grpList));
+    entry.insert("from", QString::fromStdString(_from));
+    entry.insert("obfuscateArticles", _obfuscateArticles);
+    entry.insert("obfuscateFileName", _obfuscateFileName);
+    entry.insert("tmpPath", _tmpPath);
+    entry.insert("rarPath", _rarPath);
+    entry.insert("rarArgs", _rarArgs);
+    entry.insert("rarSize", static_cast<int>(_rarSize));
+    entry.insert("useRarMax", _useRarMax);
+    entry.insert("par2Pct", static_cast<int>(_par2Pct));
+    entry.insert("compress", _doCompress);
+    entry.insert("par2", _doPar2);
+    entry.insert("rarName", _rarName);
+    entry.insert("rarPass", _rarPass);
+    entry.insert("keepRar", _keepRar);
+    entry.insert("delFiles", MB_LoadAtomic(_delFilesAfterPost) ? true : false);
+    return entry;
+}
+
+PostingJob *PostingJob::fromQueueEntry(NgPost *ngPost, const QJsonObject &entry, PostingWidget *postWidget, QString &error)
+{
+    QFileInfoList files;
+    QStringList   missingFiles;
+    for (const QJsonValue &val : entry.value("files").toArray())
+    {
+        QFileInfo fi(val.toString());
+        if (fi.exists())
+            files << fi;
+        else
+            missingFiles << val.toString();
+    }
+    if (!missingFiles.isEmpty() || files.isEmpty())
+    {
+        error = tr("the files to post are not there anymore: %1").arg(missingFiles.join(", "));
+        return nullptr;
+    }
+
+    QList<QString> groups;
+    for (const QJsonValue &val : entry.value("groups").toArray())
+        groups << val.toString();
+
+    bool nzbFinal = entry.value("nzbFinal").toBool();
+    PostingJob *job = new PostingJob(ngPost, entry.value("nzb").toString(), files, postWidget,
+                                     groups, entry.value("from").toString().toStdString(),
+                                     entry.value("obfuscateArticles").toBool(), entry.value("obfuscateFileName").toBool(),
+                                     entry.value("tmpPath").toString(), entry.value("rarPath").toString(),
+                                     entry.value("rarArgs").toString(),
+                                     static_cast<uint>(entry.value("rarSize").toInt()), entry.value("useRarMax").toBool(),
+                                     static_cast<uint>(entry.value("par2Pct").toInt()),
+                                     entry.value("compress").toBool(), entry.value("par2").toBool(),
+                                     entry.value("rarName").toString(), entry.value("rarPass").toString(),
+                                     entry.value("keepRar").toBool(), entry.value("delFiles").toBool(),
+                                     // the nzb of the interrupted post is ours: overwrite it
+                                     nzbFinal ? true : entry.value("overwriteNzb").toBool(true));
+    job->_queueId = entry.value("id").toString();
+    job->_resumed = true;
+    return job;
+}
+
 void PostingJob::_fillRepostMeta()
 {
     if (_isRepost || _repostInfo.isEmpty())
         return;
+    _repostInfo.queueId           = _queueId;
     _repostInfo.nzbPath           = _nzbFilePath;
     _repostInfo.grpList           = _grpList;
     _repostInfo.from              = _from;
@@ -1248,6 +1343,7 @@ bool PostingJob::_patchNzb(const QVector<QPair<QString, QString>> &ids, QSet<QSt
 
 void PostingJob::_applyRepost()
 {
+    _repostApplied = true;
     QSet<QString> fixed;
     if (!_repostIds.isEmpty())
         _patchNzb(_repostIds, fixed);
@@ -1833,6 +1929,12 @@ QString PostingJob::_createArchiveFolder(const QString &tmpFolder, const QString
 {
     QString archiveTmpFolder = QString("%1/%2").arg(tmpFolder).arg(archiveName);
     _compressDir = new QDir(archiveTmpFolder);
+    if (_compressDir->exists() && _resumed)
+    {
+        // left by the interrupted post that we're starting again: it's ours, we can remove it
+        _log(tr("Removing the temporary folder of the interrupted post: %1").arg(archiveTmpFolder));
+        _compressDir->removeRecursively();
+    }
     if (_compressDir->exists())
     {
         _error(tr("The temporary directory '%1' already exists... (either remove it or change the archive name)").arg(archiveTmpFolder));

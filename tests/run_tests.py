@@ -55,9 +55,8 @@ def run_ngpost(stub, work, inputs, nzb, extra=(), conns=3, timeout=120, password
     return r
 
 
-def run_ngpost_conf(stubs, work, inputs, nzb, conns=2, threads=None, extra=(), timeout=180, env_extra=None,
-                    conf_extra=""):
-    """post with a configuration file declaring one server per stub"""
+def ngpost_conf_cmd(stubs, work, inputs, nzb, conns=2, threads=None, extra=(), env_extra=None, conf_extra=""):
+    """command and environment to post with a configuration file declaring one server per stub"""
     conf = os.path.join(work, "test.conf")
     with open(conf, "w") as f:
         f.write("GROUPS = alt.binaries.test\nARTICLE_SIZE = %d\nRESUME_WAIT = 2\nSOCK_TIMEOUT = 10\n" % ARTICLE_SIZE)
@@ -69,9 +68,16 @@ def run_ngpost_conf(stubs, work, inputs, nzb, conns=2, threads=None, extra=(), t
                     "connection = %d\nenabled = true\n" % (st.port, st.user, st.password, conns))
     env = dict(os.environ, HOME=work, NGPOST_SECOND_ROUND_DELAY_MS="2000")
     env.update(env_extra or {})
-    cmd = [NGPOST, "--conf", conf, "-o", nzb, "-q"] + list(extra)
+    cmd = [NGPOST, "--conf", conf, "-q"] + (["-o", nzb] if nzb else []) + list(extra)
     for i in inputs:
         cmd += ["-i", i]
+    return cmd, env
+
+
+def run_ngpost_conf(stubs, work, inputs, nzb, conns=2, threads=None, extra=(), timeout=180, env_extra=None,
+                    conf_extra=""):
+    """post with a configuration file declaring one server per stub"""
+    cmd, env = ngpost_conf_cmd(stubs, work, inputs, nzb, conns, threads, extra, env_extra, conf_extra)
     r = subprocess.run(cmd, env=env, cwd=work, capture_output=True, text=True, timeout=timeout)
     global LAST_OUTPUT
     LAST_OUTPUT = "exit code %d\n%s%s" % (r.returncode, r.stdout, r.stderr)
@@ -436,12 +442,183 @@ def test_repost_cleans_and_deletes_originals(work):
     check(not glob.glob(os.path.join(tmp, "*", "*")), "the archive was not deleted after the repost")
 
 
+# ---------------------------------------------------------------- persistent queue
+def queue_entries(work):
+    import json
+    path = os.path.join(work, "ngPost_queue.json")
+    if not os.path.exists(path):
+        return []
+    with open(path) as f:
+        return json.load(f)["posts"]
+
+
+def start_and_kill(stub, work, inputs, nzb, after, conf_extra="", extra=()):
+    """start a post and kill ngPost (SIGKILL, like a crash) once the server has accepted `after` articles"""
+    import time
+    cmd, env = ngpost_conf_cmd([stub], work, inputs, nzb, conns=1, threads=1, extra=extra, conf_extra=conf_extra)
+    proc = subprocess.Popen(cmd, env=env, cwd=work, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    t0 = time.time()
+    while len(stub.accepted) < after and time.time() - t0 < 60 and proc.poll() is None:
+        time.sleep(0.02)
+    check(proc.poll() is None, "ngPost finished before it could be interrupted")
+    proc.kill()
+    proc.wait()
+
+
+def slow(article, attempt):
+    import time
+    time.sleep(0.15)
+    return None
+
+
+def test_queue_resume_after_crash(work):
+    # ngPost is killed in the middle of a compressed post: the post stays in the queue, a normal start
+    # only says so, and --resume_queue posts it again from the beginning (new archive, nzb overwritten)
+    seven = shutil.which("7z")
+    if not seven:
+        print("SKIP  (7z is not installed)")
+        return
+    tmp = os.path.join(work, "tmp")
+    os.makedirs(tmp)
+    conf_extra = "TMP_DIR = %s\nRAR_PATH = %s\nRAR_SIZE = 0\n" % (tmp, seven)
+    src = os.path.join(work, "crash.bin")
+    data = make_file(src, 600_000, 51)
+    nzb = os.path.join(work, "crash.nzb")
+
+    stub = NntpStub(policy=slow).start()
+    try:
+        start_and_kill(stub, work, [src], nzb, after=3, conf_extra=conf_extra,
+                       extra=["--compress", "--rar_name", "crasharch", "--rar_pass", "secret"])
+    finally:
+        stub.stop()
+    entries = queue_entries(work)
+    check(len(entries) == 1 and entries[0]["state"] == "waiting", "the interrupted post is not in the queue: %s" % entries)
+    check(entries[0]["rarPass"] == "secret", "the archive password was not saved")
+    check(os.path.isdir(os.path.join(tmp, "crasharch")), "the archive of the interrupted post is not there (test setup)")
+
+    # a normal post does not touch the waiting post, it only tells about it
+    stub = NntpStub().start()
+    try:
+        other = os.path.join(work, "other.bin")
+        make_file(other, 100_000, 52)
+        r = run_ngpost_conf([stub], work, [other], os.path.join(work, "other.nzb"), conns=1, threads=1)
+        out = r.stdout + r.stderr
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        check("--resume_queue" in out, "nothing said about the unfinished post:\n" + out[-1500:])
+        check(len(queue_entries(work)) == 1, "the queue changed: %s" % queue_entries(work))
+    finally:
+        stub.stop()
+
+    # resume
+    stub = NntpStub().start()
+    try:
+        r = run_ngpost_conf([stub], work, [], None, conns=2, threads=1, extra=["--resume_queue"],
+                            conf_extra=conf_extra)
+        out = r.stdout + r.stderr
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, out[-2000:]))
+        check("posting again from the beginning" in out, "the post was not started again")
+        check(queue_entries(work) == [], "the queue is not empty after the post: %s" % queue_entries(work))
+        common_checks(stub, nzb, None)
+        rebuilt = stub.rebuild_files()
+        check(set(rebuilt) == {"crasharch.7z"}, "files on the server: %s" % sorted(rebuilt))
+        out_dir = os.path.join(work, "extract")
+        os.makedirs(out_dir)
+        arch = os.path.join(work, "check.7z")
+        with open(arch, "wb") as f:
+            f.write(rebuilt["crasharch.7z"])
+        subprocess.run([seven, "x", "-psecret", "-o" + out_dir, arch], capture_output=True, check=True)
+        with open(os.path.join(out_dir, "crash.bin"), "rb") as f:
+            check(sha(f.read()) == sha(data), "the file in the archive is different")
+    finally:
+        stub.stop()
+
+
+def test_queue_file_gone(work):
+    # the file of an unfinished post has been deleted: the post is dropped with a clear message
+    src = os.path.join(work, "gone.bin")
+    make_file(src, 400_000, 53)
+    stub = NntpStub(policy=slow).start()
+    try:
+        start_and_kill(stub, work, [src], os.path.join(work, "gone.nzb"), after=2)
+    finally:
+        stub.stop()
+    check(len(queue_entries(work)) == 1, "the interrupted post is not in the queue")
+    os.remove(src)
+    stub = NntpStub().start()
+    try:
+        r = run_ngpost_conf([stub], work, [], None, extra=["--resume_queue"])
+        out = r.stdout + r.stderr
+        check("not there anymore" in out, "no message about the missing file:\n" + out[-1500:])
+        check(queue_entries(work) == [], "the post is still in the queue")
+        check(len(stub.accepted) == 0, "something was posted")
+    finally:
+        stub.stop()
+
+
+def test_queue_missing_articles(work):
+    # a post ends with an Article that couldn't be posted: it is kept in the queue as "missing",
+    # and --resume_queue posts only that Article and fixes the nzb
+    stub1 = NntpStub(policy=lambda article, attempt: b"441 posting failed" if article.part == 2 else None).start()
+    src = os.path.join(work, "miss.bin")
+    data = make_file(src, 200_000, 54)
+    nzb = os.path.join(work, "miss.nzb")
+    try:
+        r = run_ngpost_conf([stub1], work, [src], nzb, conns=2, threads=1,
+                            env_extra={"NGPOST_SECOND_ROUND_DELAY_MS": "500"})
+        check(r.returncode != 0, "exit code 0 although an article failed")
+    finally:
+        stub1.stop()
+    entries = queue_entries(work)
+    check(len(entries) == 1 and entries[0]["state"] == "missing", "the missing Article is not in the queue: %s" % entries)
+
+    stub2 = NntpStub().start()
+    try:
+        r = run_ngpost_conf([stub2], work, [], None, extra=["--resume_queue"])
+        out = r.stdout + r.stderr
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, out[-2000:]))
+        check("1 missing Articles posted" in out, "the missing Article was not posted:\n" + out[-1500:])
+        check(len(stub2.accepted) == 1, "%d articles posted, expected 1" % len(stub2.accepted))
+        check(queue_entries(work) == [], "the queue is not empty")
+        both = merged_accepted([stub1, stub2])
+        common_checks(both, nzb, {"miss.bin": data})
+    finally:
+        stub2.stop()
+
+
+def test_queue_used_by_another_ngpost(work):
+    # two ngPost with the same config: only the first one uses the queue
+    import time
+    src = os.path.join(work, "first.bin")
+    make_file(src, 400_000, 55)
+    stub = NntpStub(policy=slow).start()
+    cmd, env = ngpost_conf_cmd([stub], work, [src], os.path.join(work, "first.nzb"), conns=1, threads=1)
+    first = subprocess.Popen(cmd, env=env, cwd=work, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        t0 = time.time()
+        while len(stub.accepted) < 1 and time.time() - t0 < 30:
+            time.sleep(0.02)
+        second = os.path.join(work, "second.bin")
+        make_file(second, 60_000, 56)
+        r = run_ngpost_conf([stub], work, [second], os.path.join(work, "second.nzb"), conns=1, threads=1)
+        out = r.stdout + r.stderr
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        check("used by another ngPost" in out, "no message about the queue in use:\n" + out[-1500:])
+        entries = queue_entries(work)
+        check(len(entries) == 1 and entries[0]["files"] == [src], "the second ngPost wrote in the queue: %s" % entries)
+    finally:
+        first.kill()
+        first.wait()
+        stub.stop()
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
          test_other_server_used, test_second_round, test_too_many_failures,
          test_repost_missing, test_repost_nothing_to_do, test_repost_still_failing,
-         test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals]
+         test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals,
+         test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
+         test_queue_used_by_another_ngpost]
 
 
 def main():

@@ -48,6 +48,7 @@ class FoldersMonitorForNewFiles;
 class QStorageInfo;
 #endif
 class NzbCheck;
+class PostQueue;
 
 #define NB_ARTICLES_TO_PREPARE_PER_CONNECTION 3
 
@@ -193,6 +194,13 @@ private:
     bool        _historyEnabled;       //!< history of the uploads (on by default, key "history" in the config)
     bool        _historyKeyInConfig;   //!< false the first time: the user is informed that the history is on
     QString     _configPath;           //!< config file in use (the default history file is created next to it)
+
+    // persistent queue of the posts (ngPost_queue.json next to the config)
+    PostQueue  *_postQueue    = nullptr;
+    bool        _queueTried   = false; //!< we tried to open it (only once)
+    bool        _queueEnabled = true;  //!< key "queue" of the config
+    bool        _resumeQueue  = false; //!< command line: post again the unfinished posts (--resume_queue or key "resume_queue")
+    bool        _closingApp   = false; //!< the posts are stopped because the application closes: keep them in the queue
     QList<QDir> _autoDirs;
 
     FoldersMonitorForNewFiles *_folderMonitor;
@@ -340,6 +348,12 @@ public:
     static bool systemUsesDarkTheme();
 #endif
 public:
+    //! persistent queue of the posts (nullptr if off, without config file, or used by another ngPost)
+    PostQueue *postQueue();
+    QString queueFile() const;
+    void queueSaveJob(PostingJob *job);  //!< (re)write the entry of the job (if it has one)
+    void queueJobEnded(PostingJob *job); //!< remove the entry, keep it, or turn it into "missing Articles"
+    int  resumeQueue();                  //!< command line: post again the posts of the queue, returns the number of jobs
     QString historyFile() const;  //!< history file used (explicit POST_HISTORY or ngPost_history.csv next to the config), empty if off
     inline QString historyFieldSeparator() const { return _historyFieldSeparator; }
     static QStringList historyHeader();

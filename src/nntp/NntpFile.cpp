@@ -23,6 +23,7 @@
 #include "NntpArticle.h"
 #include <cmath>
 #include <QTextStream>
+#include <QDateTime>
 #include <QDebug>
 
 NntpFile::NntpFile(PostingJob *postingJob, const QFileInfo &file,
@@ -173,6 +174,9 @@ bool NntpFile::collectRepost(RepostFile &out) const
     out.padding    = _padding;
     out.groups     = _grpList;
     out.nbArticles = _nbAticles;
+    QFileInfo current(path()); // fresh information (the QFileInfo of the file may be cached)
+    out.size       = current.size();
+    out.mtimeMs    = current.lastModified().toMSecsSinceEpoch();
     out.parts.clear();
     for (const NntpArticle *article : _articles)
     {

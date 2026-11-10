@@ -33,6 +33,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QJsonObject>
 class QProcess;
 class NgPost;
 class NntpConnection;
@@ -182,6 +183,14 @@ private:
     RepostInfo _repostSource;          //!< (repost job) what we have to post again
     QVector<QPair<QString, QString>> _repostIds; //!< (repost job) old Message-ID => new Message-ID of the Articles posted
     RepostInfo _repostInfo;            //!< what is still missing at the end of this job (for the "Repost missing" button)
+    bool       _repostApplied = false; //!< (repost job) the nzb has been fixed / the remaining Articles computed
+
+    // ---- persistent queue (PostQueue)
+    QString             _queueId;           //!< id of the entry of this job in the queue (empty: not saved)
+    const QFileInfoList _inputFiles;        //!< files and folders given to post (_files is replaced by the archives)
+    bool                _resumed     = false; //!< job posted again from the queue (after a restart)
+    bool                _nzbPathFinal = false; //!< _nzbFilePath is the final one (posting started)
+    bool                _keepInQueue = false; //!< the post was interrupted (connections lost): try it again at the next start
 
 
 #ifdef __COMPUTE_IMMEDIATE_SPEED__
@@ -265,6 +274,15 @@ public:
     inline bool isRepost() const { return _isRepost; }
     //! Articles that couldn't be posted (valid once the job is finished)
     inline const RepostInfo &repostInfo() const { return _repostInfo; }
+    inline bool isRepostApplied() const { return _repostApplied; }
+
+    // persistent queue
+    inline const QString &queueId() const { return _queueId; }
+    inline void setQueueId(const QString &id) { _queueId = id; }
+    inline bool keepInQueue() const { return _keepInQueue; }
+    QJsonObject toQueueEntry() const; //!< everything needed to post it again from the beginning
+    //! job rebuilt from an entry of the queue (nullptr and an error if its files are not there anymore)
+    static PostingJob *fromQueueEntry(NgPost *ngPost, const QJsonObject &entry, PostingWidget *postWidget, QString &error);
 
     inline bool isPaused() const;
 
