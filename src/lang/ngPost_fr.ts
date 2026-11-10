@@ -2925,6 +2925,38 @@ Soit utilisez --par2_pct, soit renseignez PAR2_PCT ou PAR2_ARGS dans le fichier 
         <source>the nzb file is not there anymore: %1</source>
         <translation>le fichier nzb n&apos;existe plus : %1</translation>
     </message>
+    <message>
+        <source>Compression</source>
+        <translation>Compression</translation>
+    </message>
+    <message>
+        <source>par2</source>
+        <translation>par2</translation>
+    </message>
+    <message>
+        <source>Paused</source>
+        <translation>En pause</translation>
+    </message>
+    <message>
+        <source>Upload</source>
+        <translation>Envoi</translation>
+    </message>
+    <message>
+        <source>Completed</source>
+        <translation>Terminé</translation>
+    </message>
+    <message>
+        <source>Completed, %1 Article(s) failed</source>
+        <translation>Terminé, %1 Article(s) en échec</translation>
+    </message>
+    <message>
+        <source>Stopped</source>
+        <translation>Arrêté</translation>
+    </message>
+    <message>
+        <source>ETA %1</source>
+        <translation>Reste %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>

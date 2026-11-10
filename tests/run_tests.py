@@ -642,6 +642,23 @@ def test_phase_durations(work):
         stub.stop()
 
 
+def test_progress_line_has_eta(work):
+    # the progress line of the command line tells the remaining time (smoothed on the last seconds)
+    src = os.path.join(work, "eta.bin")
+    make_file(src, 1_000_000, 71)
+    stub = NntpStub(policy=slow).start()
+    try:
+        r = run_ngpost_conf([stub], work, [src], os.path.join(work, "eta.nzb"), conns=1, threads=1,
+                            extra=["--disp_progress", "BAR"])
+        out = r.stdout + r.stderr
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        check("ETA " in out, "no remaining time in the progress line:\n" + out[-1500:])
+        check("nan" not in out.lower(), "invalid number in the progress line:\n" + out[-1500:])
+        check("100 %" in out, "the progress line did not reach 100 %:\n" + out[-1500:])
+    finally:
+        stub.stop()
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
@@ -649,7 +666,7 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_repost_missing, test_repost_nothing_to_do, test_repost_still_failing,
          test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
-         test_queue_used_by_another_ngpost, test_phase_durations]
+         test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta]
 
 
 def main():

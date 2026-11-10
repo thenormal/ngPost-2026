@@ -337,6 +337,7 @@ qDebug() << "[MB_TRACE][Issue#82][PostingJob::onStartPosting] job: " << this
 void PostingJob::_postFiles()
 {    
     _postStarted = true;
+    _phase = Phase::UPLOADING;
     _diagRegisterPost();
     Diagnostics::instance().event("UPLOAD", QString("start: %1 file(s) (nzb: %2)").arg(_files.size()).arg(_nzbFilePath));
 
@@ -1054,6 +1055,8 @@ void PostingJob::_initPosting()
             connect(nntpFile, &NntpFile::errorReadingFile,     this, &PostingJob::onNntpErrorReading, Qt::QueuedConnection);
             _filesToUpload.enqueue(nntpFile);
             _nbArticlesTotal += nntpFile->nbExpectedArticles();
+            for (const RepostPart &part : repostFile.parts)
+                _plannedSize += static_cast<quint64>(part.bytes);
         }
         emit articlesNumber(_nbArticlesTotal);
         return;
@@ -1079,6 +1082,7 @@ void PostingJob::_initPosting()
 
         _filesToUpload.enqueue(nntpFile);
         _nbArticlesTotal += nntpFile->nbExpectedArticles();
+        _plannedSize += static_cast<quint64>(nntpFile->fileSize());
     }
     emit articlesNumber(_nbArticlesTotal);
 }
@@ -1099,6 +1103,7 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
     if (_ngPost->debugMode())
         _logAs(NgPost::LOG_DEBUG, "Finishing posting...");
 
+    _phase = Phase::DONE;
     _ngPost->_finishPosting(); // to update progress bar
 
     // 1.: print stats
@@ -1440,11 +1445,11 @@ void PostingJob::_printStats() const
         // where the time went (only when there is more than the upload)
         QStringList phases;
         if (_compressMs >= 0)
-            phases << tr("Compression %1").arg(_humanDuration(_compressMs));
+            phases << tr("Compression %1").arg(humanDuration(_compressMs));
         if (_par2Ms >= 0)
-            phases << tr("par2 %1").arg(_humanDuration(_par2Ms));
-        phases << tr("Upload %1").arg(_humanDuration(duration));
-        phases << tr("Total %1").arg(_humanDuration(jobDurationMs()));
+            phases << tr("par2 %1").arg(humanDuration(_par2Ms));
+        phases << tr("Upload %1").arg(humanDuration(duration));
+        phases << tr("Total %1").arg(humanDuration(jobDurationMs()));
         if (!_ngPost->useHMI())
             msgEnd += ts;
         msgEnd += phases.join(QString::fromUtf8(" \u00b7 ")) + "\n";
@@ -1470,7 +1475,30 @@ void PostingJob::_printStats() const
     _logAs(_nbArticlesFailed > 0 ? NgPost::LOG_WARN : NgPost::LOG_OK, msgEnd);
 }
 
-QString PostingJob::_humanDuration(qint64 ms)
+qint64 PostingJob::etaSeconds()
+{
+    if (_phase != Phase::UPLOADING || _isPaused || !_timeStart.isValid() || _plannedSize == 0)
+        return -1;
+    // clock of the upload without the pauses, speed of the last seconds (smoothed)
+    qint64 now = _timeStart.elapsed() - _pauseDuration;
+    if (_etaLastMs < 0)
+    {
+        _etaLastMs    = now;
+        _etaLastBytes = _uploadedSize;
+    }
+    else if (now - _etaLastMs >= 1000)
+    {
+        double inst = static_cast<double>(_uploadedSize - _etaLastBytes) * 1000. / static_cast<double>(now - _etaLastMs);
+        _etaSpeed     = _etaSpeed > 0. ? 0.7 * _etaSpeed + 0.3 * inst : inst;
+        _etaLastMs    = now;
+        _etaLastBytes = _uploadedSize;
+    }
+    if (_etaSpeed <= 0. || _uploadedSize >= _plannedSize)
+        return -1;
+    return static_cast<qint64>(std::ceil(static_cast<double>(_plannedSize - _uploadedSize) / _etaSpeed));
+}
+
+QString PostingJob::humanDuration(qint64 ms)
 {
     if (ms < 0)
         ms = 0;
@@ -1685,6 +1713,7 @@ bool PostingJob::startCompressFiles(const QString &cmdRar,
     connect(_extProc, &QProcess::started, this,
             [this](){ if (_diagCompressing) Diagnostics::instance().event("COMPRESS", QString("process started after %1 ms").arg(_diagTimer.elapsed())); },
             Qt::DirectConnection);
+    _phase = Phase::COMPRESSING;
     _diagTimer.start();
     _extProc->start(cmdRar, args);
     if (!passForStdin.isEmpty())
@@ -1752,7 +1781,7 @@ void PostingJob::onCompressionFinished(int exitCode)
     else
         _log("\n");
     if (exitCode == 0)
-        _logAs(NgPost::LOG_PHASE, tr("Compression done in %1").arg(_humanDuration(_compressMs)));
+        _logAs(NgPost::LOG_PHASE, tr("Compression done in %1").arg(humanDuration(_compressMs)));
 
 
 #ifdef __DEBUG__
@@ -1904,6 +1933,7 @@ bool PostingJob::startGenPar2(const QString &tmpFolder,
     _diagRegisterPost();
     _diagCompressing = false;
     Diagnostics::instance().event("PAR2", QString("start: %1 %2").arg(_ngPost->_par2Path, args.join(" ")));
+    _phase = Phase::PAR2;
     _diagTimer.start();
     _extProc->start(_ngPost->_par2Path, args);    
 
@@ -1929,7 +1959,7 @@ void PostingJob::onGenPar2Finished(int exitCode)
     else
         _log("\n");
     if (exitCode == 0)
-        _logAs(NgPost::LOG_PHASE, tr("par2 generated in %1").arg(_humanDuration(_par2Ms)));
+        _logAs(NgPost::LOG_PHASE, tr("par2 generated in %1").arg(humanDuration(_par2Ms)));
 
     _cleanExtProc();
 

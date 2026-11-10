@@ -112,6 +112,14 @@ private:
 
     QElapsedTimer _timeStart; //!< to get some stats (upload time and avg speed)
     QElapsedTimer _jobTimer;  //!< whole duration of the post (compression, par2 and upload) for the history
+public:
+    enum class Phase {WAITING, COMPRESSING, PAR2, UPLOADING, DONE};
+private:
+    Phase   _phase = Phase::WAITING;
+    quint64 _plannedSize  = 0;  //!< bytes to post (known when the Articles are prepared, unlike _totalSize)
+    qint64  _etaLastMs    = -1;
+    quint64 _etaLastBytes = 0;
+    double  _etaSpeed     = 0.; //!< bytes/s, smoothed
     qint64 _compressMs = -1; //!< duration of the compression (-1: no compression in this post)
     qint64 _par2Ms     = -1; //!< duration of the par2 generation (-1: no par2)
     QElapsedTimer _diagTimer;               //!< diagnostics: duration of the compression / par2 phase
@@ -242,6 +250,14 @@ public:
     inline void articleFailed(quint64 size);
 
     inline uint nbArticlesTotal() const;
+    inline quint64 totalSizeBytes() const { return _plannedSize; }
+    inline quint64 uploadedSizeBytes() const { return _uploadedSize; }
+
+    inline Phase phase() const { return _phase; }
+    inline bool uploadFinished() const { return _postFinished; }
+    void setDone() { _phase = Phase::DONE; }
+    qint64 etaSeconds(); //!< remaining time of the upload (smoothed on the last seconds), -1 if not known
+    static QString humanDuration(qint64 ms); //!< "1 min 30 s"
     inline uint nbArticlesUploaded() const;
     inline uint nbArticlesFailed() const;
     inline bool hasUploaded() const;
@@ -343,7 +359,6 @@ private slots:
 private:
     void _log(const QString &aMsg, bool newline = true) const; //!< log function for QString
     void _logAs(int level, const QString &aMsg) const;          //!< same with a color in the GUI (NgPost::LOG_LEVEL)
-    static QString _humanDuration(qint64 ms);                   //!< "1 min 30 s"
     void _error(const QString &error) const;
 
     int  _createNntpConnections();

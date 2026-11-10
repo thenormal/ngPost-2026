@@ -29,6 +29,8 @@
 
 #include <QDebug>
 #include <QProgressBar>
+#include <QRegularExpression>
+#include <QStyle>
 #include <QLabel>
 #include <QScreen>
 #include <QMessageBox>
@@ -103,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     _ui->progressBar->setRange(0, 100);
-    updateProgressBar(0, 0, "");
+    updateProgress(ProgressInfo());
 
     QSize screenSize = qApp->screens()[0]->size();
     resize(screenSize * 0.8);
@@ -230,35 +232,61 @@ void MainWindow::init(NgPost *ngPost)
     _ui->postSplitter->setSizes({3000, 1000}); // 3/4 for the post, 1/4 for the log
 //    connect(_ui->goCmdButton, &QAbstractButton::clicked, _ngPost, &NgPost::onGoCMD, Qt::QueuedConnection);
 
-    updateProgressBar(0, 0);
+    updateProgress(ProgressInfo());
 }
 
 
-void MainWindow::updateProgressBar(uint nbArticlesTotal, uint nbArticlesUploaded, const QString &avgSpeed
-                                   #ifdef __COMPUTE_IMMEDIATE_SPEED__
-                                       , const QString &immediateSpeed
-                                   #endif
-                                   )
+void MainWindow::updateProgress(const ProgressInfo &info)
 {
-//    qDebug() << "[MainWindow::updateProgressBar] _nbArticlesUploaded: " << nbArticlesUploaded;
-    _ui->progressBar->setValue(static_cast<int>(nbArticlesUploaded));
+    QProgressBar *bar = _ui->progressBar;
 
-#ifdef __COMPUTE_IMMEDIATE_SPEED__
-    _ui->uploadLbl->setText(QString("%5 (%1 / %2) %3: %4").arg(
-                                nbArticlesUploaded).arg(
-                                nbArticlesTotal).arg(
-                                tr("avg speed")).arg(
-                                avgSpeed).arg(
-                                immediateSpeed));
-#else
-    _ui->uploadLbl->setText(QString("(%1 / %2) %3: %4").arg(
-                                nbArticlesUploaded).arg(
-                                nbArticlesTotal).arg(
-                                tr("avg speed")).arg(
-                                avgSpeed));
-#endif
+    // bar: busy (animated) while the files are packed, then the Articles
+    if (info.phase == ProgressInfo::COMPRESSING || info.phase == ProgressInfo::PAR2
+            || (info.phase == ProgressInfo::UPLOADING && info.nbTotal == 0))
+        bar->setRange(0, 0);
+    else
+    {
+        bar->setRange(0, static_cast<int>(qMax(info.nbTotal, 1u)));
+        bar->setValue(static_cast<int>(info.nbUploaded));
+    }
+
+    // color of the bar (cf theme.qss)
+    QString state;
+    if (info.paused)
+        state = "paused";
+    else if (info.phase == ProgressInfo::DONE)
+        state = info.nbFailed ? "warn" : "done";
+    else if (info.phase == ProgressInfo::ABORTED)
+        state = "error";
+    if (bar->property("state").toString() != state)
+    {
+        bar->setProperty("state", state);
+        bar->style()->unpolish(bar);
+        bar->style()->polish(bar);
+    }
+
+    // text: the least important details are dropped when the window is narrow
+    QStringList parts = NgPost::progressParts(info);
+    const QString sep = QString::fromUtf8("  \u00b7  ");
+    int maxWidth = qMax(260, width() * 45 / 100);
+    QString text;
+    for (int nb = parts.size() ; nb > 0 ; --nb)
+    {
+        text = QStringList(parts.mid(0, nb)).join(sep);
+        if (_ui->uploadLbl->fontMetrics().horizontalAdvance(text) <= maxWidth)
+            break;
+    }
+    _ui->uploadLbl->setText(text);
+    _ui->uploadLbl->setToolTip(parts.join("\n"));
+
+    // percentage in the title of the window (visible when it is minimized)
+    QString title = windowTitle();
+    title.remove(QRegularExpression(QString::fromUtf8(" \u2013 \\d+%$")));
+    if (info.phase == ProgressInfo::UPLOADING && info.nbTotal)
+        title += QString::fromUtf8(" \u2013 %1%").arg(static_cast<int>(100. * info.nbUploaded / info.nbTotal));
+    if (title != windowTitle())
+        setWindowTitle(title);
 }
-
 
 void MainWindow::log(const QString &aMsg, bool newline, int level) const
 {
@@ -374,9 +402,6 @@ void MainWindow::changeEvent(QEvent *event)
         case QEvent::LanguageChange:
             qDebug() << "MainWindow::changeEvent";
             _ui->retranslateUi(this);
-#ifdef __COMPUTE_IMMEDIATE_SPEED__
-            _ui->uploadLbl->setToolTip(tr("Immediate speed (avg on %1 sec) - (nb Articles uploaded / total number of Articles) - avg speed").arg(NgPost::immediateSpeedDuration()));
-#endif
             _ui->shutdownCB->setToolTip(tr("Shutdown computer when all the current Posts are done (with command: %1)").arg(
                                             _ngPost->_shutdownCmd));
 

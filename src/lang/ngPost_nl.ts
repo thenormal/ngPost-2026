@@ -2940,6 +2940,38 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>the nzb file is not there anymore: %1</source>
         <translation>het nzb-bestand is er niet meer: %1</translation>
     </message>
+    <message>
+        <source>Compression</source>
+        <translation>Compressie</translation>
+    </message>
+    <message>
+        <source>par2</source>
+        <translation>par2</translation>
+    </message>
+    <message>
+        <source>Paused</source>
+        <translation>Gepauzeerd</translation>
+    </message>
+    <message>
+        <source>Upload</source>
+        <translation>Upload</translation>
+    </message>
+    <message>
+        <source>Completed</source>
+        <translation>Voltooid</translation>
+    </message>
+    <message>
+        <source>Completed, %1 Article(s) failed</source>
+        <translation>Voltooid, %1 artikel(en) mislukt</translation>
+    </message>
+    <message>
+        <source>Stopped</source>
+        <translation>Gestopt</translation>
+    </message>
+    <message>
+        <source>ETA %1</source>
+        <translation>Nog %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>

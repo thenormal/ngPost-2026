@@ -641,55 +641,105 @@ void NgPost::onErrorConnecting(QString err)
 }
 
 
+ProgressInfo NgPost::progressInfo() const
+{
+    ProgressInfo info;
+    PostingJob *job = _activeJob;
+    if (!job)
+        return info;
+
+    switch (job->phase())
+    {
+    case PostingJob::Phase::WAITING:     info.phase = ProgressInfo::IDLE;        break;
+    case PostingJob::Phase::COMPRESSING: info.phase = ProgressInfo::COMPRESSING; break;
+    case PostingJob::Phase::PAR2:        info.phase = ProgressInfo::PAR2;        break;
+    case PostingJob::Phase::UPLOADING:   info.phase = ProgressInfo::UPLOADING;   break;
+    case PostingJob::Phase::DONE:
+        info.phase = job->uploadFinished() ? ProgressInfo::DONE : ProgressInfo::ABORTED;
+        break;
+    }
+    info.paused     = job->isPaused() && info.phase == ProgressInfo::UPLOADING;
+    info.nbTotal    = job->nbArticlesTotal();
+    info.nbUploaded = job->nbArticlesUploaded();
+    info.nbFailed   = job->nbArticlesFailed();
+    info.sizeTotal  = job->totalSizeBytes();
+    info.sizeDone   = job->uploadedSizeBytes();
+    info.avgSpeed   = job->avgSpeed();
+#ifdef __COMPUTE_IMMEDIATE_SPEED__
+    info.immediateSpeed = job->immediateSpeed();
+#endif
+    info.etaSec     = info.phase == ProgressInfo::UPLOADING ? job->etaSeconds() : -1;
+    return info;
+}
+
+QStringList NgPost::progressParts(const ProgressInfo &info)
+{
+    QStringList parts;
+    switch (info.phase)
+    {
+    case ProgressInfo::IDLE:
+        return parts;
+    case ProgressInfo::COMPRESSING: parts << tr("Compression"); break;
+    case ProgressInfo::PAR2:        parts << tr("par2"); break;
+    case ProgressInfo::UPLOADING:   parts << (info.paused ? tr("Paused") : tr("Upload")); break;
+    case ProgressInfo::DONE:
+        parts << (info.nbFailed ? tr("Completed, %1 Article(s) failed").arg(info.nbFailed) : tr("Completed"));
+        break;
+    case ProgressInfo::ABORTED:     parts << tr("Stopped"); break;
+    }
+
+    bool uploading = info.phase == ProgressInfo::UPLOADING && !info.paused;
+    if (uploading && info.etaSec >= 0)
+        parts << tr("ETA %1").arg(PostingJob::humanDuration(info.etaSec * 1000));
+    if (uploading && !info.immediateSpeed.trimmed().isEmpty())
+        parts << info.immediateSpeed.simplified();
+    else if (info.phase == ProgressInfo::DONE)
+        parts << info.avgSpeed.simplified();
+    if (info.nbTotal && (info.phase == ProgressInfo::UPLOADING || info.phase == ProgressInfo::DONE))
+    {
+        parts << QString("%1 / %2").arg(PostingJob::humanSize(static_cast<double>(info.sizeDone))).arg(
+                     PostingJob::humanSize(static_cast<double>(info.sizeTotal)));
+        parts << QString("%1 / %2").arg(info.nbUploaded).arg(info.nbTotal);
+    }
+    return parts;
+}
+
 void NgPost::onRefreshprogressbarBar()
 {
-    if (_activeJob && _activeJob->isPaused())
-        return;
-
-    uint nbArticlesUploaded = 0,  nbArticlesTotal = 0;
-    QString avgSpeed("0 B/s");
-#ifdef __COMPUTE_IMMEDIATE_SPEED__
-    QString immediateSpeed("0 B/s");
-#endif
-    if (_activeJob)
-    {
-        nbArticlesTotal    = _activeJob->nbArticlesTotal();
-        nbArticlesUploaded = _activeJob->nbArticlesUploaded();
-        avgSpeed           = _activeJob->avgSpeed();
-#ifdef __COMPUTE_IMMEDIATE_SPEED__
-        immediateSpeed     = _activeJob->immediateSpeed();
-#endif
-    }
+    ProgressInfo info = progressInfo();
 #ifdef __USE_HMI__
     if (_hmi)
-#ifdef __COMPUTE_IMMEDIATE_SPEED__
-        _hmi->updateProgressBar(nbArticlesTotal, nbArticlesUploaded, avgSpeed, immediateSpeed);
-#else
-        _hmi->updateProgressBar(nbArticlesTotal, nbArticlesUploaded, avgSpeed);
-#endif
+        _hmi->updateProgress(info);
     else
 #endif
     {
-        float progressbar = static_cast<float>(nbArticlesUploaded);
-        progressbar /= nbArticlesTotal;
-
-//        qDebug() << "[NgPost::onRefreshprogressbarBar] uploaded: " << nbArticlesUploaded
-//                 << " / " << nbArticlesTotal
-//                 << " => progressbar: " << progressbar << "\n";
-
-        std::cout << "\r[";
-        int pos = static_cast<int>(std::floor(progressbar * sprogressbarBarWidth));
-        for (int i = 0; i < sprogressbarBarWidth; ++i) {
-            if (i < pos) std::cout << "=";
-            else if (i == pos) std::cout << ">";
-            else std::cout << " ";
+        if (info.phase == ProgressInfo::COMPRESSING || info.phase == ProgressInfo::PAR2)
+        {
+            std::cout << "\r" << progressParts(info).first().toStdString() << "...                                        ";
         }
-        std::cout << "] " << int(progressbar * 100) << " %"
-                  << " (" << nbArticlesUploaded << " / " << nbArticlesTotal << ")"
-                  << " avg. speed: " << avgSpeed.toStdString();
+        else if (info.phase != ProgressInfo::IDLE)
+        {
+            float progressbar = info.nbTotal ? static_cast<float>(info.nbUploaded) / info.nbTotal : 0.f;
+
+            std::cout << "\r[";
+            int pos = static_cast<int>(std::floor(progressbar * sprogressbarBarWidth));
+            for (int i = 0; i < sprogressbarBarWidth; ++i) {
+                if (i < pos) std::cout << "=";
+                else if (i == pos) std::cout << ">";
+                else std::cout << " ";
+            }
+            std::cout << "] " << int(progressbar * 100) << " %"
+                      << " (" << info.nbUploaded << " / " << info.nbTotal << ")"
+                      << " avg. speed: " << info.avgSpeed.toStdString();
+            if (info.etaSec >= 0)
+                std::cout << "  " << tr("ETA %1").arg(PostingJob::humanDuration(info.etaSec * 1000)).toStdString();
+            std::cout << "   ";
+        }
         std::cout.flush();
     }
-    if (nbArticlesUploaded < nbArticlesTotal)
+    // the timer goes on during the whole post (compression and par2 included), not when it is paused:
+    // resume() starts it again
+    if (_activeJob && !info.paused && info.phase != ProgressInfo::DONE && info.phase != ProgressInfo::ABORTED)
         _progressbarTimer.start(_refreshRate);
 }
 
@@ -1026,9 +1076,14 @@ void NgPost::onPostingJobStarted()
     if (_dispProgressBar)
 #endif
     {
-        connect(&_progressbarTimer, &QTimer::timeout, this, &NgPost::onRefreshprogressbarBar, Qt::DirectConnection);
+        connect(&_progressbarTimer, &QTimer::timeout, this, &NgPost::onRefreshprogressbarBar,
+                Qt::ConnectionType(Qt::DirectConnection | Qt::UniqueConnection));
         _progressbarTimer.start(_refreshRate);
     }
+#ifdef __USE_HMI__
+    if (_hmi && _activeJob && _activeJob->widget())
+        _hmi->setJobLabel(static_cast<int>(_activeJob->widget()->jobNumber())); // not "Ready" while it is compressing
+#endif
 }
 
 void NgPost::onPackingDone()
@@ -1089,6 +1144,13 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
     queueJobEnded(job); // no effect if done at the end of the post (PostingJob::_finishPosting)
     if (job == _activeJob)
     {
+#ifdef __USE_HMI__
+        if (_hmi)
+        {
+            job->setDone(); // a post stopped before the upload shows "Stopped"
+            _hmi->updateProgress(progressInfo());
+        }
+#endif
 #ifdef __USE_HMI__
         if (_hmi && !job->widget())
             _hmi->autoWidget()->updateFinishedJob(job->getFirstOriginalFile(),
@@ -1158,6 +1220,7 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
         if (_pendingJobs.size())
         {
             _activeJob = _pendingJobs.dequeue();
+            onPostingJobStarted();
 
 #ifdef __USE_HMI__
             if (_hmi)
@@ -2729,6 +2792,7 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::startPostingJob] job: " << job
     else
     {
         _activeJob = job;
+        onPostingJobStarted(); // the progress shows the compression and the par2 too
         emit job->startPosting(true);
         return true;
     }

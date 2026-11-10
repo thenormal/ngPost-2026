@@ -336,6 +336,10 @@ QProgressBar::chunk {
     background: @chunk@;
     border-radius: 4px;
 }
+QProgressBar[state="paused"]::chunk { background: #8a8a8a; }
+QProgressBar[state="done"]::chunk   { background: #2e9e4f; }
+QProgressBar[state="warn"]::chunk   { background: #e08a1e; }
+QProgressBar[state="error"]::chunk  { background: #d13438; }
 QFrame#uploadFrame {
     background: @card@;
     border-top: 1px solid @border@;
