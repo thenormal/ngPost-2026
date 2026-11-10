@@ -1475,6 +1475,66 @@ Se você fechar esta aba, não poderá postá-los novamente a partir daqui.
 
 Fechar a aba mesmo assim?</translation>
     </message>
+    <message>
+        <source>%1 post(s) were not finished the last time ngPost was closed.
+
+Resume: they are started again (a post that was being sent starts from the beginning).
+Discard: they are removed from the queue.
+Decide later: they stay in the queue and will be offered again at the next start.</source>
+        <translation>%1 post(s) não estavam concluídos na última vez que o ngPost foi fechado.
+
+Retomar: são iniciados novamente (um post que estava sendo enviado recomeça do início).
+Descartar: são removidos da fila.
+Decidir depois: permanecem na fila e serão oferecidos novamente na próxima inicialização.</translation>
+    </message>
+    <message>
+        <source>%1: %2 Article(s) to post again</source>
+        <translation>%1: %2 artigo(s) para postar novamente</translation>
+    </message>
+    <message>
+        <source>%1: to post again from the beginning</source>
+        <translation>%1: para postar novamente desde o início</translation>
+    </message>
+    <message>
+        <source>Decide later</source>
+        <translation>Decidir depois</translation>
+    </message>
+    <message>
+        <source>Discard</source>
+        <translation>Descartar</translation>
+    </message>
+    <message>
+        <source>Resume</source>
+        <translation>Retomar</translation>
+    </message>
+    <message>
+        <source>Posts that were not finished</source>
+        <translation>Posts não concluídos</translation>
+    </message>
+    <message>
+        <source>Queue of the posts</source>
+        <translation>Fila dos posts</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Fila: não é possível postar novamente %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Fila: não é possível postar novamente os artigos em falta de %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Fila: postando novamente os %1 artigos em falta de %2</translation>
+    </message>
+    <message>
+        <source>Save the posts that are not finished, to post them again after a restart</source>
+        <translation>Salvar os posts não concluídos para postá-los novamente após uma reinicialização</translation>
+    </message>
+    <message>
+        <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
+        <translation>A fila também registra a senha de cada arquivo em texto simples (como o histórico). Desativá-la apaga a fila salva.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2810,6 +2870,70 @@ OU use --par2_pct ou coloque PAR2_PCT ou PAR2_ARGS na configuração de arquivo.
         <source>for more details, cf %1</source>
         <translation>para obter mais detalhes, consulte %1</translation>
     </message>
+    <message>
+        <source>## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file</source>
+        <translation>## Fila dos posts: os posts não concluídos são salvos em ngPost_queue.json ao lado deste arquivo</translation>
+    </message>
+    <message>
+        <source>## command line / Docker: post again the unfinished posts at the start (same as --resume_queue)</source>
+        <translation>## linha de comando / Docker: postar novamente ao iniciar os posts não concluídos (igual a --resume_queue)</translation>
+    </message>
+    <message>
+        <source>## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text</source>
+        <translation>## para que possam ser postados novamente após uma reinicialização (ON ou OFF). Contém as senhas dos arquivos em texto simples</translation>
+    </message>
+    <message>
+        <source>Queue: %1</source>
+        <translation>Fila: %1</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) are waiting, use --resume_queue (or resume_queue = on in the config) to post them again</source>
+        <translation>Fila: %1 post(s) não concluído(s) aguardando, use --resume_queue (ou resume_queue = on na configuração) para postá-los novamente</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) to post again</source>
+        <translation>Fila: %1 post(s) não concluído(s) para postar novamente</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Fila: não é possível postar novamente %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Fila: não é possível postar novamente os artigos em falta de %1: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again from the beginning %1</source>
+        <translation>Fila: postando novamente desde o início %1</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Fila: postando novamente os %1 artigos em falta de %2</translation>
+    </message>
+    <message>
+        <source>The post %1 stays in the queue: it can be posted again at the next start.</source>
+        <translation>O post %1 permanece na fila: poderá ser postado novamente na próxima inicialização.</translation>
+    </message>
+    <message>
+        <source>nothing to post</source>
+        <translation>nada para postar</translation>
+    </message>
+    <message>
+        <source>post again the posts that were not finished (queue saved next to the config file)</source>
+        <translation>postar novamente os posts não concluídos (fila salva ao lado do arquivo de configuração)</translation>
+    </message>
+    <message>
+        <source>the file has been modified since the post: %1</source>
+        <translation>o arquivo foi modificado desde o post: %1</translation>
+    </message>
+    <message>
+        <source>the file is not there anymore: %1</source>
+        <translation>o arquivo não existe mais: %1</translation>
+    </message>
+    <message>
+        <source>the nzb file is not there anymore: %1</source>
+        <translation>o arquivo nzb não existe mais: %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3284,6 +3408,14 @@ OU use --par2_pct ou coloque PAR2_PCT ou PAR2_ARGS na configuração de arquivo.
     <message>
         <source>Temporary files deleted.</source>
         <translation>Arquivos temporários apagados.</translation>
+    </message>
+    <message>
+        <source>Removing the temporary folder of the interrupted post: %1</source>
+        <translation>Removendo a pasta temporária do post interrompido: %1</translation>
+    </message>
+    <message>
+        <source>the files to post are not there anymore: %1</source>
+        <translation>os arquivos a postar não existem mais: %1</translation>
     </message>
 </context>
 <context>
@@ -3872,6 +4004,21 @@ Clique em «Adicionar» para configurar o seu fornecedor Usenet.</translation>
         <location filename="../hmi/ServersWidget.cpp" line="568"/>
         <source>the host is empty</source>
         <translation>o host está vazio</translation>
+    </message>
+</context>
+<context>
+    <name>PostQueue</name>
+    <message>
+        <source>can&apos;t read the queue of the posts: %1</source>
+        <translation>não é possível ler a fila dos posts: %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is damaged, it has been renamed %1</source>
+        <translation>a fila dos posts está danificada, foi renomeada para %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
+        <translation>a fila dos posts está sendo usada por outro ngPost (%1): este não salvará seus posts</translation>
     </message>
 </context>
 </TS>

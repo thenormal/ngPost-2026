@@ -3206,6 +3206,43 @@ void NgPost::queueJobEnded(PostingJob *job)
     job->setQueueId(QString()); // handled only once
 }
 
+QString NgPost::queueProblemMissing(const RepostInfo &info)
+{
+    if (info.isEmpty())
+        return tr("nothing to post");
+    if (!QFileInfo::exists(info.nzbPath))
+        return tr("the nzb file is not there anymore: %1").arg(info.nzbPath);
+    for (const RepostFile &file : info.files)
+    {
+        QFileInfo fi(file.path);
+        if (!fi.exists())
+            return tr("the file is not there anymore: %1").arg(file.path);
+        if (fi.size() != file.size || (file.mtimeMs && fi.lastModified().toMSecsSinceEpoch() != file.mtimeMs))
+            return tr("the file has been modified since the post: %1").arg(file.path);
+    }
+    return QString();
+}
+
+void NgPost::queueForget(const QString &id)
+{
+    if (!id.isEmpty() && _postQueue)
+        _postQueue->remove(id);
+}
+
+void NgPost::queueSetEnabled(bool enabled)
+{
+    _queueEnabled = enabled;
+    if (enabled)
+    {
+        _queueTried = false; // opened again by the next post
+        return;
+    }
+    if (_postQueue)
+        _postQueue->clear(); // removes the file
+    delete _postQueue;
+    _postQueue = nullptr;
+}
+
 int NgPost::resumeQueue()
 {
     PostQueue *queue = postQueue();
@@ -3223,21 +3260,7 @@ int NgPost::resumeQueue()
         {
             RepostInfo info = PostQueue::repostFromJson(entry.value("missing").toObject());
             info.queueId = id;
-            QString problem;
-            if (info.isEmpty())
-                problem = tr("nothing to post");
-            else if (!QFileInfo::exists(info.nzbPath))
-                problem = tr("the nzb file is not there anymore: %1").arg(info.nzbPath);
-            for (const RepostFile &file : info.files)
-            {
-                if (!problem.isEmpty())
-                    break;
-                QFileInfo fi(file.path);
-                if (!fi.exists())
-                    problem = tr("the file is not there anymore: %1").arg(file.path);
-                else if (fi.size() != file.size || (file.mtimeMs && fi.lastModified().toMSecsSinceEpoch() != file.mtimeMs))
-                    problem = tr("the file has been modified since the post: %1").arg(file.path);
-            }
+            QString problem = queueProblemMissing(info);
             if (!problem.isEmpty())
             {
                 _error(tr("Queue: can't post again the missing Articles of %1: %2").arg(

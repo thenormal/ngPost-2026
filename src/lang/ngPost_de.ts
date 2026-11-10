@@ -1476,6 +1476,66 @@ Wenn Sie diesen Tab schließen, können Sie sie von hier aus nicht mehr erneut p
 
 Tab trotzdem schließen?</translation>
     </message>
+    <message>
+        <source>%1 post(s) were not finished the last time ngPost was closed.
+
+Resume: they are started again (a post that was being sent starts from the beginning).
+Discard: they are removed from the queue.
+Decide later: they stay in the queue and will be offered again at the next start.</source>
+        <translation>Beim letzten Beenden von ngPost waren %1 Post(s) nicht abgeschlossen.
+
+Fortsetzen: Sie werden erneut gestartet (ein Post, der gerade gesendet wurde, beginnt von vorn).
+Verwerfen: Sie werden aus der Warteschlange entfernt.
+Später entscheiden: Sie bleiben in der Warteschlange und werden beim nächsten Start erneut angeboten.</translation>
+    </message>
+    <message>
+        <source>%1: %2 Article(s) to post again</source>
+        <translation>%1: %2 Artikel erneut zu posten</translation>
+    </message>
+    <message>
+        <source>%1: to post again from the beginning</source>
+        <translation>%1: von Anfang an erneut zu posten</translation>
+    </message>
+    <message>
+        <source>Decide later</source>
+        <translation>Später entscheiden</translation>
+    </message>
+    <message>
+        <source>Discard</source>
+        <translation>Verwerfen</translation>
+    </message>
+    <message>
+        <source>Resume</source>
+        <translation>Fortsetzen</translation>
+    </message>
+    <message>
+        <source>Posts that were not finished</source>
+        <translation>Nicht abgeschlossene Posts</translation>
+    </message>
+    <message>
+        <source>Queue of the posts</source>
+        <translation>Warteschlange der Posts</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Warteschlange: %1 kann nicht erneut gepostet werden: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Warteschlange: Die fehlenden Artikel von %1 können nicht erneut gepostet werden: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Warteschlange: Die %1 fehlenden Artikel von %2 werden erneut gepostet</translation>
+    </message>
+    <message>
+        <source>Save the posts that are not finished, to post them again after a restart</source>
+        <translation>Nicht abgeschlossene Posts speichern, um sie nach einem Neustart erneut zu posten</translation>
+    </message>
+    <message>
+        <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
+        <translation>Die Warteschlange speichert auch das Passwort jedes Archivs im Klartext (wie der Verlauf). Beim Ausschalten wird die gespeicherte Warteschlange gelöscht.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2811,6 +2871,70 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>for more details, cf %1</source>
         <translation>Für weitere Einzelheiten, siehe %1</translation>
     </message>
+    <message>
+        <source>## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file</source>
+        <translation>## Warteschlange der Posts: Nicht abgeschlossene Posts werden in ngPost_queue.json neben dieser Datei gespeichert</translation>
+    </message>
+    <message>
+        <source>## command line / Docker: post again the unfinished posts at the start (same as --resume_queue)</source>
+        <translation>## Befehlszeile / Docker: nicht abgeschlossene Posts beim Start erneut posten (wie --resume_queue)</translation>
+    </message>
+    <message>
+        <source>## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text</source>
+        <translation>## damit sie nach einem Neustart erneut gepostet werden können (ON oder OFF). Enthält die Archivpasswörter im Klartext</translation>
+    </message>
+    <message>
+        <source>Queue: %1</source>
+        <translation>Warteschlange: %1</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) are waiting, use --resume_queue (or resume_queue = on in the config) to post them again</source>
+        <translation>Warteschlange: %1 nicht abgeschlossene(r) Post(s) warten, mit --resume_queue (oder resume_queue = on in der Konfiguration) erneut posten</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) to post again</source>
+        <translation>Warteschlange: %1 nicht abgeschlossene(r) Post(s) werden erneut gepostet</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Warteschlange: %1 kann nicht erneut gepostet werden: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Warteschlange: Die fehlenden Artikel von %1 können nicht erneut gepostet werden: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again from the beginning %1</source>
+        <translation>Warteschlange: %1 wird von Anfang an erneut gepostet</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Warteschlange: Die %1 fehlenden Artikel von %2 werden erneut gepostet</translation>
+    </message>
+    <message>
+        <source>The post %1 stays in the queue: it can be posted again at the next start.</source>
+        <translation>Der Post %1 bleibt in der Warteschlange: Er kann beim nächsten Start erneut gepostet werden.</translation>
+    </message>
+    <message>
+        <source>nothing to post</source>
+        <translation>nichts zu posten</translation>
+    </message>
+    <message>
+        <source>post again the posts that were not finished (queue saved next to the config file)</source>
+        <translation>nicht abgeschlossene Posts erneut posten (Warteschlange neben der Konfigurationsdatei gespeichert)</translation>
+    </message>
+    <message>
+        <source>the file has been modified since the post: %1</source>
+        <translation>die Datei wurde seit dem Post geändert: %1</translation>
+    </message>
+    <message>
+        <source>the file is not there anymore: %1</source>
+        <translation>die Datei ist nicht mehr vorhanden: %1</translation>
+    </message>
+    <message>
+        <source>the nzb file is not there anymore: %1</source>
+        <translation>die NZB-Datei ist nicht mehr vorhanden: %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3285,6 +3409,14 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     <message>
         <source>Temporary files deleted.</source>
         <translation>Temporäre Dateien gelöscht.</translation>
+    </message>
+    <message>
+        <source>Removing the temporary folder of the interrupted post: %1</source>
+        <translation>Der temporäre Ordner des unterbrochenen Posts wird entfernt: %1</translation>
+    </message>
+    <message>
+        <source>the files to post are not there anymore: %1</source>
+        <translation>die zu postenden Dateien sind nicht mehr vorhanden: %1</translation>
     </message>
 </context>
 <context>
@@ -3872,6 +4004,21 @@ Klicken Sie auf „Hinzufügen“, um Ihren Usenet-Anbieter einzurichten.</trans
         <location filename="../hmi/ServersWidget.cpp" line="568"/>
         <source>the host is empty</source>
         <translation>der Host ist leer</translation>
+    </message>
+</context>
+<context>
+    <name>PostQueue</name>
+    <message>
+        <source>can&apos;t read the queue of the posts: %1</source>
+        <translation>die Warteschlange der Posts kann nicht gelesen werden: %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is damaged, it has been renamed %1</source>
+        <translation>die Warteschlange der Posts ist beschädigt und wurde umbenannt in %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
+        <translation>die Warteschlange der Posts wird von einem anderen ngPost verwendet (%1): dieses speichert seine Posts nicht</translation>
     </message>
 </context>
 </TS>

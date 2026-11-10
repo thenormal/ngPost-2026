@@ -29,6 +29,7 @@ class QLabel;
 class QPushButton;
 #include <QFileInfoList>
 #include "RepostInfo.h"
+#include <QJsonObject>
 
 namespace Ui {
 class PostingWidget;
@@ -96,6 +97,12 @@ public:
     void setPackingAuto(bool enabled, const QStringList &keys);
 
     void postFiles(bool updateMainParams);
+
+    //! tab rebuilt from the persistent queue: a post posted again from the beginning (started at once)
+    bool restoreFromQueue(const QJsonObject &entry, QString &error);
+    //! tab rebuilt from the persistent queue: Articles that couldn't be posted (shows the repost button)
+    void restoreMissing(const RepostInfo &info);
+    void forgetQueue(); //!< the user closes the tab: its missing Articles are removed from the queue
 
     //! true if some Articles couldn't be posted and can still be posted again
     inline bool hasMissingArticles() const;

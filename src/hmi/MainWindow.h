@@ -79,6 +79,8 @@ private:
     QLineEdit      *_historyPathEdit;
     QPushButton    *_historyPathButton;
     QLabel         *_historyHint;
+    QCheckBox      *_queueCB;
+    QLabel         *_queueHint;
     QLabel         *_supportHint;
     QPushButton    *_supportButton;
     QPushButton    *_themeButton;  //!< side bar: switch Auto / Light / Dark
@@ -173,6 +175,8 @@ private slots:
     void onThemeSelected(int index);
     void onThemeButtonClicked();
     void onHistoryToggled(bool checked);
+    void onQueueToggled(bool checked);
+    void _offerQueue();   //!< at the start: the posts that were not finished (Resume / Discard / Decide later)
     void onHistoryPathClicked();
     void onAutoSave();
     void onDiagnosticReport();

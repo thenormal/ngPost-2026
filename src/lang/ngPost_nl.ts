@@ -1478,6 +1478,66 @@ Als u dit tabblad sluit, kunt u ze vanaf hier niet meer opnieuw posten.
 
 Tabblad toch sluiten?</translation>
     </message>
+    <message>
+        <source>%1 post(s) were not finished the last time ngPost was closed.
+
+Resume: they are started again (a post that was being sent starts from the beginning).
+Discard: they are removed from the queue.
+Decide later: they stay in the queue and will be offered again at the next start.</source>
+        <translation>%1 post(s) waren niet voltooid toen ngPost voor het laatst werd afgesloten.
+
+Hervatten: ze worden opnieuw gestart (een post die werd verzonden begint opnieuw van het begin).
+Verwerpen: ze worden uit de wachtrij verwijderd.
+Later beslissen: ze blijven in de wachtrij en worden bij de volgende start opnieuw aangeboden.</translation>
+    </message>
+    <message>
+        <source>%1: %2 Article(s) to post again</source>
+        <translation>%1: %2 artikel(en) opnieuw te posten</translation>
+    </message>
+    <message>
+        <source>%1: to post again from the beginning</source>
+        <translation>%1: opnieuw te posten vanaf het begin</translation>
+    </message>
+    <message>
+        <source>Decide later</source>
+        <translation>Later beslissen</translation>
+    </message>
+    <message>
+        <source>Discard</source>
+        <translation>Verwerpen</translation>
+    </message>
+    <message>
+        <source>Resume</source>
+        <translation>Hervatten</translation>
+    </message>
+    <message>
+        <source>Posts that were not finished</source>
+        <translation>Niet voltooide posts</translation>
+    </message>
+    <message>
+        <source>Queue of the posts</source>
+        <translation>Wachtrij van de posts</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Wachtrij: kan %1 niet opnieuw posten: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Wachtrij: kan de ontbrekende artikelen van %1 niet opnieuw posten: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Wachtrij: de %1 ontbrekende artikelen van %2 worden opnieuw gepost</translation>
+    </message>
+    <message>
+        <source>Save the posts that are not finished, to post them again after a restart</source>
+        <translation>Niet voltooide posts opslaan om ze na een herstart opnieuw te posten</translation>
+    </message>
+    <message>
+        <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
+        <translation>De wachtrij bewaart ook het wachtwoord van elk archief in leesbare tekst (zoals de geschiedenis). Uitschakelen verwijdert de opgeslagen wachtrij.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2816,6 +2876,70 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>for more details, cf %1</source>
         <translation>voor meer details, zie %1</translation>
     </message>
+    <message>
+        <source>## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file</source>
+        <translation>## Wachtrij van de posts: niet voltooide posts worden opgeslagen in ngPost_queue.json naast dit bestand</translation>
+    </message>
+    <message>
+        <source>## command line / Docker: post again the unfinished posts at the start (same as --resume_queue)</source>
+        <translation>## opdrachtregel / Docker: niet voltooide posts bij het starten opnieuw posten (zoals --resume_queue)</translation>
+    </message>
+    <message>
+        <source>## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text</source>
+        <translation>## zodat ze na een herstart opnieuw kunnen worden gepost (ON of OFF). Bevat de archiefwachtwoorden in leesbare tekst</translation>
+    </message>
+    <message>
+        <source>Queue: %1</source>
+        <translation>Wachtrij: %1</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) are waiting, use --resume_queue (or resume_queue = on in the config) to post them again</source>
+        <translation>Wachtrij: %1 niet voltooide post(s) wachten, gebruik --resume_queue (of resume_queue = on in de configuratie) om ze opnieuw te posten</translation>
+    </message>
+    <message>
+        <source>Queue: %1 unfinished post(s) to post again</source>
+        <translation>Wachtrij: %1 niet voltooide post(s) opnieuw te posten</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again %1: %2</source>
+        <translation>Wachtrij: kan %1 niet opnieuw posten: %2</translation>
+    </message>
+    <message>
+        <source>Queue: can&apos;t post again the missing Articles of %1: %2</source>
+        <translation>Wachtrij: kan de ontbrekende artikelen van %1 niet opnieuw posten: %2</translation>
+    </message>
+    <message>
+        <source>Queue: posting again from the beginning %1</source>
+        <translation>Wachtrij: %1 wordt opnieuw gepost vanaf het begin</translation>
+    </message>
+    <message>
+        <source>Queue: posting again the %1 missing Articles of %2</source>
+        <translation>Wachtrij: de %1 ontbrekende artikelen van %2 worden opnieuw gepost</translation>
+    </message>
+    <message>
+        <source>The post %1 stays in the queue: it can be posted again at the next start.</source>
+        <translation>De post %1 blijft in de wachtrij: hij kan bij de volgende start opnieuw worden gepost.</translation>
+    </message>
+    <message>
+        <source>nothing to post</source>
+        <translation>niets om te posten</translation>
+    </message>
+    <message>
+        <source>post again the posts that were not finished (queue saved next to the config file)</source>
+        <translation>niet voltooide posts opnieuw posten (wachtrij opgeslagen naast het configuratiebestand)</translation>
+    </message>
+    <message>
+        <source>the file has been modified since the post: %1</source>
+        <translation>het bestand is gewijzigd sinds de post: %1</translation>
+    </message>
+    <message>
+        <source>the file is not there anymore: %1</source>
+        <translation>het bestand is er niet meer: %1</translation>
+    </message>
+    <message>
+        <source>the nzb file is not there anymore: %1</source>
+        <translation>het nzb-bestand is er niet meer: %1</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3290,6 +3414,14 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
     <message>
         <source>Temporary files deleted.</source>
         <translation>Tijdelijke bestanden verwijderd.</translation>
+    </message>
+    <message>
+        <source>Removing the temporary folder of the interrupted post: %1</source>
+        <translation>Tijdelijke map van de onderbroken post wordt verwijderd: %1</translation>
+    </message>
+    <message>
+        <source>the files to post are not there anymore: %1</source>
+        <translation>de te posten bestanden zijn er niet meer: %1</translation>
     </message>
 </context>
 <context>
@@ -3878,6 +4010,21 @@ Klik op ‘Toevoegen’ om je Usenet-provider in te stellen.</translation>
         <location filename="../hmi/ServersWidget.cpp" line="568"/>
         <source>the host is empty</source>
         <translation>de host is leeg</translation>
+    </message>
+</context>
+<context>
+    <name>PostQueue</name>
+    <message>
+        <source>can&apos;t read the queue of the posts: %1</source>
+        <translation>kan de wachtrij van de posts niet lezen: %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is damaged, it has been renamed %1</source>
+        <translation>de wachtrij van de posts is beschadigd en is hernoemd naar %1</translation>
+    </message>
+    <message>
+        <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
+        <translation>de wachtrij van de posts wordt gebruikt door een andere ngPost (%1): deze slaat zijn posts niet op</translation>
     </message>
 </context>
 </TS>

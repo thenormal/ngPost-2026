@@ -46,6 +46,8 @@
 #include <QStackedWidget>
 #include "utils/Diagnostics.h"
 #include "PostingJob.h"
+#include "PostQueue.h"
+#include "RepostInfo.h"
 
 
 QColor        MainWindow::sPostingColor = QColor(255,162, 0); // gold (#FFA200)
@@ -81,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveQuickTab(false),
     _autoSaveAutoTab(false),
     _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr},
-    _history(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
+    _history(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
     _themeButton(nullptr), _aboutButton(nullptr),
     _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
     _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
@@ -198,6 +200,9 @@ void MainWindow::init(NgPost *ngPost)
     _historyCB->setChecked(_ngPost->_historyEnabled);
     _updateHistorySettings();
     connect(_historyCB,         &QAbstractButton::toggled, this, &MainWindow::onHistoryToggled);
+    _queueCB->setChecked(_ngPost->_queueEnabled);
+    connect(_queueCB,           &QAbstractButton::toggled, this, &MainWindow::onQueueToggled);
+    QTimer::singleShot(1500, this, &MainWindow::_offerQueue); // after the windows of the start
     connect(_historyPathButton, &QAbstractButton::clicked, this, &MainWindow::onHistoryPathClicked);
     if (_ngPost->_historyEnabled && !_ngPost->_historyKeyInConfig)
     {
@@ -1023,6 +1028,7 @@ void MainWindow::onCloseJob(int index)
         }
         else
         {
+            postWidget->forgetQueue(); // the missing Articles of this tab can't be posted again anymore
             _ui->postTabWidget->removeTab(index);
             delete postWidget;
 
@@ -1453,6 +1459,17 @@ QWidget *MainWindow::_buildSettingsPage()
     g->setColumnStretch(1, 1);
     left->insertWidget(left->count() - 1, history); // before the stretch of the left column
 
+    // queue of the posts
+    QFrame *queue = _card("queue", g);
+    _queueCB = new QCheckBox(queue);
+    _queueCB->setObjectName("queueCB");
+    _queueHint = newLabel("hint", queue);
+    _queueHint->setWordWrap(true);
+    g->addWidget(_queueCB, 0, 0);
+    g->addWidget(_queueHint, 1, 0);
+    g->setColumnStretch(0, 1);
+    left->insertWidget(left->count() - 1, queue);
+
     // interface
     QFrame *gui = _card("interface", g);
     _themeLbl = new QLabel(gui);
@@ -1514,6 +1531,10 @@ void MainWindow::_retranslateShell()
     _cardTitles["privacy"]->setText(tr("Privacy"));
     _cardTitles["interface"]->setText(tr("Interface"));
     _cardTitles["history"]->setText(tr("History of the uploads"));
+    _cardTitles["queue"]->setText(tr("Queue of the posts"));
+    _queueCB->setText(tr("Save the posts that are not finished, to post them again after a restart"));
+    _queueHint->setText(tr("The queue also records the password of each archive in clear text (like the history). "
+                           "Turning it off deletes the saved queue."));
     _cardTitles["support"]->setText(tr("Support the project"));
     _supportHint->setText(tr("%1 is free. If it is useful to you, you can support its development with a donation on Ko-fi.").arg(_ngPost ? _ngPost->appName() : "ngPost Deluxe"));
     _supportButton->setText(tr("Support on Ko-fi"));
@@ -1700,6 +1721,91 @@ void MainWindow::_updateHistorySettings()
     _historyPathEdit->setText(QDir::toNativeSeparators(path));
     _historyPathEdit->setEnabled(_ngPost->_historyEnabled);
     _historyPathButton->setEnabled(_ngPost->_historyEnabled);
+}
+
+void MainWindow::onQueueToggled(bool checked)
+{
+    _ngPost->queueSetEnabled(checked);
+    scheduleAutoSave();
+}
+
+void MainWindow::_offerQueue()
+{
+    PostQueue *queue = _ngPost->postQueue();
+    if (!queue || queue->size() == 0)
+        return;
+
+    // what is waiting
+    QStringList lines;
+    int nbWaiting = 0, nbMissing = 0;
+    for (const QJsonObject &entry : queue->entries())
+    {
+        if (entry.value("state").toString() == PostQueue::sStateMissing)
+        {
+            RepostInfo info = PostQueue::repostFromJson(entry.value("missing").toObject());
+            lines << tr("%1: %2 Article(s) to post again").arg(QFileInfo(info.nzbPath).fileName()).arg(info.nbArticles());
+            ++nbMissing;
+        }
+        else
+        {
+            lines << tr("%1: to post again from the beginning").arg(QFileInfo(entry.value("nzb").toString()).fileName());
+            ++nbWaiting;
+        }
+    }
+
+    QMessageBox box(QMessageBox::Question, tr("Posts that were not finished"),
+                    tr("%1 post(s) were not finished the last time ngPost was closed.\n\n"
+                       "Resume: they are started again (a post that was being sent starts from the beginning).\n"
+                       "Discard: they are removed from the queue.\n"
+                       "Decide later: they stay in the queue and will be offered again at the next start.").arg(queue->size()),
+                    QMessageBox::NoButton, this);
+    box.setDetailedText(lines.join("\n"));
+    QPushButton *resume  = box.addButton(tr("Resume"), QMessageBox::AcceptRole);
+    QPushButton *discard = box.addButton(tr("Discard"), QMessageBox::DestructiveRole);
+    box.addButton(tr("Decide later"), QMessageBox::RejectRole);
+    box.setDefaultButton(resume);
+    box.exec();
+
+    if (box.clickedButton() == discard)
+    {
+        queue->clear();
+        return;
+    }
+    if (box.clickedButton() != resume)
+        return;
+
+    const QList<QJsonObject> entries = queue->entries(); // copy: the entries change while we go
+    for (const QJsonObject &entry : entries)
+    {
+        const QString id = entry.value("id").toString();
+        PostingWidget *tab = addNewQuickTab(0);
+        QString error;
+        if (entry.value("state").toString() == PostQueue::sStateMissing)
+        {
+            RepostInfo info = PostQueue::repostFromJson(entry.value("missing").toObject());
+            info.queueId = id;
+            QString problem = NgPost::queueProblemMissing(info);
+            if (!problem.isEmpty())
+            {
+                logError(tr("Queue: can't post again the missing Articles of %1: %2").arg(
+                             QFileInfo(info.nzbPath).fileName(), problem));
+                queue->remove(id);
+                closeTab(tab);
+                continue;
+            }
+            tab->restoreMissing(info); // the "Repost missing Articles" button is there, the user starts it
+            _ngPost->_log(tr("Queue: posting again the %1 missing Articles of %2").arg(info.nbArticles()).arg(
+                              QFileInfo(info.nzbPath).fileName()));
+            tab->onRepostMissing();
+        }
+        else if (!tab->restoreFromQueue(entry, error))
+        {
+            logError(tr("Queue: can't post again %1: %2").arg(
+                         QFileInfo(entry.value("nzb").toString()).fileName(), error));
+            queue->remove(id);
+            closeTab(tab);
+        }
+    }
 }
 
 void MainWindow::onHistoryToggled(bool checked)
