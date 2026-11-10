@@ -3423,6 +3423,78 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>the files to post are not there anymore: %1</source>
         <translation>de te posten bestanden zijn er niet meer: %1</translation>
     </message>
+    <message>
+        <source>%1 Article(s) could not be posted: new attempt in %2 seconds</source>
+        <translation>%1 artikel(en) konden niet worden gepost: nieuwe poging over %2 seconden</translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
+        <translation>%1 u %2 min</translation>
+    </message>
+    <message>
+        <source>%1 min %2 s</source>
+        <translation>%1 min %2 s</translation>
+    </message>
+    <message>
+        <source>%1 s</source>
+        <translation>%1 s</translation>
+    </message>
+    <message>
+        <source>Authentication failed on all the connections: the server refused the user name or password. Post stopped.</source>
+        <translation>Authenticatie mislukt op alle verbindingen: de server weigerde de gebruikersnaam of het wachtwoord. Post gestopt.</translation>
+    </message>
+    <message>
+        <source>Compression %1</source>
+        <translation>Compressie %1</translation>
+    </message>
+    <message>
+        <source>Compression done in %1</source>
+        <translation>Compressie voltooid in %1</translation>
+    </message>
+    <message>
+        <source>Error: the last files were never confirmed as posted, closing the Post</source>
+        <translation>Fout: de laatste bestanden zijn nooit als gepost bevestigd, de post wordt gesloten</translation>
+    </message>
+    <message>
+        <source>Error: the nzb is already closed, %1 is not in it</source>
+        <translation>Fout: het nzb is al gesloten, %1 staat er niet in</translation>
+    </message>
+    <message>
+        <source>More than %1 Articles failed: there won&apos;t be a second attempt, they are counted as failed</source>
+        <translation>Meer dan %1 artikelen zijn mislukt: er komt geen tweede poging, ze tellen als mislukt</translation>
+    </message>
+    <message>
+        <source>Second attempt for the Articles that could not be posted</source>
+        <translation>Tweede poging voor de artikelen die niet konden worden gepost</translation>
+    </message>
+    <message>
+        <source>Total %1</source>
+        <translation>Totaal %1</translation>
+    </message>
+    <message>
+        <source>Upload %1</source>
+        <translation>Upload %1</translation>
+    </message>
+    <message>
+        <source>[%1] Article given to another connection: %2</source>
+        <translation>[%1] Artikel aan een andere verbinding gegeven: %2</translation>
+    </message>
+    <message>
+        <source>[%1] Article kept for a second attempt: %2</source>
+        <translation>[%1] Artikel bewaard voor een tweede poging: %2</translation>
+    </message>
+    <message>
+        <source>give up on Article: %1</source>
+        <translation>artikel wordt opgegeven: %1</translation>
+    </message>
+    <message>
+        <source>par2 %1</source>
+        <translation>par2 %1</translation>
+    </message>
+    <message>
+        <source>par2 generated in %1</source>
+        <translation>par2 gegenereerd in %1</translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>

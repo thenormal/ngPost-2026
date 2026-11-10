@@ -112,6 +112,8 @@ private:
 
     QElapsedTimer _timeStart; //!< to get some stats (upload time and avg speed)
     QElapsedTimer _jobTimer;  //!< whole duration of the post (compression, par2 and upload) for the history
+    qint64 _compressMs = -1; //!< duration of the compression (-1: no compression in this post)
+    qint64 _par2Ms     = -1; //!< duration of the par2 generation (-1: no par2)
     QElapsedTimer _diagTimer;               //!< diagnostics: duration of the compression / par2 phase
     qint64        _diagInputSize   = 0;     //!< diagnostics: size of the files to pack
     bool          _diagRegistered  = false; //!< diagnostics: secrets (names, password) already registered
@@ -340,6 +342,8 @@ private slots:
 
 private:
     void _log(const QString &aMsg, bool newline = true) const; //!< log function for QString
+    void _logAs(int level, const QString &aMsg) const;          //!< same with a color in the GUI (NgPost::LOG_LEVEL)
+    static QString _humanDuration(qint64 ms);                   //!< "1 min 30 s"
     void _error(const QString &error) const;
 
     int  _createNntpConnections();

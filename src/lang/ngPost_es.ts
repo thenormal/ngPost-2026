@@ -3418,6 +3418,78 @@ O bien usa --par2_pct o establece PAR2_PCT o PAR2_ARGS en el fichero de configur
         <source>the files to post are not there anymore: %1</source>
         <translation>los ficheros a publicar ya no están: %1</translation>
     </message>
+    <message>
+        <source>%1 Article(s) could not be posted: new attempt in %2 seconds</source>
+        <translation>%1 artículo(s) no se pudieron publicar: nuevo intento en %2 segundos</translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
+        <translation>%1 h %2 min</translation>
+    </message>
+    <message>
+        <source>%1 min %2 s</source>
+        <translation>%1 min %2 s</translation>
+    </message>
+    <message>
+        <source>%1 s</source>
+        <translation>%1 s</translation>
+    </message>
+    <message>
+        <source>Authentication failed on all the connections: the server refused the user name or password. Post stopped.</source>
+        <translation>Falló la autenticación en todas las conexiones: el servidor rechazó el usuario o la contraseña. Envío detenido.</translation>
+    </message>
+    <message>
+        <source>Compression %1</source>
+        <translation>Compresión %1</translation>
+    </message>
+    <message>
+        <source>Compression done in %1</source>
+        <translation>Compresión terminada en %1</translation>
+    </message>
+    <message>
+        <source>Error: the last files were never confirmed as posted, closing the Post</source>
+        <translation>Error: los últimos ficheros nunca se confirmaron como publicados, se cierra el envío</translation>
+    </message>
+    <message>
+        <source>Error: the nzb is already closed, %1 is not in it</source>
+        <translation>Error: el nzb ya está cerrado, %1 no está en él</translation>
+    </message>
+    <message>
+        <source>More than %1 Articles failed: there won&apos;t be a second attempt, they are counted as failed</source>
+        <translation>Más de %1 artículos fallaron: no habrá segundo intento, se cuentan como fallidos</translation>
+    </message>
+    <message>
+        <source>Second attempt for the Articles that could not be posted</source>
+        <translation>Segundo intento para los artículos que no se pudieron publicar</translation>
+    </message>
+    <message>
+        <source>Total %1</source>
+        <translation>Total %1</translation>
+    </message>
+    <message>
+        <source>Upload %1</source>
+        <translation>Subida %1</translation>
+    </message>
+    <message>
+        <source>[%1] Article given to another connection: %2</source>
+        <translation>[%1] Artículo entregado a otra conexión: %2</translation>
+    </message>
+    <message>
+        <source>[%1] Article kept for a second attempt: %2</source>
+        <translation>[%1] Artículo guardado para un segundo intento: %2</translation>
+    </message>
+    <message>
+        <source>give up on Article: %1</source>
+        <translation>se abandona el artículo: %1</translation>
+    </message>
+    <message>
+        <source>par2 %1</source>
+        <translation>par2 %1</translation>
+    </message>
+    <message>
+        <source>par2 generated in %1</source>
+        <translation>par2 generado en %1</translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>

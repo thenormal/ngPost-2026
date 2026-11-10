@@ -3383,6 +3383,78 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>the files to post are not there anymore: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>%1 Article(s) could not be posted: new attempt in %2 seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 min %2 s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Authentication failed on all the connections: the server refused the user name or password. Post stopped.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression done in %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: the last files were never confirmed as posted, closing the Post</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: the nzb is already closed, %1 is not in it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>More than %1 Articles failed: there won&apos;t be a second attempt, they are counted as failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Second attempt for the Articles that could not be posted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upload %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[%1] Article given to another connection: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[%1] Article kept for a second attempt: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>give up on Article: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>par2 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>par2 generated in %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>

@@ -3418,6 +3418,78 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>the files to post are not there anymore: %1</source>
         <translation>要发布的文件已不存在: %1</translation>
     </message>
+    <message>
+        <source>%1 Article(s) could not be posted: new attempt in %2 seconds</source>
+        <translation>%1篇文章发布失败: %2秒后重试</translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
+        <translation>%1小时%2分钟</translation>
+    </message>
+    <message>
+        <source>%1 min %2 s</source>
+        <translation>%1分%2秒</translation>
+    </message>
+    <message>
+        <source>%1 s</source>
+        <translation>%1秒</translation>
+    </message>
+    <message>
+        <source>Authentication failed on all the connections: the server refused the user name or password. Post stopped.</source>
+        <translation>所有连接的身份验证均失败: 服务器拒绝了用户名或密码. 发布已停止.</translation>
+    </message>
+    <message>
+        <source>Compression %1</source>
+        <translation>压缩 %1</translation>
+    </message>
+    <message>
+        <source>Compression done in %1</source>
+        <translation>压缩完成, 用时%1</translation>
+    </message>
+    <message>
+        <source>Error: the last files were never confirmed as posted, closing the Post</source>
+        <translation>错误: 最后的文件从未被确认已发布, 正在关闭此发布任务</translation>
+    </message>
+    <message>
+        <source>Error: the nzb is already closed, %1 is not in it</source>
+        <translation>错误: nzb已关闭, 其中没有%1</translation>
+    </message>
+    <message>
+        <source>More than %1 Articles failed: there won&apos;t be a second attempt, they are counted as failed</source>
+        <translation>超过%1篇文章失败: 不会再次重试, 它们将计为失败</translation>
+    </message>
+    <message>
+        <source>Second attempt for the Articles that could not be posted</source>
+        <translation>对未能发布的文章进行第二次尝试</translation>
+    </message>
+    <message>
+        <source>Total %1</source>
+        <translation>总计 %1</translation>
+    </message>
+    <message>
+        <source>Upload %1</source>
+        <translation>上传 %1</translation>
+    </message>
+    <message>
+        <source>[%1] Article given to another connection: %2</source>
+        <translation>[%1] 文章已交给另一个连接: %2</translation>
+    </message>
+    <message>
+        <source>[%1] Article kept for a second attempt: %2</source>
+        <translation>[%1] 文章留待第二次尝试: %2</translation>
+    </message>
+    <message>
+        <source>give up on Article: %1</source>
+        <translation>放弃文章: %1</translation>
+    </message>
+    <message>
+        <source>par2 %1</source>
+        <translation>par2 %1</translation>
+    </message>
+    <message>
+        <source>par2 generated in %1</source>
+        <translation>par2生成完成, 用时%1</translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>

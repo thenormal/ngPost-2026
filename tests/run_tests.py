@@ -611,6 +611,37 @@ def test_queue_used_by_another_ngpost(work):
         stub.stop()
 
 
+def test_phase_durations(work):
+    # a compressed post tells how long each phase took, a plain post has no such summary
+    seven = shutil.which("7z")
+    if not seven:
+        print("SKIP  (7z is not installed)")
+        return
+    tmp = os.path.join(work, "tmp")
+    os.makedirs(tmp)
+    conf_extra = "TMP_DIR = %s\nRAR_PATH = %s\nRAR_SIZE = 0\n" % (tmp, seven)
+    src = os.path.join(work, "dur.bin")
+    make_file(src, 300_000, 61)
+    stub = NntpStub().start()
+    try:
+        r = run_ngpost_conf([stub], work, [src], os.path.join(work, "dur.nzb"), conns=1, threads=1,
+                            conf_extra=conf_extra, extra=["--compress", "--rar_name", "durarch"])
+        out = r.stdout + r.stderr
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        check("Compression done in" in out, "no end of compression line:\n" + out[-1500:])
+        check("Compression " in out and "Upload " in out and "Total " in out,
+              "no summary of the durations:\n" + out[-1500:])
+
+        plain = os.path.join(work, "plain.bin")
+        make_file(plain, 100_000, 62)
+        r = run_ngpost_conf([stub], work, [plain], os.path.join(work, "plain.nzb"), conns=1, threads=1)
+        out = r.stdout + r.stderr
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        check("Total " not in out, "a plain post should not print the summary:\n" + out[-1500:])
+    finally:
+        stub.stop()
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
@@ -618,7 +649,7 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_repost_missing, test_repost_nothing_to_do, test_repost_still_failing,
          test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
-         test_queue_used_by_another_ngpost]
+         test_queue_used_by_another_ngpost, test_phase_durations]
 
 
 def main():
