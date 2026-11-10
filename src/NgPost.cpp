@@ -21,6 +21,7 @@
 #include <QSaveFile>
 #include "utils/Diagnostics.h"
 #include "PostingJob.h"
+#include "PostQueue.h"
 #include "FoldersMonitorForNewFiles.h"
 #include "nntp/NntpArticle.h"
 #include "nntp/NntpServerParams.h"
@@ -55,6 +56,8 @@
 #include <QNetworkReply>
 #include <QRegularExpression>
 #include <QDir>
+#include <QJsonObject>
+#include <QDateTime>
 #include <QStandardPaths>
 #include <QNetworkProxy>
 #ifdef __USE_TMP_RAM__
@@ -185,6 +188,7 @@ const QList<QCommandLineOption> NgPost::sCmdOptions = {
     { sOptionNames[Opt::AUTO_DIR],            tr("parse directory and post every file/folder separately. You must use --compress, should add --gen_par2, --gen_name and --gen_pass"), sOptionNames[Opt::AUTO_DIR]},
     { sOptionNames[Opt::MONITOR_DIR],         tr("monitor directory and post every new file/folder. You must use --compress, should add --gen_par2, --gen_name and --gen_pass"), sOptionNames[Opt::MONITOR_DIR]},
     { sOptionNames[Opt::DEL_AUTO],            tr("delete file/folder once posted. You must use --auto or --monitor with this option.")},
+    { "resume_queue",                         tr("post again the posts that were not finished (queue saved next to the config file)")},
 
 // quick posting (several files/folders)
     {{"i", sOptionNames[Opt::INPUT]},         tr("input file to upload (single file or directory), you can use it multiple times"), sOptionNames[Opt::INPUT]},
@@ -432,6 +436,10 @@ NgPost::~NgPost()
     if (_activeJob)
         delete _activeJob;
     qDeleteAll(_pendingJobs);
+    _pendingJobs.clear();
+
+    delete _postQueue; // releases its lock
+    _postQueue = nullptr;
 
     qDeleteAll(_nntpServers);
     qDeleteAll(_removedServers);
@@ -1072,6 +1080,7 @@ void NgPost::onPostingJobFinished()
 qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
          << ", file: " << job->nzbName();
 #endif
+    queueJobEnded(job); // no effect if done at the end of the post (PostingJob::_finishPosting)
     if (job == _activeJob)
     {
 #ifdef __USE_HMI__
@@ -1353,7 +1362,9 @@ QString NgPost::randomPass(uint length) const
 
 void NgPost::closeAllPostingJobs()
 {
+    _closingApp = true; // the posts that are stopped now stay in the queue to be posted again at the next start
     qDeleteAll(_pendingJobs);
+    _pendingJobs.clear();
     if (_activeJob)
         _activeJob->onStopPosting();
 }
@@ -1521,7 +1532,11 @@ bool NgPost::parseCommandLine(int argc, char *argv[])
         return false;
     }
 
-    if (!parser.isSet(sOptionNames[Opt::INPUT]) && !parser.isSet(sOptionNames[Opt::AUTO_DIR]) && !parser.isSet(sOptionNames[Opt::MONITOR_DIR]))
+    if (parser.isSet("resume_queue"))
+        _resumeQueue = true;
+
+    if (!parser.isSet(sOptionNames[Opt::INPUT]) && !parser.isSet(sOptionNames[Opt::AUTO_DIR]) && !parser.isSet(sOptionNames[Opt::MONITOR_DIR])
+            && !_resumeQueue)
     {
         _error(tr("Error syntax: you should provide at least one input file or directory using the option -i, --auto or --monitor"),
                ERROR_CODE::ERR_NO_INPUT);
@@ -1965,7 +1980,18 @@ bool NgPost::parseCommandLine(int argc, char *argv[])
 #endif
 
 
-    if (filesToUpload.isEmpty() && _autoDirs.isEmpty() && !isMonitoring)
+    // persistent queue: the posts that were not finished are posted first (only if asked)
+    int nbResumed = 0;
+    if (_resumeQueue)
+        nbResumed = resumeQueue();
+    else if (PostQueue *queue = postQueue())
+    {
+        if (queue->size())
+            _log(tr("Queue: %1 unfinished post(s) are waiting, use --resume_queue (or resume_queue = on in the config) to post them again").arg(
+                     queue->size()));
+    }
+
+    if (filesToUpload.isEmpty() && _autoDirs.isEmpty() && !isMonitoring && !nbResumed)
     {
         _error(tr("Nothing to do..."));
         return false;
@@ -2279,6 +2305,17 @@ QString NgPost::_parseConfig(const QString &configPath)
 
                     else if (opt == sOptionNames[Opt::LANG])
                         changeLanguage(val.toLower());
+
+                    else if (opt == "queue")
+                    {
+                        val = val.toLower();
+                        _queueEnabled = !(val == "off" || val == "false" || val == "0" || val == "no");
+                    }
+                    else if (opt == "resume_queue")
+                    {
+                        val = val.toLower();
+                        _resumeQueue = (val == "on" || val == "true" || val == "1" || val == "yes");
+                    }
 
                     else if (opt == "history")
                     {
@@ -2636,6 +2673,15 @@ QString NgPost::parseDefaultConfig()
 
 bool NgPost::startPostingJob(PostingJob *job)
 {
+    if (!job->isRepost() && job->queueId().isEmpty())
+    {
+        if (PostQueue *queue = postQueue())
+        {
+            job->setQueueId(PostQueue::newId());
+            queue->put(job->toQueueEntry());
+        }
+    }
+
 #ifdef __DEBUG__
 qDebug() << "[MB_TRACE][Issue#82][NgPost::startPostingJob] job: " << job
          << ", file: " << job->nzbName();
@@ -2816,6 +2862,12 @@ void NgPost::saveConfig(bool quiet)
                << tr("## the file contains the archive passwords in clear text: keep it private") << "\n"
                << "history = " << (_historyEnabled ? "ON" : "OFF") << "\n"
                << tr("## by default the history is saved in ngPost_history.csv next to this file") << "\n"
+               << "\n"
+               << tr("## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file") << "\n"
+               << tr("## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text") << "\n"
+               << "queue = " << (_queueEnabled ? "ON" : "OFF") << "\n"
+               << tr("## command line / Docker: post again the unfinished posts at the start (same as --resume_queue)") << "\n"
+               << (_resumeQueue ? "" : "#") << "resume_queue = ON\n"
                << tr("## History posting file") << "\n"
                << tr("## each succesful post will append a line with the date, the file name, the archive name, the password...") << "\n"
                << (_postHistoryFile.isEmpty()  ? "#" : "") <<"POST_HISTORY = "
@@ -3069,6 +3121,152 @@ QStringList NgPost::historyHeader()
 {
     return {tr("date"), tr("nzb name"), tr("size"), tr("avg. speed"), tr("archive name"), tr("archive pass"),
             tr("groups"), tr("from"), tr("status"), tr("files"), tr("duration"), tr("nzb file")};
+}
+
+QString NgPost::queueFile() const
+{
+    if (_configPath.isEmpty())
+        return QString();
+    return QFileInfo(_configPath).absoluteDir().absoluteFilePath("ngPost_queue.json");
+}
+
+PostQueue *NgPost::postQueue()
+{
+    if (_postQueue)
+        return _postQueue;
+    if (_queueTried || !_queueEnabled)
+        return nullptr;
+    QString path = queueFile();
+    if (path.isEmpty())
+        return nullptr; // no config file: nowhere to save it (like the history)
+    _queueTried = true;
+    PostQueue *queue = new PostQueue();
+    QString err;
+    bool ok = queue->open(path, err);
+    if (!err.isEmpty())
+        _error(tr("Queue: %1").arg(err));
+    if (!ok)
+    {
+        delete queue;
+        return nullptr;
+    }
+    _postQueue = queue;
+    return _postQueue;
+}
+
+void NgPost::queueSaveJob(PostingJob *job)
+{
+    if (job->queueId().isEmpty() || job->isRepost() || !_postQueue)
+        return;
+    _postQueue->put(job->toQueueEntry());
+}
+
+void NgPost::queueJobEnded(PostingJob *job)
+{
+    const QString id = job->queueId();
+    if (id.isEmpty() || !_postQueue)
+        return;
+
+    if (job->isRepost())
+    {
+        // the entry is the "missing Articles" of an earlier post: it follows what is still missing in the nzb
+        if (!job->isRepostApplied())
+            return; // the repost didn't start (no connection...): nothing changed
+        const RepostInfo &left = job->repostInfo();
+        if (left.isEmpty())
+            _postQueue->remove(id);
+        else
+        {
+            QJsonObject entry;
+            entry.insert("id", id);
+            entry.insert("state", PostQueue::sStateMissing);
+            entry.insert("added", QDateTime::currentDateTime().toString(Qt::ISODate));
+            entry.insert("missing", PostQueue::repostToJson(left));
+            _postQueue->put(entry);
+        }
+    }
+    else if (_closingApp)
+        return; // the application is closing: the post stays in the queue (and keeps its id)
+    else if (job->hasPostFinished() && !job->repostInfo().isEmpty())
+    {
+        QJsonObject entry;
+        entry.insert("id", id);
+        entry.insert("state", PostQueue::sStateMissing);
+        entry.insert("added", QDateTime::currentDateTime().toString(Qt::ISODate));
+        entry.insert("missing", PostQueue::repostToJson(job->repostInfo()));
+        _postQueue->put(entry);
+    }
+    else if (!job->hasPostFinished() && job->keepInQueue())
+    {
+        _log(tr("The post %1 stays in the queue: it can be posted again at the next start.").arg(job->nzbName()));
+    }
+    else
+        _postQueue->remove(id); // posted, stopped by the user, or failed (compression error...)
+
+    job->setQueueId(QString()); // handled only once
+}
+
+int NgPost::resumeQueue()
+{
+    PostQueue *queue = postQueue();
+    if (!queue || queue->size() == 0)
+        return 0;
+
+    int nbJobs = 0;
+    const QList<QJsonObject> entries = queue->entries(); // copy: entries are removed below
+    _log(tr("Queue: %1 unfinished post(s) to post again").arg(entries.size()));
+    for (const QJsonObject &entry : entries)
+    {
+        const QString id    = entry.value("id").toString();
+        const QString state = entry.value("state").toString();
+        if (state == PostQueue::sStateMissing)
+        {
+            RepostInfo info = PostQueue::repostFromJson(entry.value("missing").toObject());
+            info.queueId = id;
+            QString problem;
+            if (info.isEmpty())
+                problem = tr("nothing to post");
+            else if (!QFileInfo::exists(info.nzbPath))
+                problem = tr("the nzb file is not there anymore: %1").arg(info.nzbPath);
+            for (const RepostFile &file : info.files)
+            {
+                if (!problem.isEmpty())
+                    break;
+                QFileInfo fi(file.path);
+                if (!fi.exists())
+                    problem = tr("the file is not there anymore: %1").arg(file.path);
+                else if (fi.size() != file.size || (file.mtimeMs && fi.lastModified().toMSecsSinceEpoch() != file.mtimeMs))
+                    problem = tr("the file has been modified since the post: %1").arg(file.path);
+            }
+            if (!problem.isEmpty())
+            {
+                _error(tr("Queue: can't post again the missing Articles of %1: %2").arg(
+                           QFileInfo(info.nzbPath).fileName(), problem));
+                queue->remove(id);
+                continue;
+            }
+            _log(tr("Queue: posting again the %1 missing Articles of %2").arg(info.nbArticles()).arg(
+                     QFileInfo(info.nzbPath).fileName()));
+            startPostingJob(PostingJob::createRepostJob(this, info, nullptr));
+            ++nbJobs;
+        }
+        else
+        {
+            QString error;
+            PostingJob *job = PostingJob::fromQueueEntry(this, entry, nullptr, error);
+            if (!job)
+            {
+                _error(tr("Queue: can't post again %1: %2").arg(
+                           QFileInfo(entry.value("nzb").toString()).fileName(), error));
+                queue->remove(id);
+                continue;
+            }
+            _log(tr("Queue: posting again from the beginning %1").arg(job->nzbName()));
+            startPostingJob(job);
+            ++nbJobs;
+        }
+    }
+    return nbJobs;
 }
 
 QString NgPost::historyFile() const

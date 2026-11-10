@@ -85,6 +85,7 @@ SOURCES += \
         NzbCheck.cpp \
         Poster.cpp \
         PostingJob.cpp \
+        PostQueue.cpp \
         main.cpp \
         nntp/Nntp.cpp \
         nntp/NntpArticle.cpp \
@@ -110,6 +111,7 @@ HEADERS += \
     Poster.h \
     PostingJob.h \
     RepostInfo.h \
+    PostQueue.h \
     nntp/Nntp.h \
     nntp/NntpArticle.h \
     nntp/NntpFile.h \
