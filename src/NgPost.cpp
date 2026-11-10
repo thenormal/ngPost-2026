@@ -354,6 +354,7 @@ NgPost::NgPost(int &argc, char *argv[]):
     }
 
     connect(this, &NgPost::log,   this, &NgPost::onLog,   Qt::QueuedConnection);
+    connect(this, &NgPost::logLevel, this, &NgPost::onLogLevel, Qt::QueuedConnection);
     connect(this, &NgPost::error, this, &NgPost::onError, Qt::QueuedConnection);
 
     _loadTanslators();
@@ -621,6 +622,11 @@ int NgPost::startHMI()
 void NgPost::onLog(QString msg, bool newline)
 {
     _log(msg, newline);
+}
+
+void NgPost::onLogLevel(QString msg, int level)
+{
+    _logLevel(msg, level);
 }
 
 void NgPost::onError(QString msg)
@@ -1319,6 +1325,21 @@ void NgPost::_log(const QString &aMsg, bool newline) const
             _cout << "\n";
         _cout << MB_FLUSH;
     }
+}
+
+void NgPost::_logLevel(const QString &aMsg, int level) const
+{
+    Q_UNUSED(level)
+#ifdef __USE_HMI__
+    if (_hmi)
+    {
+        _hmi->log(aMsg, true, level);
+        if (_logStream)
+            *_logStream << aMsg << "\n" << MB_FLUSH; // force flush in case of crash
+    }
+    else
+#endif
+        _cout << aMsg << "\n" << MB_FLUSH;
 }
 
 void NgPost::_error(const QString &error) const

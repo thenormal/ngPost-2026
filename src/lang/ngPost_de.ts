@@ -3418,6 +3418,78 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>the files to post are not there anymore: %1</source>
         <translation>die zu postenden Dateien sind nicht mehr vorhanden: %1</translation>
     </message>
+    <message>
+        <source>%1 Article(s) could not be posted: new attempt in %2 seconds</source>
+        <translation>%1 Artikel konnten nicht gepostet werden: neuer Versuch in %2 Sekunden</translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
+        <translation>%1 Std. %2 Min.</translation>
+    </message>
+    <message>
+        <source>%1 min %2 s</source>
+        <translation>%1 Min. %2 s</translation>
+    </message>
+    <message>
+        <source>%1 s</source>
+        <translation>%1 s</translation>
+    </message>
+    <message>
+        <source>Authentication failed on all the connections: the server refused the user name or password. Post stopped.</source>
+        <translation>Authentifizierung auf allen Verbindungen fehlgeschlagen: Der Server hat Benutzername oder Passwort abgelehnt. Post gestoppt.</translation>
+    </message>
+    <message>
+        <source>Compression %1</source>
+        <translation>Komprimierung %1</translation>
+    </message>
+    <message>
+        <source>Compression done in %1</source>
+        <translation>Komprimierung abgeschlossen in %1</translation>
+    </message>
+    <message>
+        <source>Error: the last files were never confirmed as posted, closing the Post</source>
+        <translation>Fehler: Die letzten Dateien wurden nie als gepostet bestätigt, der Post wird geschlossen</translation>
+    </message>
+    <message>
+        <source>Error: the nzb is already closed, %1 is not in it</source>
+        <translation>Fehler: Die NZB-Datei ist bereits geschlossen, %1 ist nicht darin enthalten</translation>
+    </message>
+    <message>
+        <source>More than %1 Articles failed: there won&apos;t be a second attempt, they are counted as failed</source>
+        <translation>Mehr als %1 Artikel sind fehlgeschlagen: Es gibt keinen zweiten Versuch, sie zählen als fehlgeschlagen</translation>
+    </message>
+    <message>
+        <source>Second attempt for the Articles that could not be posted</source>
+        <translation>Zweiter Versuch für die Artikel, die nicht gepostet werden konnten</translation>
+    </message>
+    <message>
+        <source>Total %1</source>
+        <translation>Gesamt %1</translation>
+    </message>
+    <message>
+        <source>Upload %1</source>
+        <translation>Upload %1</translation>
+    </message>
+    <message>
+        <source>[%1] Article given to another connection: %2</source>
+        <translation>[%1] Artikel an eine andere Verbindung übergeben: %2</translation>
+    </message>
+    <message>
+        <source>[%1] Article kept for a second attempt: %2</source>
+        <translation>[%1] Artikel für einen zweiten Versuch aufbewahrt: %2</translation>
+    </message>
+    <message>
+        <source>give up on Article: %1</source>
+        <translation>Artikel wird aufgegeben: %1</translation>
+    </message>
+    <message>
+        <source>par2 %1</source>
+        <translation>par2 %1</translation>
+    </message>
+    <message>
+        <source>par2 generated in %1</source>
+        <translation>par2 erzeugt in %1</translation>
+    </message>
 </context>
 <context>
     <name>PostingWidget</name>

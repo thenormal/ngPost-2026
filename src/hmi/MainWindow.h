@@ -125,7 +125,7 @@ public:
 
     void setJobLabel(int jobNumber);
 
-    void log(const QString &aMsg, bool newline = true) const; //!< log function for QString
+    void log(const QString &aMsg, bool newline = true, int level = 0) const; //!< log function for QString (level: NgPost::LOG_LEVEL)
     void logError(const QString &error) const; //!< log function for QString
 
     bool useFixedPassword() const;

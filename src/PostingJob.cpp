@@ -150,12 +150,12 @@ PostingJob::~PostingJob()
 {
 
 #ifdef __DEBUG__
-    _log("Destructing PostingJob");
+    _logAs(NgPost::LOG_DEBUG, "Destructing PostingJob");
     qDebug() << "[PostingJob] <<<< Destruction " << this;
 #endif
 
     if (_ngPost->debugMode())
-        _log("Deleting PostingJob");
+        _logAs(NgPost::LOG_DEBUG, "Deleting PostingJob");
 
     if (_compressDir)
     {
@@ -263,7 +263,7 @@ qDebug() << "[MB_TRACE][Issue#82][PostingJob::onStartPosting] job: " << this
     }
     else
 #endif
-        _log(QString("\n\n[%1] %2: %3").arg(timestamp()).arg(_isRepost ? tr("Post again the missing Articles") : tr("Start posting")).arg(_nzbName));
+        _logAs(NgPost::LOG_PHASE, QString("\n\n[%1] %2: %3").arg(timestamp()).arg(_isRepost ? tr("Post again the missing Articles") : tr("Start posting")).arg(_nzbName));
 
     if (_doCompress)
     {
@@ -292,7 +292,7 @@ qDebug() << "[MB_TRACE][Issue#82][PostingJob::onStartPosting] job: " << this
 
 
 #ifdef __DEBUG__
-        _log("[PostingJob::onStartPosting] Starting compression...");
+        _logAs(NgPost::LOG_DEBUG, "[PostingJob::onStartPosting] Starting compression...");
 #endif
         if (!startCompressFiles(_rarPath, _tmpPath, _rarName, _rarPass, _rarSize))
             emit postingFinished();
@@ -578,7 +578,7 @@ void PostingJob::onDisconnectedConnection(NntpConnection *con)
                 if (_ngPost->_tryResumePostWhenConnectionLost)
                 {
                     int sleepDurationInSec = _ngPost->waitDurationBeforeAutoResume();
-                    _log(tr("Sleep for %1 sec before trying to reconnect").arg(sleepDurationInSec));
+                    _logAs(NgPost::LOG_WARN, tr("Sleep for %1 sec before trying to reconnect").arg(sleepDurationInSec));
                     _ngPost->pause();
                     _resumeTimer.start(sleepDurationInSec*1000);
                 }
@@ -607,7 +607,7 @@ void PostingJob::recoverArticle(NntpArticle *article, const NntpServerParams *se
     {
         _recoveryArticles.enqueue(article);
         if (_ngPost->debugMode())
-            _log(tr("[%1] Article given to another connection: %2").arg(conPrefix).arg(article->str()));
+            _logAs(NgPost::LOG_DEBUG, tr("[%1] Article given to another connection: %2").arg(conPrefix).arg(article->str()));
         return;
     }
 
@@ -618,7 +618,7 @@ void PostingJob::recoverArticle(NntpArticle *article, const NntpServerParams *se
         {
             _heldArticles.append(article);
             if (_ngPost->debugMode())
-                _log(tr("[%1] Article kept for a second attempt: %2").arg(conPrefix).arg(article->str()));
+                _logAs(NgPost::LOG_DEBUG, tr("[%1] Article kept for a second attempt: %2").arg(conPrefix).arg(article->str()));
             return;
         }
         _heldOverflow = true;
@@ -686,7 +686,7 @@ bool PostingJob::_startSecondRoundIfNeeded()
     }
 
     int delayMs = secondRoundDelayMs();
-    _log(tr("%1 Article(s) could not be posted: new attempt in %2 seconds").arg(nbArticles).arg(delayMs / 1000));
+    _logAs(NgPost::LOG_WARN, tr("%1 Article(s) could not be posted: new attempt in %2 seconds").arg(nbArticles).arg(delayMs / 1000));
     QTimer::singleShot(delayMs, this, [this]() { _restartConnectionsForSecondRound(); });
     return true;
 }
@@ -696,7 +696,7 @@ void PostingJob::_restartConnectionsForSecondRound()
     if (MB_LoadAtomic(_stopPosting) || _postFinished)
         return;
 
-    _log(tr("Second attempt for the Articles that could not be posted"));
+    _logAs(NgPost::LOG_WARN, tr("Second attempt for the Articles that could not be posted"));
     _nntpConnections.append(_closedConnections);
     _closedConnections.clear();
     if (_isPaused)
@@ -820,6 +820,11 @@ void PostingJob::_log(const QString &aMsg, bool newline) const
     emit _ngPost->log(aMsg, newline);
 }
 
+void PostingJob::_logAs(int level, const QString &aMsg) const
+{
+    emit _ngPost->logLevel(aMsg, level);
+}
+
 void PostingJob::_error(const QString &error) const
 {
     emit _ngPost->error(error);
@@ -869,7 +874,7 @@ int PostingJob::_createNntpConnections()
 void PostingJob::_preparePostersArticles()
 {
     if (_ngPost->debugFull())
-        _log("PostingJob::_prepareArticles");
+        _logAs(NgPost::LOG_DEBUG, "PostingJob::_prepareArticles");
 
     for (int i = 0 ; i < _ngPost->sNbPreparedArticlePerConnection ; ++i)
     {
@@ -911,7 +916,7 @@ NntpArticle *PostingJob::_readNextArticleIntoBufferPtr(const QString &threadName
         {
             _noMoreFiles = 0x1;
 #ifdef __DEBUG__
-            _log(tr("[%1] No more file to post...").arg(threadName));
+            _logAs(NgPost::LOG_DEBUG, tr("[%1] No more file to post...").arg(threadName));
 #endif
             return nullptr;
         }
@@ -923,7 +928,7 @@ NntpArticle *PostingJob::_readNextArticleIntoBufferPtr(const QString &threadName
         if (_file->open(QIODevice::ReadOnly))
         {
             if (_ngPost->debugFull())
-                _log(tr("[%1] starting processing file %2").arg(threadName).arg(_nntpFile->path()));
+                _logAs(NgPost::LOG_DEBUG, tr("[%1] starting processing file %2").arg(threadName).arg(_nntpFile->path()));
             _part = 0;
         }
         else
@@ -982,7 +987,7 @@ NntpArticle *PostingJob::_readNextArticleIntoBufferPtr(const QString &threadName
         {
             (*bufferPtr)[bytesRead] = '\0';
             if (_ngPost->debugFull())
-                _log(tr("[%1] we've read %2 bytes from %3 (=> new pos: %4)").arg(threadName).arg(bytesRead).arg(pos).arg(_file->pos()));
+                _logAs(NgPost::LOG_DEBUG, tr("[%1] we've read %2 bytes from %3 (=> new pos: %4)").arg(threadName).arg(bytesRead).arg(pos).arg(_file->pos()));
             ++_part;
             NntpArticle *article = new NntpArticle(_nntpFile, _part, pos, bytesRead,
                                                    _obfuscateArticles ? nullptr : &_from,
@@ -992,7 +997,7 @@ NntpArticle *PostingJob::_readNextArticleIntoBufferPtr(const QString &threadName
         else
         {
             if (_ngPost->debugFull())
-                _log(tr("[%1] finished processing file %2").arg(threadName).arg(_nntpFile->path()));
+                _logAs(NgPost::LOG_DEBUG, tr("[%1] finished processing file %2").arg(threadName).arg(_nntpFile->path()));
 
             _file->close();
             delete _file;
@@ -1092,7 +1097,7 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
     }
 
     if (_ngPost->debugMode())
-        _log("Finishing posting...");
+        _logAs(NgPost::LOG_DEBUG, "Finishing posting...");
 
     _ngPost->_finishPosting(); // to update progress bar
 
@@ -1118,11 +1123,11 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
         poster->stopThreads();
 
     if (_ngPost->debugMode())
-        _log("All posters stopped...");
+        _logAs(NgPost::LOG_DEBUG, "All posters stopped...");
 
 
 #ifdef __DEBUG__
-    _log("All connections are closed...");
+    _logAs(NgPost::LOG_DEBUG, "All connections are closed...");
 #endif
 
     // 5.: print out the list of files that havn't been posted
@@ -1161,7 +1166,7 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
         if (_nbArticlesFailed == 0 && _repostInfo.isEmpty())
             _delOriginalFiles();
         else
-            _log(tr("The original files have NOT been deleted because some Articles couldn't be posted."));
+            _logAs(NgPost::LOG_WARN, tr("The original files have NOT been deleted because some Articles couldn't be posted."));
     }
 
     if (_isRepost)
@@ -1368,7 +1373,7 @@ void PostingJob::_applyRepost()
     }
 
     if (nbFixed)
-        _log(tr("%1 missing Articles posted, the nzb file has been updated: %2").arg(nbFixed).arg(_repostSource.nzbPath));
+        _logAs(NgPost::LOG_OK, tr("%1 missing Articles posted, the nzb file has been updated: %2").arg(nbFixed).arg(_repostSource.nzbPath));
 
     if (!remaining.isEmpty())
     {
@@ -1377,7 +1382,7 @@ void PostingJob::_applyRepost()
         return;
     }
 
-    _log(tr("All the Articles are now posted."));
+    _logAs(NgPost::LOG_OK, tr("All the Articles are now posted."));
     if (!_repostSource.compressDir.isEmpty() && !_repostSource.keepRar)
     {
         QDir(_repostSource.compressDir).removeRecursively();
@@ -1430,6 +1435,21 @@ void PostingJob::_printStats() const
         msgEnd += tr("%1 / %2 articles FAILED to be uploaded (even with %3 retries)...\n").arg(
                       _nbArticlesFailed).arg(_nbArticlesTotal).arg(NntpArticle::nbMaxTrySending());
 
+    if (_compressMs >= 0 || _par2Ms >= 0)
+    {
+        // where the time went (only when there is more than the upload)
+        QStringList phases;
+        if (_compressMs >= 0)
+            phases << tr("Compression %1").arg(_humanDuration(_compressMs));
+        if (_par2Ms >= 0)
+            phases << tr("par2 %1").arg(_humanDuration(_par2Ms));
+        phases << tr("Upload %1").arg(_humanDuration(duration));
+        phases << tr("Total %1").arg(_humanDuration(jobDurationMs()));
+        if (!_ngPost->useHMI())
+            msgEnd += ts;
+        msgEnd += phases.join(QString::fromUtf8(" \u00b7 ")) + "\n";
+    }
+
     if (_nzb)
     {
         if (!_ngPost->useHMI())
@@ -1447,7 +1467,22 @@ void PostingJob::_printStats() const
             msgEnd += "\n";
     }
 
-    _log(msgEnd);
+    _logAs(_nbArticlesFailed > 0 ? NgPost::LOG_WARN : NgPost::LOG_OK, msgEnd);
+}
+
+QString PostingJob::_humanDuration(qint64 ms)
+{
+    if (ms < 0)
+        ms = 0;
+    if (ms < 10000)
+        return tr("%1 s").arg(ms / 1000., 0, 'f', 1);
+    qint64 sec = (ms + 500) / 1000;
+    if (sec < 60)
+        return tr("%1 s").arg(sec);
+    qint64 min = sec / 60;
+    if (min < 60)
+        return tr("%1 min %2 s").arg(min).arg(sec % 60);
+    return tr("%1 h %2 min").arg(min / 60).arg(min % 60);
 }
 
 
@@ -1632,9 +1667,9 @@ bool PostingJob::startCompressFiles(const QString &cmdRar,
 
     // 3.: launch rar
     if (_ngPost->debugMode() || !_postWidget)
-        _log(QString("[%1] %2: %3 %4\n").arg(timestamp()).arg(tr("Compressing files")).arg(cmdRar).arg(args.join(" ")));
+        _logAs(NgPost::LOG_PHASE, QString("[%1] %2: %3 %4\n").arg(timestamp()).arg(tr("Compressing files")).arg(cmdRar).arg(args.join(" ")));
     else
-        _log(QString("%1...\n").arg(tr("Compressing files")));
+        _logAs(NgPost::LOG_PHASE, QString("%1...\n").arg(tr("Compressing files")));
     _limitProcDisplay = false;
     _diagRegisterPost();
     Diagnostics::instance().event("COMPRESS", QString("start: %1 %2 | input: %3 in %4 file(s)/folder(s) | tmp: %5").arg(
@@ -1696,6 +1731,7 @@ void PostingJob::onCompressionFinished(int exitCode)
         QString msg = QString("end: exit code %1 | %2 in %3 s => %4").arg(exitCode).arg(
                     Diagnostics::humanSize(_diagInputSize)).arg(ms / 1000.0, 0, 'f', 1).arg(Diagnostics::speed(_diagInputSize, ms));
         Diagnostics::instance().event("COMPRESS", msg);
+        _compressMs = ms;
         if (_diagCompressing)
         {
             QString tail = QString::fromLocal8Bit(_diagOutTail).trimmed().replace('\r', ' ').replace('\n', " | ");
@@ -1715,6 +1751,8 @@ void PostingJob::onCompressionFinished(int exitCode)
         _log(tr("=> rar exit code: %1\n").arg(exitCode));
     else
         _log("\n");
+    if (exitCode == 0)
+        _logAs(NgPost::LOG_PHASE, tr("Compression done in %1").arg(_humanDuration(_compressMs)));
 
 
 #ifdef __DEBUG__
@@ -1857,9 +1895,9 @@ bool PostingJob::startGenPar2(const QString &tmpFolder,
             this, &PostingJob::onGenPar2Finished, Qt::QueuedConnection);
 
     if (_ngPost->debugMode() || !_postWidget)
-        _log(QString("[%1] %2: %3 %4").arg(timestamp()).arg(tr("Generating par2")).arg(_ngPost->_par2Path).arg(args.join(" ")));
+        _logAs(NgPost::LOG_PHASE, QString("[%1] %2: %3 %4").arg(timestamp()).arg(tr("Generating par2")).arg(_ngPost->_par2Path).arg(args.join(" ")));
     else
-        _log(QString("%1...\n").arg(tr("Generating par2")));
+        _logAs(NgPost::LOG_PHASE, QString("%1...\n").arg(tr("Generating par2")));
     if (!_ngPost->useParPar())
         _limitProcDisplay = true;
     _nbProcDisp = 0;
@@ -1876,6 +1914,7 @@ void PostingJob::onGenPar2Finished(int exitCode)
 {
     {
         qint64 ms = _diagTimer.isValid() ? _diagTimer.elapsed() : 0;
+        _par2Ms = ms;
         Diagnostics::instance().event("PAR2", QString("end: exit code %1 | %2 in %3 s => %4").arg(exitCode).arg(
                                           Diagnostics::humanSize(_diagInputSize)).arg(ms / 1000.0, 0, 'f', 1).arg(
                                           Diagnostics::speed(_diagInputSize, ms)));
@@ -1889,6 +1928,8 @@ void PostingJob::onGenPar2Finished(int exitCode)
         _log(tr("=> par2 exit code: %1\n").arg(exitCode));
     else
         _log("\n");
+    if (exitCode == 0)
+        _logAs(NgPost::LOG_PHASE, tr("par2 generated in %1").arg(_humanDuration(_par2Ms)));
 
     _cleanExtProc();
 

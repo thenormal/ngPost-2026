@@ -260,9 +260,26 @@ void MainWindow::updateProgressBar(uint nbArticlesTotal, uint nbArticlesUploaded
 }
 
 
-void MainWindow::log(const QString &aMsg, bool newline) const
+void MainWindow::log(const QString &aMsg, bool newline, int level) const
 {
-    if (newline)
+    if (newline && level != NgPost::LOG_INFO)
+    {
+        // colors readable on both the light and the dark theme
+        bool dark = _ui->logBrowser->palette().base().color().lightness() < 128;
+        QString color;
+        bool bold = false;
+        switch (level)
+        {
+        case NgPost::LOG_PHASE: color = dark ? "#6cb0ff" : "#1a5fb4"; bold = true; break;
+        case NgPost::LOG_OK:    color = dark ? "#5fd38a" : "#1e7e34"; break;
+        case NgPost::LOG_WARN:  color = dark ? "#ffb454" : "#b45f06"; break;
+        default:                color = dark ? "#9a9a9a" : "#7a7a7a"; break; // LOG_DEBUG
+        }
+        _ui->logBrowser->append(QString("<span style='color:%1;%2'>%3</span>").arg(
+                                    color, bold ? "font-weight:bold;" : "",
+                                    aMsg.toHtmlEscaped().replace("\n", "<br/>")));
+    }
+    else if (newline)
         _ui->logBrowser->append(aMsg);
     else
     {

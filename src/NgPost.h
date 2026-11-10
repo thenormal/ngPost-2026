@@ -79,6 +79,8 @@ class NgPost : public QObject, public CmdOrGuiApp
     friend class AboutNgPost;
 
 public:
+    enum LOG_LEVEL {LOG_INFO = 0, LOG_PHASE, LOG_OK, LOG_WARN, LOG_DEBUG}; //!< colors of the log in the GUI
+
     enum class Opt {HELP = 0, LANG, VERSION, CONF, SHUTDOWN_CMD, CHECK, QUIET, PROXY_SOCKS5,
                     DISP_PROGRESS, DEBUG, DEBUG_FULL, POST_HISTORY, FIELD_SEPARATOR, NZB_RM_ACCENTS,
                     RESUME_WAIT, NO_RESUME_AUTO, SOCK_TIMEOUT, PREPARE_PACKING,
@@ -450,6 +452,7 @@ public:
 
 signals:
     void log(QString msg, bool newline); //!< in case we signal from another thread
+    void logLevel(QString msg, int level); //!< same with a level (LOG_LEVEL)
     void error(QString msg); //!< in case we signal from another thread
 
 public slots:
@@ -476,6 +479,7 @@ public slots:
 
 private slots:
     void onLog(QString msg, bool newline);
+    void onLogLevel(QString msg, int level);
     void onError(QString msg);
     void onErrorConnecting(QString err);
     void onRefreshprogressbarBar();
@@ -496,6 +500,7 @@ private:
     void _stopMonitoring();
 
     void _log(const QString &aMsg, bool newline = true) const; //!< log function for QString
+    void _logLevel(const QString &aMsg, int level) const; //!< same, colored in the GUI (LOG_LEVEL)
     void _error(const QString &error) const;    
     void _error(const QString &error, ERROR_CODE code);
 
