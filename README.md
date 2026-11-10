@@ -124,6 +124,9 @@ As it is made in C++/Qt, you can build and run it on any OS (macOS, Android...):
 ### Full documentation
 The command line options, the complete list of configuration keywords and the installation guides are those of the original project: see the [README of ngPost](https://github.com/mbruel/ngPost#readme). Its installation guides refer to the original binaries, not to this fork.
 
+### Roadmap
+What is done, what is planned and the ideas under evaluation: see [ROADMAP.md](ROADMAP.md).
+
 ### FAQ
 
 **Windows says "Windows protected your PC". Is it safe?**<br/>
