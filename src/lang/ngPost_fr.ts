@@ -1526,6 +1526,30 @@ Décider plus tard : ils restent dans la file et seront proposés de nouveau au 
         <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
         <translation>La file enregistre aussi le mot de passe de chaque archive en clair (comme l&apos;historique). La désactiver supprime la file enregistrée.</translation>
     </message>
+    <message>
+        <source>All the groups in every post</source>
+        <translation>Tous les groupes dans chaque envoi</translation>
+    </message>
+    <message>
+        <source>One random group for each file (with Obfuscate Articles)</source>
+        <translation>Un groupe au hasard par fichier (avec obfuscation des Articles)</translation>
+    </message>
+    <message>
+        <source>One random group for each post</source>
+        <translation>Un groupe au hasard par envoi</translation>
+    </message>
+    <message>
+        <source>There is no newsgroup: add at least one in the Settings (Newsgroups).</source>
+        <translation>Il n&apos;y a aucun newsgroup : ajoutez-en au moins un dans les Paramètres (Newsgroups).</translation>
+    </message>
+    <message>
+        <source>These newsgroups are not valid: %1. Fix them in the Settings (Newsgroups).</source>
+        <translation>Ces newsgroups ne sont pas valides : %1. Corrigez-les dans les Paramètres (Newsgroups).</translation>
+    </message>
+    <message>
+        <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
+        <translation>Avec plusieurs groupes : où vont les envois. « Par fichier » nécessite l&apos;obfuscation des Articles.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3071,6 +3095,14 @@ Soit utilisez --par2_pct, soit renseignez PAR2_PCT ou PAR2_ARGS dans le fichier 
         <source>start sending article: %1</source>
         <translation></translation>
     </message>
+    <message>
+        <source>Article refused %1 times on this connection, it will be posted again: %2 (Error: &apos;%3&apos;)</source>
+        <translation>Article refusé %1 fois sur cette connexion, il sera posté de nouveau : %2 (Erreur : &apos;%3&apos;)</translation>
+    </message>
+    <message>
+        <source>[Connection #%1] Authentication refused by server %2:%3 for user &apos;%4&apos;: check your user name and password</source>
+        <translation>[Connexion #%1] Authentification refusée par le serveur %2:%3 pour l&apos;utilisateur &apos;%4&apos; : vérifiez votre nom d&apos;utilisateur et votre mot de passe</translation>
+    </message>
 </context>
 <context>
     <name>NzbCheck</name>
@@ -4113,6 +4145,25 @@ Cliquez sur « Ajouter » pour configurer votre fournisseur Usenet.</translation
     <message>
         <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
         <translation>la file des envois est utilisée par un autre ngPost (%1) : celui-ci n&apos;enregistrera pas ses envois</translation>
+    </message>
+</context>
+<context>
+    <name>GroupsEdit</name>
+    <message>
+        <source>Add a newsgroup, for example alt.binaries.test</source>
+        <translation>Ajoutez un newsgroup, par exemple alt.binaries.test</translation>
+    </message>
+    <message>
+        <source>This does not look like a newsgroup name (for example alt.binaries.test)</source>
+        <translation>Ceci ne ressemble pas à un nom de newsgroup (par exemple alt.binaries.test)</translation>
+    </message>
+    <message>
+        <source>Type a newsgroup and press Enter (or comma, or space). Suggestions appear while you type.</source>
+        <translation>Tapez un newsgroup et appuyez sur Entrée (ou virgule, ou espace). Des suggestions apparaissent pendant la saisie.</translation>
+    </message>
+    <message>
+        <source>add...</source>
+        <translation>ajouter...</translation>
     </message>
 </context>
 </TS>

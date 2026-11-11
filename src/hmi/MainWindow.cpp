@@ -29,6 +29,7 @@
 
 #include <QDebug>
 #include <QProgressBar>
+#include "GroupsEdit.h"
 #include <QRegularExpression>
 #include <QStyle>
 #include <QLabel>
@@ -526,7 +527,8 @@ void MainWindow::_initPostingBox()
     connect(_ui->rarPassEdit,       &QLineEdit::textChanged,   this, &MainWindow::onRarPassUpdated);
 
     _ui->fromEdit->setText(_ngPost->xml2txt(_ngPost->_from.c_str()));
-    _ui->groupsEdit->setText(_ngPost->groups());
+    _groupsEdit->setGroups(_ngPost->_grpList);
+    _groupPolicyCB->setCurrentIndex(qMax(0, _groupPolicyCB->findData(static_cast<int>(_ngPost->_groupPolicy))));
     _ui->uniqueFromCB->setChecked(_ngPost->_genFrom);
     _ui->saveFromCB->setChecked(_ngPost->_saveFrom);
 
@@ -603,7 +605,8 @@ void MainWindow::updateParams()
     _ngPost->enableAutoPacking(_ui->autoCompressCB->isChecked());
     _ngPost->_autoCloseTabs = _ui->autoCloseCB->isChecked();
 
-    _ngPost->updateGroups(_ui->groupsEdit->toPlainText());
+    _ngPost->updateGroups(_groupsEdit->groups().join(","));
+    _ngPost->_groupPolicy = static_cast<NgPost::GROUP_POLICY>(_groupPolicyCB->currentData().toInt());
 
     _ngPost->_obfuscateArticles = _ui->obfuscateMsgIdCB->isChecked();
     _ngPost->_obfuscateFileName = _ui->obfuscateFileNameCB->isChecked();
@@ -1449,9 +1452,18 @@ QWidget *MainWindow::_buildSettingsPage()
     // newsgroups
     QFrame *groups = _card("groups", g);
     _ui->groupsLbl->hide();
-    _ui->groupsEdit->setMaximumHeight(110);
-    _ui->groupsEdit->setMinimumHeight(70);
-    g->addWidget(_ui->groupsEdit, 0, 0);
+    _ui->groupsEdit->hide(); // replaced by the chips
+    _groupsEdit = new GroupsEdit(groups);
+    _groupPolicyCB = new QComboBox(groups);
+    _groupPolicyCB->setObjectName("groupPolicyCB");
+    _groupPolicyCB->addItem(QString(), static_cast<int>(NgPost::GROUP_POLICY::ALL));
+    _groupPolicyCB->addItem(QString(), static_cast<int>(NgPost::GROUP_POLICY::EACH_POST));
+    _groupPolicyCB->addItem(QString(), static_cast<int>(NgPost::GROUP_POLICY::EACH_FILE));
+    g->addWidget(_groupsEdit, 0, 0);
+    g->addWidget(_groupPolicyCB, 1, 0);
+    _retranslateGroups();
+    connect(_groupsEdit,    &GroupsEdit::changed, this, &MainWindow::scheduleAutoSave);
+    connect(_groupPolicyCB, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::scheduleAutoSave);
     left->addWidget(groups);
     left->addStretch();
 
@@ -1568,6 +1580,7 @@ void MainWindow::_retranslateShell()
     _cardTitles["poster"]->setText(tr("Poster"));
     _cardTitles["archives"]->setText(tr("Archives and password"));
     _cardTitles["groups"]->setText(tr("Newsgroups"));
+    _retranslateGroups();
     _cardTitles["upload"]->setText(tr("Upload"));
     _cardTitles["nzb"]->setText(tr("NZB files"));
     _cardTitles["privacy"]->setText(tr("Privacy"));
@@ -1599,6 +1612,33 @@ void MainWindow::_retranslateShell()
     _ui->saveButton->setText(tr("Save now"));
     _ui->logBox->setTitle(tr("Log"));
     setJobLabel(_jobNumber);
+}
+
+void MainWindow::_retranslateGroups()
+{
+    if (!_groupsEdit || !_groupPolicyCB)
+        return;
+    _groupsEdit->retranslate();
+    _groupPolicyCB->setItemText(0, tr("All the groups in every post"));
+    _groupPolicyCB->setItemText(1, tr("One random group for each post"));
+    _groupPolicyCB->setItemText(2, tr("One random group for each file (with Obfuscate Articles)"));
+    _groupPolicyCB->setToolTip(tr("When there are several groups: where the posts go. \"For each file\" needs the obfuscation of the Articles."));
+}
+
+bool MainWindow::checkGroups()
+{
+    QStringList bad = _groupsEdit->invalidGroups();
+    if (_groupsEdit->groups().isEmpty())
+    {
+        logError(tr("There is no newsgroup: add at least one in the Settings (Newsgroups)."));
+        return false;
+    }
+    if (!bad.isEmpty())
+    {
+        logError(tr("These newsgroups are not valid: %1. Fix them in the Settings (Newsgroups).").arg(bad.join(", ")));
+        return false;
+    }
+    return true;
 }
 
 void MainWindow::_updateThemeButton()

@@ -1536,6 +1536,30 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
         <translation>队列也会以明文记录每个压缩包的密码 (与历史记录相同). 关闭后将删除已保存的队列.</translation>
     </message>
+    <message>
+        <source>All the groups in every post</source>
+        <translation>每个发布使用所有新闻组</translation>
+    </message>
+    <message>
+        <source>One random group for each file (with Obfuscate Articles)</source>
+        <translation>每个文件随机一个新闻组 (需启用文章混淆)</translation>
+    </message>
+    <message>
+        <source>One random group for each post</source>
+        <translation>每个发布随机一个新闻组</translation>
+    </message>
+    <message>
+        <source>There is no newsgroup: add at least one in the Settings (Newsgroups).</source>
+        <translation>没有新闻组: 请在设置 (新闻组) 中至少添加一个.</translation>
+    </message>
+    <message>
+        <source>These newsgroups are not valid: %1. Fix them in the Settings (Newsgroups).</source>
+        <translation>这些新闻组无效: %1. 请在设置 (新闻组) 中修正.</translation>
+    </message>
+    <message>
+        <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
+        <translation>有多个新闻组时: 发布到哪里. “每个文件”需要启用文章混淆.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3081,6 +3105,14 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>start sending article: %1</source>
         <translation>开始发送文章：%1</translation>
     </message>
+    <message>
+        <source>Article refused %1 times on this connection, it will be posted again: %2 (Error: &apos;%3&apos;)</source>
+        <translation>文章在此连接上被拒绝%1次, 将重新发布: %2 (错误: &apos;%3&apos;)</translation>
+    </message>
+    <message>
+        <source>[Connection #%1] Authentication refused by server %2:%3 for user &apos;%4&apos;: check your user name and password</source>
+        <translation>[连接 #%1] 服务器%2:%3拒绝了用户&apos;%4&apos;的身份验证: 请检查用户名和密码</translation>
+    </message>
 </context>
 <context>
     <name>NzbCheck</name>
@@ -4124,6 +4156,25 @@ Click on &quot;Add&quot; to configure your Usenet provider.</source>
     <message>
         <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
         <translation>发布队列正被另一个ngPost使用 (%1): 此实例不会保存其发布任务</translation>
+    </message>
+</context>
+<context>
+    <name>GroupsEdit</name>
+    <message>
+        <source>Add a newsgroup, for example alt.binaries.test</source>
+        <translation>添加新闻组, 例如 alt.binaries.test</translation>
+    </message>
+    <message>
+        <source>This does not look like a newsgroup name (for example alt.binaries.test)</source>
+        <translation>这看起来不像新闻组名称 (例如 alt.binaries.test)</translation>
+    </message>
+    <message>
+        <source>Type a newsgroup and press Enter (or comma, or space). Suggestions appear while you type.</source>
+        <translation>输入新闻组后按回车 (或逗号, 或空格). 输入时会出现建议.</translation>
+    </message>
+    <message>
+        <source>add...</source>
+        <translation>添加...</translation>
     </message>
 </context>
 </TS>

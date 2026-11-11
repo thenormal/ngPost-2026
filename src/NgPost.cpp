@@ -489,7 +489,11 @@ void NgPost::updateGroups(const QString &groups)
 {
     _grpList.clear();
     for (const QString &grp : groups.split(","))
-        _grpList << grp;
+    {
+        QString name = grp.trimmed(); // "a.b.c, d.e.f" would otherwise keep a space in front of the second group
+        if (!name.isEmpty() && !_grpList.contains(name))
+            _grpList << name;
+    }
     _nbGroups = _grpList.size();
 }
 
