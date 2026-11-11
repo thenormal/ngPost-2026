@@ -41,6 +41,7 @@ class QFrame;
 class QLineEdit;
 class QCheckBox;
 class HistoryWidget;
+class HelpWidget;
 class GroupsEdit;
 
 namespace Ui {
@@ -69,12 +70,13 @@ private:
     static constexpr int sAutoSaveDelayMs = 1000;
 
     // new layout of ngPost Deluxe: side bar + pages
-    enum Page {PAGE_POSTS = 0, PAGE_SERVERS, PAGE_SETTINGS, PAGE_HISTORY};
-    enum Nav  {NAV_QUICK = 0, NAV_AUTO, NAV_SERVERS, NAV_SETTINGS, NAV_HISTORY, NB_NAV};
+    enum Page {PAGE_POSTS = 0, PAGE_SERVERS, PAGE_SETTINGS, PAGE_HISTORY, PAGE_HELP};
+    enum Nav  {NAV_QUICK = 0, NAV_AUTO, NAV_SERVERS, NAV_SETTINGS, NAV_HISTORY, NAV_HELP, NB_NAV};
     QStackedWidget *_pages;
     QButtonGroup   *_nav;
     QPushButton    *_navButtons[NB_NAV];
     HistoryWidget  *_history;
+    HelpWidget     *_help;
     int             _jobNumber;   //!< post shown in the bottom bar (-1: none)
     bool            _pauseIcon;   //!< the pause button shows pause (true) or play
     QCheckBox      *_historyCB;

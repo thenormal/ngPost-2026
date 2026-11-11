@@ -1562,6 +1562,10 @@ Later beslissen: ze blijven in de wachtrij en worden bij de volgende start opnie
         <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
         <translation>Bij meerdere groepen: waar de posts heen gaan. "Per bestand" vereist de verhulling van de artikelen.</translation>
     </message>
+    <message>
+        <source>Help</source>
+        <translation>Help</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>

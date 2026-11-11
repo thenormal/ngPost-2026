@@ -19,6 +19,7 @@ SOURCES += \
     hmi/AutoPostWidget.cpp \
     hmi/CheckBoxCenterWidget.cpp \
     hmi/GroupsEdit.cpp \
+    hmi/HelpWidget.cpp \
     hmi/PostingWidget.cpp \
     hmi/SignedListWidget.cpp \
     hmi/ServersWidget.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     hmi/AutoPostWidget.h \
     hmi/CheckBoxCenterWidget.h \
     hmi/GroupsEdit.h \
+    hmi/HelpWidget.h \
     hmi/PostingWidget.h \
     hmi/SignedListWidget.h \
     hmi/ServersWidget.h \

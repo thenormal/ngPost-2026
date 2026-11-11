@@ -23,6 +23,7 @@
 #include "AutoPostWidget.h"
 #include "ServersWidget.h"
 #include "HistoryWidget.h"
+#include "HelpWidget.h"
 #include "NgPost.h"
 #include "nntp/NntpServerParams.h"
 #include "nntp/NntpArticle.h"
@@ -85,8 +86,8 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveReady(false),
     _autoSaveQuickTab(false),
     _autoSaveAutoTab(false),
-    _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr},
-    _history(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
+    _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+    _history(nullptr), _help(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
     _themeButton(nullptr), _aboutButton(nullptr),
     _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
     _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
@@ -200,6 +201,10 @@ void MainWindow::init(NgPost *ngPost)
     _pages->insertWidget(PAGE_HISTORY, _history);
     _pages->removeWidget(placeholder);
     placeholder->deleteLater();
+    // help page (offline pages embedded in the program)
+    _help = new HelpWidget(_pages);
+    _pages->insertWidget(PAGE_HELP, _help);
+    _help->setLanguage(_ngPost->_lang);
     _historyCB->setChecked(_ngPost->_historyEnabled);
     _updateHistorySettings();
     connect(_historyCB,         &QAbstractButton::toggled, this, &MainWindow::onHistoryToggled);
@@ -1595,6 +1600,9 @@ void MainWindow::_retranslateShell()
     _supportButton->setText(tr("Support on Ko-fi"));
     _supportButton->setToolTip(NgPost::supportUrl());
     _navButtons[NAV_HISTORY]->setText(tr("History"));
+    _navButtons[NAV_HELP]->setText(tr("Help"));
+    if (_help && _ngPost)
+        _help->setLanguage(_ngPost->_lang);
     _historyCB->setText(tr("Save the history of the uploads"));
     _historyPathButton->setToolTip(tr("Choose the history file"));
     _historyHint->setText(tr("The history also records the password of each archive in clear text: "
@@ -1658,7 +1666,7 @@ void MainWindow::onThemeApplied()
     QColor checked = dark ? QColor("#4cc2ff") : QColor("#0067c0");
     static const char *icons[NB_NAV] = {":/icons/nav_quick.png", ":/icons/nav_auto.png",
                                         ":/icons/nav_servers.png", ":/icons/nav_settings.png",
-                                        ":/icons/nav_history.png"};
+                                        ":/icons/nav_history.png", ":/icons/nav_help.png"};
     for (int i = 0; i < NB_NAV; ++i)
         _navButtons[i]->setIcon(_navIcon(icons[i], normal, checked));
     _themeButton->setIcon(_navIcon(":/icons/nav_theme.png", normal, checked));
@@ -1690,6 +1698,9 @@ void MainWindow::onNavClicked(int id)
         break;
     case NAV_HISTORY:
         _pages->setCurrentIndex(PAGE_HISTORY);
+        break;
+    case NAV_HELP:
+        _pages->setCurrentIndex(PAGE_HELP);
         break;
     }
     _postsTitle->setText(_navButtons[id == NAV_AUTO ? NAV_AUTO : NAV_QUICK]->text());
