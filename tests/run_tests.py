@@ -678,6 +678,26 @@ def test_groups_are_cleaned(work):
         stub.stop()
 
 
+def test_help_pages(work):
+    # the pages of the Help section: titled, linked together, and all embedded in the program
+    import re
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    help_dir = os.path.join(root, "src", "resources", "help")
+    en = sorted(f for f in os.listdir(os.path.join(help_dir, "en")) if f.endswith(".md"))
+    check(len(en) >= 13, "only %d pages" % len(en))
+    qrc = open(os.path.join(root, "src", "resources", "resources.qrc")).read()
+    for lang in sorted(os.listdir(help_dir)):
+        for f in sorted(os.listdir(os.path.join(help_dir, lang))):
+            text = open(os.path.join(help_dir, lang, f), encoding="utf-8").read()
+            check("<file>help/%s/%s</file>" % (lang, f) in qrc, "%s/%s is not in resources.qrc" % (lang, f))
+            check(text.lstrip().startswith("# "), "%s/%s has no title" % (lang, f))
+            if lang != "en":
+                check(f in en, "%s/%s has no English page" % (lang, f))
+            for link in re.findall(r"\]\(([^)]+)\)", text):
+                if not link.startswith("http"):
+                    check(link in en, "%s/%s links to a missing page: %s" % (lang, f, link))
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
@@ -685,7 +705,8 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_repost_missing, test_repost_nothing_to_do, test_repost_still_failing,
          test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
-         test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned]
+         test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
+         test_help_pages]
 
 
 def main():

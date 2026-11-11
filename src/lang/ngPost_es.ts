@@ -1559,6 +1559,10 @@ Decidir más tarde: permanecen en la cola y se ofrecerán de nuevo en el próxim
         <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
         <translation>Si hay varios grupos: adónde van los envíos. «Por fichero» necesita la ofuscación de los artículos.</translation>
     </message>
+    <message>
+        <source>Help</source>
+        <translation>Ayuda</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>

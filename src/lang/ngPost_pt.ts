@@ -1559,6 +1559,10 @@ Decidir depois: permanecem na fila e serão oferecidos novamente na próxima ini
         <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
         <translation>Com vários grupos: para onde vão os posts. "Por arquivo" exige a ofuscação dos artigos.</translation>
     </message>
+    <message>
+        <source>Help</source>
+        <translation>Ajuda</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>

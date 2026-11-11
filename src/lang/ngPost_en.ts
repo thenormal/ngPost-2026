@@ -1542,6 +1542,10 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Help</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>

@@ -1560,6 +1560,10 @@ Später entscheiden: Sie bleiben in der Warteschlange und werden beim nächsten 
         <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
         <translation>Bei mehreren Gruppen: wohin die Posts gehen. „Pro Datei“ benötigt die Verschleierung der Artikel.</translation>
     </message>
+    <message>
+        <source>Help</source>
+        <translation>Hilfe</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>

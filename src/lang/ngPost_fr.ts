@@ -1550,6 +1550,10 @@ Décider plus tard : ils restent dans la file et seront proposés de nouveau au 
         <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
         <translation>Avec plusieurs groupes : où vont les envois. « Par fichier » nécessite l&apos;obfuscation des Articles.</translation>
     </message>
+    <message>
+        <source>Help</source>
+        <translation>Aide</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>

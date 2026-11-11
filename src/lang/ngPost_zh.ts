@@ -1560,6 +1560,10 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
         <translation>有多个新闻组时: 发布到哪里. “每个文件”需要启用文章混淆.</translation>
     </message>
+    <message>
+        <source>Help</source>
+        <translation>帮助</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>

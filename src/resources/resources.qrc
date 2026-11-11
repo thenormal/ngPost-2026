@@ -45,6 +45,7 @@
         <file>icons/nav_servers.png</file>
         <file>icons/nav_settings.png</file>
         <file>icons/nav_history.png</file>
+        <file>icons/nav_help.png</file>
         <file>icons/nav_pause.png</file>
         <file>icons/nav_play.png</file>
         <file>icons/nav_about.png</file>
@@ -59,5 +60,18 @@
         <file>icons/tab_close.png</file>
         <file>icons/tab_close_dark.png</file>
         <file>icons/check_dark.png</file>
+            <file>help/en/01-first-steps.md</file>
+        <file>help/en/02-servers.md</file>
+        <file>help/en/03-newsgroups.md</file>
+        <file>help/en/04-quick-post.md</file>
+        <file>help/en/05-queue.md</file>
+        <file>help/en/06-progress-and-log.md</file>
+        <file>help/en/07-failed-articles.md</file>
+        <file>help/en/08-auto-posting.md</file>
+        <file>help/en/09-nzb-files.md</file>
+        <file>help/en/10-command-line.md</file>
+        <file>help/en/11-glossary.md</file>
+        <file>help/en/12-problems.md</file>
+        <file>help/en/13-warnings.md</file>
     </qresource>
 </RCC>
