@@ -27,6 +27,9 @@ The points are added one by one, when they are approved.
 
 | | |
 |---|---|
+| Planned | **Check the post afterwards**: verify that the Articles are on the server (button, optional automatic) and show the result in the history |
+| Planned | **Notifications** when a post is done or fails (system tray, optional webhook for Telegram / Discord; the webhook address is treated like a password) |
+| Planned | **Bandwidth limit** and time slots for the upload |
 | Planned | Fix: the "One release" note of Quick Post must not appear during or after the upload (the list then shows the volumes of the archive) |
 
 ## Ideas, not committed
@@ -34,14 +37,11 @@ The points are added one by one, when they are approved.
 No order, no version. Some of them will probably be done, some will be dropped.
 
 **Control**
-- Notifications (system tray, webhook for Telegram / Discord) when a post is done or fails
-- Bandwidth limit and time slots
 - VPN guard: pause the posts when the VPN connection drops (the real kill-switch stays in the firewall or in the VPN application)
 - Check for updates and update from inside the program (with a checksum, and asking before anything is installed)
 - Temporary files in RAM: easier on Windows, and chosen automatically when there is room
 
 **Check and comfort**
-- Check the post afterwards and show the result in the history
 - Posting profiles, newsgroups per post and favorites, maybe the list of groups from the server
 - Log: filters by category, search, one log per post
 - A progress bar for each post in the lists, a graph of the speed
