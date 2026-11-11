@@ -21,6 +21,14 @@ Goal: a post should not be lost because of a bad connection, a crash or a restar
 | Done | Guide for Docker / Unraid behind a VPN container (gluetun) |
 | Done | Latency measures in the diagnostic report |
 
+## Version 1.3 (in preparation)
+
+The points are added one by one, when they are approved.
+
+| | |
+|---|---|
+| Planned | Fix: the "One release" note of Quick Post must not appear during or after the upload (the list then shows the volumes of the archive) |
+
 ## Ideas, not committed
 
 No order, no version. Some of them will probably be done, some will be dropped.
