@@ -2,7 +2,7 @@ name: Build Windows (64 and 32 bit)
 
 # Builds ngPost Deluxe on a Windows runner (Qt 5.15.2 + MinGW 8.1) for Windows 64 bit and 32 bit and
 # publishes a ready-to-run folder as a downloadable artifact: Actions tab > the run > "Artifacts".
-# When a tag "v*" is pushed (v1.0, v1.1...), a GitHub release is created with the two ZIP files.
+# When a tag "v*" is pushed (v1.0, v1.1, v1.2...), a GitHub release is created with the two ZIP files.
 on:
   push:
     branches: [ master ]

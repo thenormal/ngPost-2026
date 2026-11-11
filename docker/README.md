@@ -4,7 +4,7 @@ The image contains the **command line** version of ngPost Deluxe (no graphical i
 It **watches a folder**: every file or folder you put in `/watch` is compressed (random name and password),
 protected with par2 and posted. The NZB file is written in `/nzb`, the history (with the archive passwords) in `/config`.
 
-Image: `ghcr.io/thenormal/ngpost-deluxe` (tags `latest` and the version, for example `1.1`).
+Image: `ghcr.io/thenormal/ngpost-deluxe` (tags `latest` and the version, for example `1.2`).
 
 ## Quick start
 
