@@ -18,7 +18,7 @@ Goal: a post should not be lost because of a bad connection, a crash or a restar
 | Done | Progress bar with the phase, the remaining time and colors |
 | Done | Newsgroups box with "chips" (suggestions and checks) and a menu for where the posts go when there are several groups |
 | Done | Help section inside the program (offline, in English; other languages can be added later) |
-| Planned | Guide for Docker / Unraid behind a VPN container (gluetun) |
+| Done | Guide for Docker / Unraid behind a VPN container (gluetun) |
 | Planned | Latency measures in the diagnostic report |
 
 ## Ideas, not committed
