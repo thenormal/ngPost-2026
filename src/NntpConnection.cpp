@@ -18,6 +18,7 @@
 //========================================================================
 
 #include "NntpConnection.h"
+#include "utils/LatencyStats.h"
 #include "nntp/NntpServerParams.h"
 #include "nntp/Nntp.h"
 #include "nntp/NntpArticle.h"
@@ -112,6 +113,8 @@ void NntpConnection::onStartConnection()
     connect(_socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
             this, SLOT(onErrors(QAbstractSocket::SocketError)), Qt::DirectConnection);
 
+    _latencyServer = QString("%1:%2").arg(_srvParams.host).arg(_srvParams.port);
+    _latencyTimer.start();
     _socket->connectToHost(_srvParams.host, _srvParams.port);
 
 #ifdef __USE_CONNECTION_TIMEOUT__
@@ -252,6 +255,8 @@ void NntpConnection::onConnected()
     _log("> connected to server");
 #endif
     _isConnected = true;
+    LatencyStats::instance().add(_latencyServer, LatencyStats::CONNECT, _latencyTimer.nsecsElapsed());
+    _latencyTimer.restart();
     if (_srvParams.useSSL)
     {
         QSslSocket *sslSock = static_cast<QSslSocket*>(_socket);
@@ -273,6 +278,7 @@ void NntpConnection::onEncrypted()
 #if defined(__DEBUG__) && defined(LOG_CONNECTION_STEPS)
     _log("> SSL handshake succeed");
 #endif
+    LatencyStats::instance().add(_latencyServer, LatencyStats::SSL, _latencyTimer.nsecsElapsed());
 
     _postingState = PostingState::CONNECTED;
     // We should receive the Hello Message
@@ -325,6 +331,8 @@ void NntpConnection::onReadyRead()
 
             if(strncmp(line.constData(), Nntp::getResponse(340), 3) == 0)
             {
+                LatencyStats::instance().add(_latencyServer, LatencyStats::ROUND_TRIP, _latencyTimer.nsecsElapsed());
+                _latencyTimer.restart();
                 _postingState = PostingState::WAITING_ANSWER;
                 _currentArticle->write(this, _ngPost->aticleSignature()); // This will be done async
                 if (_ngPost->dispPostingFile() && _currentArticle->isFirstArticle())
@@ -351,6 +359,7 @@ void NntpConnection::onReadyRead()
         {
             if(strncmp(line.constData(), Nntp::getResponse(240), 3) == 0)
             {
+                LatencyStats::instance().add(_latencyServer, LatencyStats::ACCEPT, _latencyTimer.nsecsElapsed());
                 // Check if the server overwrite the Message-ID
                 // 240 <5ed10f42$0$7342$f56682d5@speedium.nl> Article posted
                 const char *lt= strchr(line.constData(), '<');
@@ -449,6 +458,7 @@ void NntpConnection::onReadyRead()
                 else
                 {
                     _postingState = PostingState::AUTH_USER;
+                    _latencyTimer.restart();
 
                     std::string cmd(Nntp::AUTHINFO_USER);
                     cmd += _srvParams.user;
@@ -515,6 +525,7 @@ void NntpConnection::onReadyRead()
                 _log("> AUTHINFO_PASS succeed => ready to POST \\o/");
 #endif
                 _authFailed = false;
+                LatencyStats::instance().add(_latencyServer, LatencyStats::LOGIN, _latencyTimer.nsecsElapsed());
                 _postingState = PostingState::IDLE;
                 _sendNextArticle();
             }
@@ -533,6 +544,7 @@ void NntpConnection::_sendNextArticle()
         _postingState = PostingState::SENDING_ARTICLE;
         if (_ngPost->debugFull())
             _log(tr("start sending article: %1").arg(_currentArticle->str()));
+        _latencyTimer.restart();
         _socket->write(Nntp::POST);
     }
     else

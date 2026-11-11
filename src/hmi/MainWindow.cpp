@@ -49,6 +49,7 @@
 #include <QSaveFile>
 #include <QStackedWidget>
 #include "utils/Diagnostics.h"
+#include "utils/LatencyStats.h"
 #include "PostingJob.h"
 #include "PostQueue.h"
 #include "RepostInfo.h"
@@ -953,6 +954,9 @@ QString MainWindow::_diagnosticReport() const
     };
     folder("TMP_DIR", _ngPost->_tmpPath);
     folder("nzbPath", _ngPost->_nzbPath);
+
+    title("Latency (this session)");
+    out << LatencyStats::instance().report();
 
     title("Anomalies (this session)");
     QStringList anomalies = diag.anomalies();

@@ -17,6 +17,10 @@ The ETA is an estimate based on the recent speed: it changes when the speed chan
 
 The log colors the lines: phases, success, warnings and errors are easy to tell apart. At the end of a post it shows a summary with the time of each phase (compression, par2, upload) and the total.
 
+## Latency
+
+At the end of a post the log also shows the **latency**: the median time of a round trip with the server (the command POST and its answer, with no data) and of the connection. It is measured only from what ngPost already does, nothing is sent for it. A high value (more than half a second) means the delay comes from the network, the distance to the server or the server itself, for example a VPN, and not from your computer.
+
 ## Diagnostic report
 
-If something does not work, the **Diagnostic report** button, below the log in Quick Post, saves a report of what the program did. It is a text file you can attach when you ask for help. Check it before sharing: it should not contain your password.
+If something does not work, the **Diagnostic report** button, below the log in Quick Post, saves a report of what the program did, with a **Latency** section for each server (connection, SSL, login, round trip: minimum, median, 95th percentile and maximum). It is a text file you can attach when you ask for help. Check it before sharing: it should not contain your password.

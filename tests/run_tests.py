@@ -678,6 +678,30 @@ def test_groups_are_cleaned(work):
         stub.stop()
 
 
+def test_latency_is_measured(work):
+    # the end of a post tells the round trip (POST -> 340): about the delay of the server, not of the size of the data
+    import re
+
+    def median_round_trip(delay, name, seed):
+        src = os.path.join(work, name + ".bin")
+        make_file(src, 200_000, seed)
+        stub = NntpStub(post_delay=delay).start()
+        try:
+            r = run_ngpost_conf([stub], work, [src], os.path.join(work, name + ".nzb"), conns=1, threads=1)
+            out = r.stdout + r.stderr
+            check(r.returncode == 0, "exit code %d" % r.returncode)
+            m = re.search(r"Latency \(median.*?round trip ([0-9.]+) ms", out)
+            check(m is not None, "no latency line:\n" + out[-1500:])
+            return float(m.group(1))
+        finally:
+            stub.stop()
+
+    near = median_round_trip(0, "near", 91)
+    far = median_round_trip(0.3, "far", 92)
+    check(near < 200, "round trip of a near server: %s ms" % near)
+    check(250 <= far < 1500, "round trip of a server with a delay of 300 ms: %s ms" % far)
+
+
 def test_help_pages(work):
     # the pages of the Help section: titled, linked together, and all embedded in the program
     import re
@@ -706,7 +730,7 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
          test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
-         test_help_pages]
+         test_help_pages, test_latency_is_measured]
 
 
 def main():
