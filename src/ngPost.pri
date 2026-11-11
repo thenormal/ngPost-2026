@@ -92,6 +92,7 @@ SOURCES += \
         nntp/NntpFile.cpp \
         utils/CmdOrGuiApp.cpp \
         utils/Diagnostics.cpp \
+        utils/LatencyStats.cpp \
         utils/Yenc.cpp
 
 
@@ -119,6 +120,7 @@ HEADERS += \
     nntp/NntpServerParams.h \
     utils/CmdOrGuiApp.h \
     utils/Diagnostics.h \
+    utils/LatencyStats.h \
     utils/Macros.h \
     utils/PureStaticClass.h \
     utils/Yenc.h

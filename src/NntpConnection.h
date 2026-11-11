@@ -22,6 +22,7 @@
 
 #include <QTcpSocket>
 #include <QSslError>
+#include <QElapsedTimer>
 
 struct NntpServerParams;
 class NntpArticle;
@@ -58,6 +59,8 @@ private:
 
 
     PostingState   _postingState;
+    QElapsedTimer  _latencyTimer;  //!< times the steps of the connection (cf LatencyStats)
+    QString        _latencyServer; //!< host:port
     NntpArticle   *_currentArticle;
     ushort         _nbDisconnected;
     bool           _authFailed;    //!< the server refused the user / password (retrying would be useless)

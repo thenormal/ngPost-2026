@@ -26,6 +26,7 @@
 #include "NntpConnection.h"
 #include "nntp/NntpServerParams.h"
 #include "utils/Diagnostics.h"
+#include "utils/LatencyStats.h"
 #include "nntp/NntpFile.h"
 #include "nntp/NntpArticle.h"
 #ifdef __USE_HMI__
@@ -1433,6 +1434,12 @@ void PostingJob::_printStats() const
     Diagnostics::instance().event("UPLOAD", QString("end: %1 in %2 s => %3 | %4 connections | articles: %5 ok, %6 failed / %7").arg(
                                       size).arg(sec).arg(avgSpeed()).arg(_nntpConnections.size()+_closedConnections.size()).arg(
                                       _nbArticlesUploaded - _nbArticlesFailed).arg(_nbArticlesFailed).arg(_nbArticlesTotal));
+    QString latency = LatencyStats::instance().oneLine();
+    if (!latency.isEmpty())
+    {
+        Diagnostics::instance().event("UPLOAD", latency);
+        msgEnd += latency + "\n";
+    }
     if (_nbArticlesFailed > 0)
         Diagnostics::instance().anomaly(QString("%1 / %2 articles failed to be uploaded").arg(_nbArticlesFailed).arg(_nbArticlesTotal));
 

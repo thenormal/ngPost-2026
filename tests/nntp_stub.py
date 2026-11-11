@@ -106,8 +106,9 @@ class NntpStub:
     gaps counts the times the server had no connection at all after having had some:
     it tells the phases of a post apart (first round: 0, second round: 1, post again the missing articles: 2)."""
 
-    def __init__(self, user="user", password="pass", policy=None, refuse_logins=0, die_after=None):
+    def __init__(self, user="user", password="pass", policy=None, refuse_logins=0, die_after=None, post_delay=0):
         self.user, self.password = user, password
+        self.post_delay = post_delay         # seconds the server waits before answering 340 (a far server)
         self.refuse_logins = refuse_logins   # the first N logins are refused (like a connection limit)
         self.die_after = die_after
         self.dead = False
@@ -172,6 +173,8 @@ class NntpStub:
                             ev('login refused')
                             w.write(b"481 Authentication failed\r\n")
                     elif cmd == "POST":
+                        if stub.post_delay:
+                            __import__('time').sleep(stub.post_delay)
                         w.write(b"340 send article\r\n")
                         raw = []
                         while True:
