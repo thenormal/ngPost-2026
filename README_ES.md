@@ -58,6 +58,14 @@ Es un fork de [mbruel/ngPost](https://github.com/mbruel/ngPost) (v4.16, licencia
 -   **Instalador de Windows** (64 y 32 bits, con **7-Zip incluido**) y paquetes ZIP portátiles, creados automáticamente en GitHub y publicados en las Releases (`ngPostDeluxe.exe`)
 -   **Windows**: la ventana de consola se cierra sola cuando ngPost se inicia con doble clic; el paquete incluye OpenSSL 1.1.1w (última versión soportada por Qt 5)
 
+**Fiabilidad y comodidad (v1.2)**
+-   **Artículos fallidos**: un artículo que falla se vuelve a intentar en otro servidor y en una segunda ronda; el botón **Repost missing Articles** publica solo los que faltan y corrige el NZB; los archivos originales se conservan cuando hay artículos fallidos
+-   **Contraseña incorrecta**: la publicación se detiene, con un mensaje claro, cuando el servidor rechaza el inicio de sesión en todas las conexiones
+-   **Cola**: las publicaciones sin terminar se guardan y se ofrecen de nuevo en el siguiente inicio (`--resume_queue` en línea de comandos)
+-   **Progreso y registro**: barra de progreso con la fase, el tiempo restante y colores; registro en colores con la duración de cada fase; mediciones de latencia en el informe de diagnóstico
+-   **Grupos de noticias**: un cuadro con «chips», sugerencias y comprobaciones, y un menú para elegir adónde van las publicaciones cuando hay varios grupos
+-   Página de **Ayuda** en el programa (en inglés), guía para Docker detrás de una VPN (gluetun) y pruebas automáticas de la publicación en CI
+
 **Seguridad y correcciones**
 -   **Corrección de seguridad**: posible desbordamiento de memoria en el búfer de codificación yEnc (con ciertos datos la salida podía ser mayor que el búfer)
 -   **Corrección yEnc**: un espacio o tabulador al final de una línea ahora se escapa correctamente (algunos servidores lo eliminaban y corrompían los datos)

@@ -58,6 +58,14 @@ Du benutzt schon ngPost? Kopiere deine `ngPost.conf` nach `%APPDATA%\ngPost Delu
 -   **Windows-Installer** (64 Bit und 32 Bit, **7-Zip inklusive**) und portable ZIP-Pakete, automatisch auf GitHub erstellt und in den Releases veröffentlicht (`ngPostDeluxe.exe`)
 -   **Windows**: das Konsolenfenster schließt sich von selbst, wenn ngPost per Doppelklick gestartet wird; das Paket enthält OpenSSL 1.1.1w (neueste von Qt 5 unterstützte Version)
 
+**Zuverlässigkeit und Komfort (v1.2)**
+-   **Fehlgeschlagene Artikel**: ein fehlgeschlagener Artikel wird auf einem anderen Server und in einer zweiten Runde erneut versucht; die Schaltfläche **Repost missing Articles** postet nur die fehlenden und korrigiert die NZB; die Originaldateien bleiben erhalten, wenn Artikel fehlgeschlagen sind
+-   **Falsches Passwort**: der Post wird mit einer klaren Meldung gestoppt, wenn der Server den Login auf allen Verbindungen ablehnt
+-   **Warteschlange**: nicht beendete Posts werden gespeichert und beim nächsten Start wieder angeboten (`--resume_queue` in der Kommandozeile)
+-   **Fortschritt und Log**: Fortschrittsbalken mit Phase, Restzeit und Farben; farbiges Log mit der Dauer jeder Phase; Latenzmessungen im Diagnosebericht
+-   **Newsgroups**: ein Feld mit „Chips“, Vorschlägen und Prüfungen sowie ein Menü, um bei mehreren Gruppen zu wählen, wohin die Posts gehen
+-   **Hilfe**-Seite im Programm (auf Englisch), Anleitung für Docker hinter einem VPN (gluetun) und automatische Tests des Postings in der CI
+
 **Sicherheit und Korrekturen**
 -   **Sicherheitskorrektur**: möglicher Heap-Überlauf im yEnc-Kodierungspuffer (die Ausgabe konnte bei bestimmten Daten größer als der Puffer sein)
 -   **yEnc-Fix**: Ein Leerzeichen oder Tabulator am Zeilenende wird jetzt korrekt maskiert (manche Server entfernen ihn, wodurch die Daten beschädigt wurden)

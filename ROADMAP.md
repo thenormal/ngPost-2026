@@ -4,7 +4,7 @@ This is a working plan, not a promise: there are no release dates, and what is l
 
 Your opinion counts: if an idea matters to you (or something is missing), say it in the [issues](https://github.com/thenormal/ngPost-Deluxe/issues).
 
-## Version 1.2 - Reliability
+## Version 1.2 - Reliability (released)
 
 Goal: a post should not be lost because of a bad connection, a crash or a restart, and it should be easy to see what is going on.
 
