@@ -30,6 +30,7 @@ The points are added one by one, when they are approved.
 | Planned | **Check the post afterwards**: verify that the Articles are on the server (button, optional automatic) and show the result in the history |
 | Planned | **Notifications** when a post is done or fails (system tray, optional webhook for Telegram / Discord; the webhook address is treated like a password) |
 | Planned | **Bandwidth limit** and time slots for the upload |
+| Planned | **Feedback** entry in the About window: report a bug or suggest an idea. It opens the new-issue page of GitHub already filled in (no access key in the program, nothing is sent without the user seeing it), with the diagnostic report to attach and issue forms in the repository |
 | Planned | Fix: the "One release" note of Quick Post must not appear during or after the upload (the list then shows the volumes of the archive) |
 
 ## Ideas, not committed
