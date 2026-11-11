@@ -169,6 +169,8 @@ void PostingWidget::postFiles(bool updateMainParams)
 
         if (updateMainParams)
         {
+            if (!_hmi->checkGroups())
+                return;
             _hmi->updateServers();
             _hmi->updateParams();
         }

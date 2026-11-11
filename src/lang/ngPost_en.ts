@@ -1518,6 +1518,30 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>All the groups in every post</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One random group for each file (with Obfuscate Articles)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One random group for each post</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There is no newsgroup: add at least one in the Settings (Newsgroups).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These newsgroups are not valid: %1. Fix them in the Settings (Newsgroups).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3052,6 +3076,14 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>start sending article: %1</source>
         <translation></translation>
     </message>
+    <message>
+        <source>Article refused %1 times on this connection, it will be posted again: %2 (Error: &apos;%3&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[Connection #%1] Authentication refused by server %2:%3 for user &apos;%4&apos;: check your user name and password</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NzbCheck</name>
@@ -4087,6 +4119,25 @@ Click on &quot;Add&quot; to configure your Usenet provider.</translation>
     </message>
     <message>
         <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GroupsEdit</name>
+    <message>
+        <source>Add a newsgroup, for example alt.binaries.test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This does not look like a newsgroup name (for example alt.binaries.test)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type a newsgroup and press Enter (or comma, or space). Suggestions appear while you type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>add...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

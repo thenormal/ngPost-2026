@@ -1538,6 +1538,30 @@ Later beslissen: ze blijven in de wachtrij en worden bij de volgende start opnie
         <source>The queue also records the password of each archive in clear text (like the history). Turning it off deletes the saved queue.</source>
         <translation>De wachtrij bewaart ook het wachtwoord van elk archief in leesbare tekst (zoals de geschiedenis). Uitschakelen verwijdert de opgeslagen wachtrij.</translation>
     </message>
+    <message>
+        <source>All the groups in every post</source>
+        <translation>Alle groepen in elke post</translation>
+    </message>
+    <message>
+        <source>One random group for each file (with Obfuscate Articles)</source>
+        <translation>Een willekeurige groep per bestand (met artikelverhulling)</translation>
+    </message>
+    <message>
+        <source>One random group for each post</source>
+        <translation>Een willekeurige groep per post</translation>
+    </message>
+    <message>
+        <source>There is no newsgroup: add at least one in the Settings (Newsgroups).</source>
+        <translation>Er is geen newsgroup: voeg er minstens één toe in de Instellingen (Newsgroups).</translation>
+    </message>
+    <message>
+        <source>These newsgroups are not valid: %1. Fix them in the Settings (Newsgroups).</source>
+        <translation>Deze newsgroups zijn niet geldig: %1. Corrigeer ze in de Instellingen (Newsgroups).</translation>
+    </message>
+    <message>
+        <source>When there are several groups: where the posts go. "For each file" needs the obfuscation of the Articles.</source>
+        <translation>Bij meerdere groepen: waar de posts heen gaan. "Per bestand" vereist de verhulling van de artikelen.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3086,6 +3110,14 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>start sending article: %1</source>
         <translation>begin met verzenden van artikel:%1</translation>
     </message>
+    <message>
+        <source>Article refused %1 times on this connection, it will be posted again: %2 (Error: &apos;%3&apos;)</source>
+        <translation>Artikel %1 keer geweigerd op deze verbinding, hij wordt opnieuw gepost: %2 (Fout: &apos;%3&apos;)</translation>
+    </message>
+    <message>
+        <source>[Connection #%1] Authentication refused by server %2:%3 for user &apos;%4&apos;: check your user name and password</source>
+        <translation>[Verbinding #%1] Authenticatie geweigerd door server %2:%3 voor gebruiker &apos;%4&apos;: controleer je gebruikersnaam en wachtwoord</translation>
+    </message>
 </context>
 <context>
     <name>NzbCheck</name>
@@ -4129,6 +4161,25 @@ Klik op ‘Toevoegen’ om je Usenet-provider in te stellen.</translation>
     <message>
         <source>the queue of the posts is used by another ngPost (%1): this one won&apos;t save its posts</source>
         <translation>de wachtrij van de posts wordt gebruikt door een andere ngPost (%1): deze slaat zijn posts niet op</translation>
+    </message>
+</context>
+<context>
+    <name>GroupsEdit</name>
+    <message>
+        <source>Add a newsgroup, for example alt.binaries.test</source>
+        <translation>Voeg een newsgroup toe, bijvoorbeeld alt.binaries.test</translation>
+    </message>
+    <message>
+        <source>This does not look like a newsgroup name (for example alt.binaries.test)</source>
+        <translation>Dit lijkt niet op de naam van een newsgroup (bijvoorbeeld alt.binaries.test)</translation>
+    </message>
+    <message>
+        <source>Type a newsgroup and press Enter (or comma, or space). Suggestions appear while you type.</source>
+        <translation>Typ een newsgroup en druk op Enter (of komma, of spatie). Tijdens het typen verschijnen suggesties.</translation>
+    </message>
+    <message>
+        <source>add...</source>
+        <translation>toevoegen...</translation>
     </message>
 </context>
 </TS>

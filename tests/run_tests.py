@@ -659,6 +659,25 @@ def test_progress_line_has_eta(work):
         stub.stop()
 
 
+def test_groups_are_cleaned(work):
+    # spaces around the groups, empty names and doubles are removed (a space in a group name is refused by the server)
+    import re
+    src = os.path.join(work, "grp.bin")
+    make_file(src, 100_000, 81)
+    nzb = os.path.join(work, "grp.nzb")
+    stub = NntpStub().start()
+    try:
+        r = run_ngpost_conf([stub], work, [src], nzb, conns=1, threads=1,
+                            extra=["-g", "alt.test.one, alt.test.two ,, alt.test.one"])
+        check(r.returncode == 0, "exit code %d" % r.returncode)
+        groups = sorted(set(re.findall(r"<group>(.*?)</group>", open(nzb).read())))
+        check(groups == ["alt.test.one", "alt.test.two"], "groups in the nzb: %s" % groups)
+        for art in stub.accepted.values():
+            check(all(g == g.strip() and g for g in art.groups), "group with a space: %s" % art.groups)
+    finally:
+        stub.stop()
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
@@ -666,7 +685,7 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_repost_missing, test_repost_nothing_to_do, test_repost_still_failing,
          test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
-         test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta]
+         test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned]
 
 
 def main():

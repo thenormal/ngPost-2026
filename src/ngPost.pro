@@ -18,6 +18,7 @@ SOURCES += \
     hmi/AboutNgPost.cpp \
     hmi/AutoPostWidget.cpp \
     hmi/CheckBoxCenterWidget.cpp \
+    hmi/GroupsEdit.cpp \
     hmi/PostingWidget.cpp \
     hmi/SignedListWidget.cpp \
     hmi/ServersWidget.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     hmi/AboutNgPost.h \
     hmi/AutoPostWidget.h \
     hmi/CheckBoxCenterWidget.h \
+    hmi/GroupsEdit.h \
     hmi/PostingWidget.h \
     hmi/SignedListWidget.h \
     hmi/ServersWidget.h \

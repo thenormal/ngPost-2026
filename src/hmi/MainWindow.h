@@ -41,6 +41,7 @@ class QFrame;
 class QLineEdit;
 class QCheckBox;
 class HistoryWidget;
+class GroupsEdit;
 
 namespace Ui {
 class MainWindow;
@@ -92,6 +93,8 @@ private:
     QLabel         *_settingsTitle;
     QLabel         *_settingsSubtitle;
     QLabel         *_appVersion;
+    GroupsEdit     *_groupsEdit   = nullptr; //!< newsgroups as chips (Settings)
+    QComboBox      *_groupPolicyCB = nullptr; //!< all the groups / one per post / one per file
     QComboBox      *_themeCB;
     QLabel         *_themeLbl;
     QLabel         *_autoSaveHint;
@@ -109,6 +112,7 @@ public:
     void updateProgress(const ProgressInfo &info); //!< progress bar, text under it and title of the window
 
     void updateServers();
+    bool checkGroups(); //!< false (and a message in the log) if the newsgroups can't be used to post
     void updateParams();
     void updateAutoPostingParams();
 
@@ -223,6 +227,7 @@ private:
     void _adaptTabIcons();
     QColor _tabNormalColor() const;
     QIcon  _tabIcon(const QString &path) const;
+    void _retranslateGroups();
     void _updateThemeButton();
     void _updateHistorySettings();
     static QIcon _navIcon(const QString &path, const QColor &normal, const QColor &checked);

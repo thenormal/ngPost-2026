@@ -144,6 +144,8 @@ Press the Scan button and remove what you don't want to post ;)\n\
         return;
     }
 
+    if (!_hmi->checkGroups())
+        return;
     _hmi->updateServers();
     _hmi->updateParams();
     udatePostingParams();

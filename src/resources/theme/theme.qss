@@ -322,6 +322,48 @@ QFrame[frameShape="4"], QFrame[frameShape="5"] { /* HLine, VLine */
     color: @border@;
 }
 
+/* ---------- newsgroups box (chips) ---------- */
+QFrame#groupsBox {
+    background: @input@;
+    border: 1px solid @inputBorder@;
+    border-radius: 5px;
+}
+QFrame#groupsBox[focused="true"] {
+    border: 1px solid @accent@;
+}
+QLineEdit#groupsInput {
+    background: transparent;
+    border: none;
+    padding: 2px 2px;
+    min-height: 18px;
+}
+QLineEdit#groupsInput:focus {
+    border: none;
+}
+QFrame#groupChip {
+    background: @selection@;
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+QFrame#groupChip QLabel#groupChipText {
+    background: transparent;
+    color: @selectionText@;
+}
+QFrame#groupChip[invalid="true"] {
+    background: rgba(209, 52, 56, 50);
+    border: 1px solid #d13438;
+}
+QToolButton#groupChipClose {
+    background: transparent;
+    border: none;
+    color: @selectionText@;
+    font-weight: bold;
+    padding: 0px 3px;
+}
+QToolButton#groupChipClose:hover {
+    color: #d13438;
+}
+
 /* ---------- progress bar ---------- */
 QProgressBar {
     background: @progress@;
