@@ -266,6 +266,7 @@ void PostingWidget::restoreMissing(const RepostInfo &info)
     _postingFinished = true;
     _hmi->updateJobTab(this, _hmi->sDoneKOColor, QIcon(_hmi->sDoneKOIcon), QFileInfo(info.nzbPath).fileName());
     _updateRepostButton();
+    _updateReleaseInfo();
 }
 
 void PostingWidget::forgetQueue()
@@ -325,6 +326,7 @@ void PostingWidget::_showJobStarted(bool hasStarted)
     _ui->postButton->setText(buttonTxt);
     _hmi->updateJobTab(this, tabColor, QIcon(tabIcon), _postingJob->nzbName());
     _updateRepostButton();
+    _updateReleaseInfo();
 }
 
 void PostingWidget::onRepostMissing()
@@ -752,6 +754,7 @@ void PostingWidget::setIDLE()
     _ui->postButton->setText(tr("Post Files"));
     _state = STATE::IDLE;
     _updateRepostButton();
+    _updateReleaseInfo();
 }
 
 void PostingWidget::setPosting()
@@ -759,6 +762,7 @@ void PostingWidget::setPosting()
     _hmi->updateJobTab(this, _hmi->sPostingColor, QIcon(_hmi->sPostingIcon), _postingJob->nzbName());
     _ui->postButton->setText(tr("Stop Posting"));
     _state = STATE::POSTING;
+    _updateReleaseInfo();
 }
 
 
@@ -930,7 +934,8 @@ void PostingWidget::_updateReleaseInfo()
 {
     if (!_releaseInfo)
         return;
-    _releaseInfo->setVisible(_ui->filesList->count() > 1);
+    // only while the post is prepared: during and after the upload the list shows the volumes of the archive
+    _releaseInfo->setVisible(_ui->filesList->count() > 1 && _state == STATE::IDLE && !_postingFinished);
 }
 
 void PostingWidget::_retranslateLayout()
