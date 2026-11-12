@@ -20,6 +20,7 @@
 #include "AboutNgPost.h"
 #include "ui_AboutNgPost.h"
 #include "NgPost.h"
+#include "FeedbackDialog.h"
 #include <QDesktopServices>
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -59,6 +60,16 @@ AboutNgPost::AboutNgPost(NgPost *ngPost, QWidget *parent) :
     QHBoxLayout *supportLayout = new QHBoxLayout();
     supportLayout->addStretch();
     supportLayout->addWidget(supportButton);
+    // feedback: report a problem / suggest an idea (new-issue page of GitHub)
+    QPushButton *feedbackButton = new QPushButton(tr("Feedback"), this);
+    feedbackButton->setCursor(Qt::PointingHandCursor);
+    connect(feedbackButton, &QAbstractButton::clicked, this, [this](){
+        FeedbackDialog dialog(this);
+        connect(&dialog, &FeedbackDialog::saveReportRequested, this, &AboutNgPost::saveReportRequested);
+        dialog.exec();
+    });
+    supportLayout->addSpacing(8);
+    supportLayout->addWidget(feedbackButton);
     supportLayout->addStretch();
     ui->mainLayout->insertLayout(ui->mainLayout->indexOf(ui->linksLbl) + 1, supportLayout);
 

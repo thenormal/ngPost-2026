@@ -36,6 +36,9 @@ public:
     explicit AboutNgPost(NgPost *ngPost, QWidget *parent = nullptr);
     ~AboutNgPost();
 
+signals:
+    void saveReportRequested();
+
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;

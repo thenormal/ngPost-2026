@@ -73,6 +73,10 @@
         <source>Fork maintained by %1</source>
         <translation>Fork maintenu par %1</translation>
     </message>
+    <message>
+        <source>Feedback</source>
+        <translation>Retour d'expérience</translation>
+    </message>
 </context>
 <context>
     <name>AutoPostWidget</name>
@@ -4168,6 +4172,37 @@ Cliquez sur « Ajouter » pour configurer votre fournisseur Usenet.</translation
     <message>
         <source>add...</source>
         <translation>ajouter...</translation>
+    </message>
+</context>
+<context>
+    <name>FeedbackDialog</name>
+    <message>
+        <source>Feedback</source>
+        <translation>Retour d&apos;expérience</translation>
+    </message>
+    <message>
+        <source>Found a problem or have an idea? The page of GitHub opens in your browser, already filled with the version and the system. Nothing is sent by the program: you check the page and send it yourself (a free GitHub account is needed).</source>
+        <translation>Un problème ou une idée ? La page de GitHub s&apos;ouvre dans le navigateur, déjà remplie avec la version et le système. Le programme n&apos;envoie rien : vous vérifiez la page et l&apos;envoyez vous-même (un compte GitHub gratuit est nécessaire).</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>Signaler un problème</translation>
+    </message>
+    <message>
+        <source>Suggest an idea</source>
+        <translation>Proposer une idée</translation>
+    </message>
+    <message>
+        <source>For a problem, save the diagnostic report and attach it to the page. Passwords, usernames and file names are masked in it.</source>
+        <translation>Pour un problème, enregistrez le rapport de diagnostic et joignez-le à la page. Les mots de passe, noms d&apos;utilisateur et noms de fichiers y sont masqués.</translation>
+    </message>
+    <message>
+        <source>Save the diagnostic report</source>
+        <translation>Enregistrer le rapport de diagnostic</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Fermer</translation>
     </message>
 </context>
 </TS>

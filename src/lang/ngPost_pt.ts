@@ -73,6 +73,10 @@
         <source>Fork maintained by %1</source>
         <translation>Fork mantido por %1</translation>
     </message>
+    <message>
+        <source>Feedback</source>
+        <translation>Feedback</translation>
+    </message>
 </context>
 <context>
     <name>AutoPostWidget</name>
@@ -4178,6 +4182,37 @@ Clique em «Adicionar» para configurar o seu fornecedor Usenet.</translation>
     <message>
         <source>add...</source>
         <translation>adicionar...</translation>
+    </message>
+</context>
+<context>
+    <name>FeedbackDialog</name>
+    <message>
+        <source>Feedback</source>
+        <translation>Feedback</translation>
+    </message>
+    <message>
+        <source>Found a problem or have an idea? The page of GitHub opens in your browser, already filled with the version and the system. Nothing is sent by the program: you check the page and send it yourself (a free GitHub account is needed).</source>
+        <translation>Encontrou um problema ou tem uma ideia? A página do GitHub abre no navegador, já preenchida com a versão e o sistema. O programa não envia nada: você confere a página e a envia você mesmo (é necessária uma conta gratuita do GitHub).</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>Reportar um problema</translation>
+    </message>
+    <message>
+        <source>Suggest an idea</source>
+        <translation>Sugerir uma ideia</translation>
+    </message>
+    <message>
+        <source>For a problem, save the diagnostic report and attach it to the page. Passwords, usernames and file names are masked in it.</source>
+        <translation>Para um problema, salve o relatório de diagnóstico e anexe-o à página. Senhas, nomes de usuário e nomes de arquivos são mascarados.</translation>
+    </message>
+    <message>
+        <source>Save the diagnostic report</source>
+        <translation>Salvar o relatório de diagnóstico</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Fechar</translation>
     </message>
 </context>
 </TS>

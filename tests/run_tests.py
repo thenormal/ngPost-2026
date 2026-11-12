@@ -722,6 +722,25 @@ def test_help_pages(work):
                     check(link in en, "%s/%s links to a missing page: %s" % (lang, f, link))
 
 
+def test_feedback_forms(work):
+    # the Feedback window opens a prefilled issue: its template names and field ids must exist in the issue forms
+    import re
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    code = open(os.path.join(root, "src", "hmi", "FeedbackDialog.cpp"), encoding="utf-8").read()
+    templates = re.findall(r'"(\w+\.yml)"', code)
+    check(sorted(templates) == ["bug_report.yml", "feature_request.yml"], "templates used: %s" % templates)
+    fields = re.findall(r'addQueryItem\("(?!template)([a-z]+)"', code)
+    check(sorted(fields) == ["system", "version"], "prefilled fields: %s" % fields)
+    for t in templates:
+        form = open(os.path.join(root, ".github", "ISSUE_TEMPLATE", t), encoding="utf-8").read()
+        ids = re.findall(r"^\s+id: (\w+)", form, re.M)
+        for f in fields:
+            check(f in ids, "%s has no field '%s'" % (t, f))
+        check(re.search(r"^name: .+", form, re.M) and re.search(r"^description: .+", form, re.M), "%s: name/description missing" % t)
+    cfg = open(os.path.join(root, ".github", "ISSUE_TEMPLATE", "config.yml"), encoding="utf-8").read()
+    check("blank_issues_enabled: false" in cfg, "blank issues are not disabled")
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
@@ -730,7 +749,7 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
          test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
-         test_help_pages, test_latency_is_measured]
+         test_help_pages, test_latency_is_measured, test_feedback_forms]
 
 
 def main():

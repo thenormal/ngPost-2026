@@ -73,6 +73,10 @@
         <source>Fork maintained by %1</source>
         <translation>Fork onderhouden door %1</translation>
     </message>
+    <message>
+        <source>Feedback</source>
+        <translation>Feedback</translation>
+    </message>
 </context>
 <context>
     <name>AutoPostWidget</name>
@@ -4184,6 +4188,37 @@ Klik op ‘Toevoegen’ om je Usenet-provider in te stellen.</translation>
     <message>
         <source>add...</source>
         <translation>toevoegen...</translation>
+    </message>
+</context>
+<context>
+    <name>FeedbackDialog</name>
+    <message>
+        <source>Feedback</source>
+        <translation>Feedback</translation>
+    </message>
+    <message>
+        <source>Found a problem or have an idea? The page of GitHub opens in your browser, already filled with the version and the system. Nothing is sent by the program: you check the page and send it yourself (a free GitHub account is needed).</source>
+        <translation>Een probleem gevonden of een idee? De GitHub-pagina opent in uw browser, al ingevuld met de versie en het systeem. Het programma verstuurt niets: u controleert de pagina en verstuurt die zelf (een gratis GitHub-account is nodig).</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>Een probleem melden</translation>
+    </message>
+    <message>
+        <source>Suggest an idea</source>
+        <translation>Een idee voorstellen</translation>
+    </message>
+    <message>
+        <source>For a problem, save the diagnostic report and attach it to the page. Passwords, usernames and file names are masked in it.</source>
+        <translation>Sla bij een probleem het diagnoserapport op en voeg het toe aan de pagina. Wachtwoorden, gebruikersnamen en bestandsnamen zijn gemaskeerd.</translation>
+    </message>
+    <message>
+        <source>Save the diagnostic report</source>
+        <translation>Diagnoserapport opslaan</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Sluiten</translation>
     </message>
 </context>
 </TS>

@@ -1068,6 +1068,8 @@ void NgPost::onCheckForNewVersion()
 void NgPost::onAboutClicked()
 {
     AboutNgPost about(this);
+    if (_hmi)
+        connect(&about, &AboutNgPost::saveReportRequested, _hmi, &MainWindow::saveDiagnosticReport);
     about.exec();
 }
 #endif

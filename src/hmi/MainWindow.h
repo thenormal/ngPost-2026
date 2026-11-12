@@ -106,6 +106,7 @@ private:
 
 
 public:
+    void saveDiagnosticReport() { onDiagnosticReport(); }  //!< same as the button under the log (used by the Feedback window)
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 

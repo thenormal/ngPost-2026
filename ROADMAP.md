@@ -43,7 +43,7 @@ Goal: the program should be simple for someone who opens it for the first time, 
 |---|---|
 | Planned | **Quick Post**: the same options card as Auto Posting (shared, so it is fixed once), the profiles, par2 starting at 10 %, the password in the Archive card, checks before posting and a summary (files, size, estimated time) |
 | Planned | Fix: the "One release" note of Quick Post must not appear during or after the upload (the list then shows the volumes of the archive) |
-| Planned | **Feedback** entry in the About window: report a bug or suggest an idea. It opens the new-issue page of GitHub already filled in (no access key in the program, nothing is sent without the user seeing it), with the diagnostic report to attach and issue forms in the repository |
+| Done | **Feedback** entry in the About window: report a bug or suggest an idea. It opens the new-issue page of GitHub already filled in (no access key in the program, nothing is sent without the user seeing it), with the diagnostic report to attach and issue forms in the repository |
 | Planned | Warning when a post is already in the history (same content), before it is posted again |
 | Planned | NFO file generator for a post |
 | Planned | **Notifications** when a post is done or fails (system tray, optional webhook for Telegram / Discord; the webhook address is treated like a password) |
