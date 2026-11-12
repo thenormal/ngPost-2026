@@ -54,6 +54,7 @@ public:
         QString   duration;
         qint64    durationSec = -1;
         QString   nzbPath;
+        QString   inputSize; //!< bytes of the original files (empty for the older lines)
     };
 
     HistoryWidget(NgPost *ngPost, QWidget *parent = nullptr);

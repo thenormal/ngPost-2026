@@ -56,6 +56,7 @@
 #include <QNetworkReply>
 #include <QRegularExpression>
 #include <QDir>
+#include <QDirIterator>
 #include <QJsonObject>
 #include <QDateTime>
 #include <QStandardPaths>
@@ -189,6 +190,7 @@ const QList<QCommandLineOption> NgPost::sCmdOptions = {
     { sOptionNames[Opt::MONITOR_DIR],         tr("monitor directory and post every new file/folder. You must use --compress, should add --gen_par2, --gen_name and --gen_pass"), sOptionNames[Opt::MONITOR_DIR]},
     { sOptionNames[Opt::DEL_AUTO],            tr("delete file/folder once posted. You must use --auto or --monitor with this option.")},
     { "resume_queue",                         tr("post again the posts that were not finished (queue saved next to the config file)")},
+    { "allow_repost",                         tr("post again the files that are already in the history (by default they are skipped)")},
 
 // quick posting (several files/folders)
     {{"i", sOptionNames[Opt::INPUT]},         tr("input file to upload (single file or directory), you can use it multiple times"), sOptionNames[Opt::INPUT]},
@@ -1197,6 +1199,7 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
                                                                      .arg((sec / 60) % 60, 2, 10, QChar('0'))
                                                                      .arg(sec % 60, 2, 10, QChar('0'))
                        << _historyFieldSeparator << QDir::toNativeSeparators(_activeJob->nzbFilePath())
+                       << _historyFieldSeparator << inputSize(_activeJob->originalFiles()) // to recognize the same post later
                        << "\n" << MB_FLUSH;
                 hist.close();
             }
@@ -1624,6 +1627,8 @@ bool NgPost::parseCommandLine(int argc, char *argv[])
 
     if (parser.isSet("resume_queue"))
         _resumeQueue = true;
+    if (parser.isSet("allow_repost"))
+        _checkDuplicates = false;
 
     if (!parser.isSet(sOptionNames[Opt::INPUT]) && !parser.isSet(sOptionNames[Opt::AUTO_DIR]) && !parser.isSet(sOptionNames[Opt::MONITOR_DIR])
             && !_resumeQueue)
@@ -2401,6 +2406,11 @@ QString NgPost::_parseConfig(const QString &configPath)
                         val = val.toLower();
                         _queueEnabled = !(val == "off" || val == "false" || val == "0" || val == "no");
                     }
+                    else if (opt == "warn_duplicates")
+                    {
+                        val = val.toLower();
+                        _checkDuplicates = !(val == "off" || val == "false" || val == "0" || val == "no");
+                    }
                     else if (opt == "resume_queue")
                     {
                         val = val.toLower();
@@ -2763,6 +2773,28 @@ QString NgPost::parseDefaultConfig()
 
 bool NgPost::startPostingJob(PostingJob *job)
 {
+    // a new post of the auto posting / command line that is already in the history is skipped
+    // (Quick Post asks the user before creating its job, the queue and the reposts are never checked)
+    if (!job->isRepost() && job->queueId().isEmpty() && !job->widget())
+    {
+        QString posted = duplicateInPost(job->nzbName(), job->originalFiles());
+        if (!posted.isEmpty())
+        {
+            _log(tr("%1 is already in the history (posted on %2): skipped. Use --allow_repost (or warn_duplicates = off in the config) to post it again.").arg(
+                     job->nzbName(), posted));
+            delete job;
+            QTimer::singleShot(0, this, [this](){ // nothing else to do: the command line ends (after the loops that start the posts)
+#ifdef __USE_HMI__
+                if (!_activeJob && _pendingJobs.isEmpty() && !_folderMonitor && !_hmi)
+#else
+                if (!_activeJob && _pendingJobs.isEmpty() && !_folderMonitor)
+#endif
+                    qApp->quit();
+            });
+            return false;
+        }
+    }
+
     if (!job->isRepost() && job->queueId().isEmpty())
     {
         if (PostQueue *queue = postQueue())
@@ -2953,6 +2985,9 @@ void NgPost::saveConfig(bool quiet)
                << tr("## the file contains the archive passwords in clear text: keep it private") << "\n"
                << "history = " << (_historyEnabled ? "ON" : "OFF") << "\n"
                << tr("## by default the history is saved in ngPost_history.csv next to this file") << "\n"
+               << "\n"
+               << tr("## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)") << "\n"
+               << "warn_duplicates = " << (_checkDuplicates ? "ON" : "OFF") << "\n"
                << "\n"
                << tr("## Queue of the posts: the posts that are not finished are saved in ngPost_queue.json next to this file") << "\n"
                << tr("## so they can be posted again after a restart (ON or OFF). It contains the archive passwords in clear text") << "\n"
@@ -3211,7 +3246,7 @@ const QString NgPost::sNgPostASCII = QString("\
 QStringList NgPost::historyHeader()
 {
     return {tr("date"), tr("nzb name"), tr("size"), tr("avg. speed"), tr("archive name"), tr("archive pass"),
-            tr("groups"), tr("from"), tr("status"), tr("files"), tr("duration"), tr("nzb file")};
+            tr("groups"), tr("from"), tr("status"), tr("files"), tr("duration"), tr("nzb file"), tr("input size")};
 }
 
 QString NgPost::queueFile() const
@@ -3381,6 +3416,57 @@ int NgPost::resumeQueue()
         }
     }
     return nbJobs;
+}
+
+qint64 NgPost::inputSize(const QFileInfoList &files)
+{
+    qint64 size = 0;
+    for (const QFileInfo &fi : files)
+    {
+        if (fi.isDir())
+        {
+            QDirIterator it(fi.absoluteFilePath(), QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+            while (it.hasNext())
+            {
+                it.next();
+                size += it.fileInfo().size();
+            }
+        }
+        else
+            size += fi.size();
+    }
+    return size;
+}
+
+QString NgPost::duplicateInPost(const QString &nzbName, const QFileInfoList &files) const
+{
+    QString path = historyFile();
+    if (!_checkDuplicates || path.isEmpty())
+        return QString();
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly|QIODevice::Text))
+        return QString();
+
+    const qint64 size = inputSize(files);
+    QString found;
+    QTextStream stream(&file);
+    stream.setCodec("UTF-8");
+    while (!stream.atEnd())
+    {
+        QStringList f = stream.readLine().split(_historyFieldSeparator);
+        // only the posts that are finished without errors (the lines written by the original ngPost have no status)
+        if (f.size() < 9 || f.value(1).trimmed() != nzbName || !(f.value(8).trimmed() == "OK" || f.value(8).trimmed().isEmpty()))
+            continue;
+        if (f.size() > 12 && !f.value(12).trimmed().isEmpty())
+        {
+            if (f.value(12).trimmed().toLongLong() != size)
+                continue;
+        }
+        else if (f.size() > 9 && !f.value(9).trimmed().isEmpty() && f.value(9).trimmed().toInt() != files.size())
+            continue; // lines written before ngPost Deluxe 1.3: the number of files is the only other clue
+        found = f.value(0).trimmed();
+    }
+    return found;
 }
 
 QString NgPost::historyFile() const

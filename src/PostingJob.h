@@ -267,6 +267,7 @@ public:
     inline const QString &rarPass() const;
     inline QString postSize() const;
     inline int nbOriginalFiles() const { return _nbInputFiles; }
+    inline const QFileInfoList &originalFiles() const { return _files; }
     inline qint64 jobDurationMs() const { return _jobTimer.isValid() ? _jobTimer.elapsed() - _pauseDuration : 0; }
 
     inline bool hasCompressed() const;

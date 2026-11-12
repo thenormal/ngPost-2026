@@ -204,6 +204,7 @@ private:
     bool        _queueTried   = false; //!< we tried to open it (only once)
     bool        _queueEnabled = true;  //!< key "queue" of the config
     bool        _resumeQueue  = false; //!< command line: post again the unfinished posts (--resume_queue or key "resume_queue")
+    bool        _checkDuplicates = true; //!< warn (GUI) / skip (auto, command line) a post already in the history (key "warn_duplicates", --allow_repost turns it off)
     bool        _closingApp   = false; //!< the posts are stopped because the application closes: keep them in the queue
     QList<QDir> _autoDirs;
 
@@ -370,6 +371,9 @@ public:
     QString historyFile() const;  //!< history file used (explicit POST_HISTORY or ngPost_history.csv next to the config), empty if off
     inline QString historyFieldSeparator() const { return _historyFieldSeparator; }
     static QStringList historyHeader();
+    //! date of the post already in the history with this nzb name and these input files (empty if none, or if the check is off)
+    QString duplicateInPost(const QString &nzbName, const QFileInfoList &files) const;
+    static qint64 inputSize(const QFileInfoList &files); //!< size of the files and folders (recursive)
 #ifdef __USE_HMI__
 #endif
 

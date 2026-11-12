@@ -741,6 +741,38 @@ def test_feedback_forms(work):
     check("blank_issues_enabled: false" in cfg, "blank issues are not disabled")
 
 
+def test_duplicate_is_skipped(work):
+    # a post already in the history (same nzb name and size) is skipped, unless --allow_repost; a different size is posted
+    stub = NntpStub().start()
+    try:
+        src = os.path.join(work, "movie.bin")
+        make_file(src, 200_000, 7)
+        hist = os.path.join(work, "history.csv")
+        nzb = os.path.join(work, "out.nzb")
+        conf = os.path.join(work, "dup.conf")
+        with open(conf, "w") as f:
+            f.write("POST_HISTORY = %s\n" % hist)
+        extra = ["--conf", conf]
+        r = run_ngpost(stub, work, [src], nzb, extra=extra)
+        check(r.returncode == 0 and os.path.exists(hist), "first post failed\n%s%s" % (r.stdout, r.stderr))
+        nb = len(stub.accepted)
+        check(nb > 0, "nothing posted")
+
+        os.remove(nzb)
+        r = run_ngpost(stub, work, [src], nzb, extra=extra, timeout=30)
+        check("already in the history" in LAST_OUTPUT, "no skip message\n" + LAST_OUTPUT)
+        check(len(stub.accepted) == nb and not os.path.exists(nzb), "the duplicate was posted")
+
+        r = run_ngpost(stub, work, [src], nzb, extra=extra + ["--allow_repost"])
+        check(r.returncode == 0 and len(stub.accepted) == 2 * nb, "--allow_repost did not post again\n" + LAST_OUTPUT)
+
+        make_file(src, 200_001, 8)   # same name, other size: not the same post
+        r = run_ngpost(stub, work, [src], nzb, extra=extra)
+        check(len(stub.accepted) > 2 * nb, "a different size was skipped\n" + LAST_OUTPUT)
+    finally:
+        stub.stop()
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
@@ -749,7 +781,8 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_originals_kept_when_articles_failed, test_repost_cleans_and_deletes_originals,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
          test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
-         test_help_pages, test_latency_is_measured, test_feedback_forms]
+         test_help_pages, test_latency_is_measured, test_feedback_forms,
+         test_duplicate_is_skipped]
 
 
 def main():

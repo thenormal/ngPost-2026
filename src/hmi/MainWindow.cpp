@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveQuickTab(false),
     _autoSaveAutoTab(false),
     _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
-    _history(nullptr), _help(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
+    _history(nullptr), _help(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _duplicatesCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
     _themeButton(nullptr), _aboutButton(nullptr),
     _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
     _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
@@ -209,6 +209,8 @@ void MainWindow::init(NgPost *ngPost)
     _historyCB->setChecked(_ngPost->_historyEnabled);
     _updateHistorySettings();
     connect(_historyCB,         &QAbstractButton::toggled, this, &MainWindow::onHistoryToggled);
+    _duplicatesCB->setChecked(_ngPost->_checkDuplicates);
+    connect(_duplicatesCB,      &QAbstractButton::toggled, this, [this](bool checked){ _ngPost->_checkDuplicates = checked; });
     _queueCB->setChecked(_ngPost->_queueEnabled);
     connect(_queueCB,           &QAbstractButton::toggled, this, &MainWindow::onQueueToggled);
     QTimer::singleShot(1500, this, &MainWindow::_offerQueue); // after the windows of the start
@@ -1519,6 +1521,9 @@ QWidget *MainWindow::_buildSettingsPage()
     g->addWidget(_historyCB, 0, 0, 1, 2);
     g->addLayout(hbox({_historyPathEdit, _historyPathButton}, false), 1, 0, 1, 2);
     g->addWidget(_historyHint, 2, 0, 1, 2);
+    _duplicatesCB = new QCheckBox(history);
+    _duplicatesCB->setObjectName("duplicatesCB");
+    g->addWidget(_duplicatesCB, 3, 0, 1, 2);
     g->setColumnStretch(1, 1);
     left->insertWidget(left->count() - 1, history); // before the stretch of the left column
 
@@ -1608,6 +1613,8 @@ void MainWindow::_retranslateShell()
     if (_help && _ngPost)
         _help->setLanguage(_ngPost->_lang);
     _historyCB->setText(tr("Save the history of the uploads"));
+    _duplicatesCB->setText(tr("Warn when a post is already in the history (same name and size)"));
+    _duplicatesCB->setToolTip(tr("Quick Post asks before posting it again; the auto posting skips it."));
     _historyPathButton->setToolTip(tr("Choose the history file"));
     _historyHint->setText(tr("The history also records the password of each archive in clear text: "
                              "it stays on this computer, but anyone using it can read the file."));

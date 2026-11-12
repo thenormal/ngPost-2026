@@ -1568,6 +1568,14 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>Help</source>
         <translation>帮助</translation>
     </message>
+    <message>
+        <source>Warn when a post is already in the history (same name and size)</source>
+        <translation>当帖子已在历史记录中（名称和大小相同）时提示</translation>
+    </message>
+    <message>
+        <source>Quick Post asks before posting it again; the auto posting skips it.</source>
+        <translation>Quick Post 会先询问再重新发布；自动发布会跳过。</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2999,6 +3007,22 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>ETA %1</source>
         <translation>剩余 %1</translation>
     </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): skipped. Use --allow_repost (or warn_duplicates = off in the config) to post it again.</source>
+        <translation>%1 已在历史记录中（发布于 %2）：已跳过。使用 --allow_repost（或在配置中设置 warn_duplicates = off）可再次发布。</translation>
+    </message>
+    <message>
+        <source>post again the files that are already in the history (by default they are skipped)</source>
+        <translation>再次发布已在历史记录中的文件（默认会跳过）</translation>
+    </message>
+    <message>
+        <source>input size</source>
+        <translation>原始大小</translation>
+    </message>
+    <message>
+        <source>## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)</source>
+        <translation>## 当帖子已在历史记录中（名称和大小相同）时提示：图形界面会询问，自动发布和命令行会跳过（ON 或 OFF）</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3970,6 +3994,24 @@ Would you like to overwrite it ?</source>
     <message>
         <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
         <translation>有些文章未能发布. 此操作只重新发布这些文章并修复nzb文件.</translation>
+    </message>
+    <message>
+        <source>Already posted?</source>
+        <translation>已发布过？</translation>
+    </message>
+    <message>
+        <source>This post is already in the history (%1, posted on %2).
+Do you want to post it again?</source>
+        <translation>此帖子已在历史记录中（%1，发布于 %2）。
+要再次发布吗？</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>Post anyway</source>
+        <translation>仍然发布</translation>
     </message>
 </context>
 <context>

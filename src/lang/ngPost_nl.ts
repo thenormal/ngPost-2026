@@ -1570,6 +1570,14 @@ Later beslissen: ze blijven in de wachtrij en worden bij de volgende start opnie
         <source>Help</source>
         <translation>Help</translation>
     </message>
+    <message>
+        <source>Warn when a post is already in the history (same name and size)</source>
+        <translation>Waarschuwen als een post al in de geschiedenis staat (zelfde naam en grootte)</translation>
+    </message>
+    <message>
+        <source>Quick Post asks before posting it again; the auto posting skips it.</source>
+        <translation>Quick Post vraagt het eerst; automatisch posten slaat de post over.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3004,6 +3012,22 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>ETA %1</source>
         <translation>Nog %1</translation>
     </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): skipped. Use --allow_repost (or warn_duplicates = off in the config) to post it again.</source>
+        <translation>%1 staat al in de geschiedenis (gepost op %2): overgeslagen. Gebruik --allow_repost (of warn_duplicates = off in de configuratie) om het opnieuw te posten.</translation>
+    </message>
+    <message>
+        <source>post again the files that are already in the history (by default they are skipped)</source>
+        <translation>bestanden opnieuw posten die al in de geschiedenis staan (standaard worden ze overgeslagen)</translation>
+    </message>
+    <message>
+        <source>input size</source>
+        <translation>oorspronkelijke grootte</translation>
+    </message>
+    <message>
+        <source>## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)</source>
+        <translation>## Waarschuwen als een post al in de geschiedenis staat (zelfde naam en grootte): de GUI vraagt het, automatisch posten en de opdrachtregel slaan het over (ON of OFF)</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3975,6 +3999,24 @@ Wil je het overschrijven?</translation>
     <message>
         <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
         <translation>Sommige artikelen konden niet worden gepost. Dit post alleen die opnieuw en herstelt het nzb-bestand.</translation>
+    </message>
+    <message>
+        <source>Already posted?</source>
+        <translation>Al gepost?</translation>
+    </message>
+    <message>
+        <source>This post is already in the history (%1, posted on %2).
+Do you want to post it again?</source>
+        <translation>Deze post staat al in de geschiedenis (%1, gepost op %2).
+Wilt u hem opnieuw posten?</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuleren</translation>
+    </message>
+    <message>
+        <source>Post anyway</source>
+        <translation>Toch posten</translation>
     </message>
 </context>
 <context>

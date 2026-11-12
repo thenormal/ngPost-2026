@@ -1567,6 +1567,14 @@ Decidir depois: permanecem na fila e serão oferecidos novamente na próxima ini
         <source>Help</source>
         <translation>Ajuda</translation>
     </message>
+    <message>
+        <source>Warn when a post is already in the history (same name and size)</source>
+        <translation>Avisar quando um post já está no histórico (mesmo nome e tamanho)</translation>
+    </message>
+    <message>
+        <source>Quick Post asks before posting it again; the auto posting skips it.</source>
+        <translation>O Quick Post pergunta antes de postar novamente; o post automático o ignora.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2998,6 +3006,22 @@ OU use --par2_pct ou coloque PAR2_PCT ou PAR2_ARGS na configuração de arquivo.
         <source>ETA %1</source>
         <translation>Faltam %1</translation>
     </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): skipped. Use --allow_repost (or warn_duplicates = off in the config) to post it again.</source>
+        <translation>%1 já está no histórico (postado em %2): ignorado. Use --allow_repost (ou warn_duplicates = off na configuração) para postar novamente.</translation>
+    </message>
+    <message>
+        <source>post again the files that are already in the history (by default they are skipped)</source>
+        <translation>postar novamente os arquivos que já estão no histórico (por padrão são ignorados)</translation>
+    </message>
+    <message>
+        <source>input size</source>
+        <translation>tamanho original</translation>
+    </message>
+    <message>
+        <source>## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)</source>
+        <translation>## Avisar quando um post já está no histórico (mesmo nome e tamanho): a GUI pergunta, o post automático e a linha de comando o ignoram (ON ou OFF)</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3969,6 +3993,24 @@ Deseja substituí-lo?</translation>
     <message>
         <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
         <translation>Alguns artigos não puderam ser postados. Isto posta novamente apenas esses e corrige o arquivo nzb.</translation>
+    </message>
+    <message>
+        <source>Already posted?</source>
+        <translation>Já postado?</translation>
+    </message>
+    <message>
+        <source>This post is already in the history (%1, posted on %2).
+Do you want to post it again?</source>
+        <translation>Este post já está no histórico (%1, postado em %2).
+Deseja postá-lo novamente?</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
+        <source>Post anyway</source>
+        <translation>Postar mesmo assim</translation>
     </message>
 </context>
 <context>
