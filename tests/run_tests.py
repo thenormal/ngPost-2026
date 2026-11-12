@@ -769,6 +769,24 @@ def test_duplicate_is_skipped(work):
         make_file(src, 200_001, 8)   # same name, other size: not the same post
         r = run_ngpost(stub, work, [src], nzb, extra=extra)
         check(len(stub.accepted) > 2 * nb, "a different size was skipped\n" + LAST_OUTPUT)
+
+        # a compressed post is recognised too (the history keeps the size of the original files, not of the archives)
+        seven = shutil.which("7z")
+        if seven:
+            tmp = os.path.join(work, "tmp")
+            os.makedirs(tmp)
+            conf_extra = "POST_HISTORY = %s\nTMP_DIR = %s\nRAR_PATH = %s\nRAR_SIZE = 0\n" % (hist, tmp, seven)
+            clip = os.path.join(work, "clip.bin")
+            make_file(clip, 150_000, 9)
+            nzb2 = os.path.join(work, "clip.nzb")
+            cextra = ["--compress", "--rar_name", "cliparch"]
+            r = run_ngpost_conf([stub], work, [clip], nzb2, conns=1, threads=1, conf_extra=conf_extra, extra=cextra)
+            check(r.returncode == 0, "compressed post failed\n" + LAST_OUTPUT)
+            nb2 = len(stub.accepted)
+            os.remove(nzb2)
+            r = run_ngpost_conf([stub], work, [clip], nzb2, conns=1, threads=1, conf_extra=conf_extra, extra=cextra, timeout=30)
+            check("already in the history" in LAST_OUTPUT and len(stub.accepted) == nb2,
+                  "the compressed duplicate was not skipped\n" + LAST_OUTPUT)
     finally:
         stub.stop()
 
