@@ -73,6 +73,10 @@
         <source>Fork maintained by %1</source>
         <translation>分支由 %1 维护</translation>
     </message>
+    <message>
+        <source>Feedback</source>
+        <translation>反馈</translation>
+    </message>
 </context>
 <context>
     <name>AutoPostWidget</name>
@@ -4179,6 +4183,37 @@ Click on &quot;Add&quot; to configure your Usenet provider.</source>
     <message>
         <source>add...</source>
         <translation>添加...</translation>
+    </message>
+</context>
+<context>
+    <name>FeedbackDialog</name>
+    <message>
+        <source>Feedback</source>
+        <translation>反馈</translation>
+    </message>
+    <message>
+        <source>Found a problem or have an idea? The page of GitHub opens in your browser, already filled with the version and the system. Nothing is sent by the program: you check the page and send it yourself (a free GitHub account is needed).</source>
+        <translation>发现问题或有想法？GitHub 页面将在浏览器中打开，并已填好版本和系统信息。程序不会发送任何内容：您检查页面后自行提交（需要免费的 GitHub 账号）。</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>报告问题</translation>
+    </message>
+    <message>
+        <source>Suggest an idea</source>
+        <translation>提出建议</translation>
+    </message>
+    <message>
+        <source>For a problem, save the diagnostic report and attach it to the page. Passwords, usernames and file names are masked in it.</source>
+        <translation>如遇问题，请保存诊断报告并附加到页面。报告中的密码、用户名和文件名均已隐藏。</translation>
+    </message>
+    <message>
+        <source>Save the diagnostic report</source>
+        <translation>保存诊断报告</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>关闭</translation>
     </message>
 </context>
 </TS>

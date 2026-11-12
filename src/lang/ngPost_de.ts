@@ -73,6 +73,10 @@
         <source>Fork maintained by %1</source>
         <translation>Fork gepflegt von %1</translation>
     </message>
+    <message>
+        <source>Feedback</source>
+        <translation>Feedback</translation>
+    </message>
 </context>
 <context>
     <name>AutoPostWidget</name>
@@ -4178,6 +4182,37 @@ Klicken Sie auf „Hinzufügen“, um Ihren Usenet-Anbieter einzurichten.</trans
     <message>
         <source>add...</source>
         <translation>hinzufügen...</translation>
+    </message>
+</context>
+<context>
+    <name>FeedbackDialog</name>
+    <message>
+        <source>Feedback</source>
+        <translation>Feedback</translation>
+    </message>
+    <message>
+        <source>Found a problem or have an idea? The page of GitHub opens in your browser, already filled with the version and the system. Nothing is sent by the program: you check the page and send it yourself (a free GitHub account is needed).</source>
+        <translation>Problem gefunden oder eine Idee? Die GitHub-Seite öffnet sich im Browser, bereits mit Version und System ausgefüllt. Das Programm sendet nichts: Sie prüfen die Seite und senden sie selbst ab (ein kostenloses GitHub-Konto ist nötig).</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>Problem melden</translation>
+    </message>
+    <message>
+        <source>Suggest an idea</source>
+        <translation>Idee vorschlagen</translation>
+    </message>
+    <message>
+        <source>For a problem, save the diagnostic report and attach it to the page. Passwords, usernames and file names are masked in it.</source>
+        <translation>Speichern Sie bei einem Problem den Diagnosebericht und hängen Sie ihn an die Seite an. Passwörter, Benutzernamen und Dateinamen sind maskiert.</translation>
+    </message>
+    <message>
+        <source>Save the diagnostic report</source>
+        <translation>Diagnosebericht speichern</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Schließen</translation>
     </message>
 </context>
 </TS>

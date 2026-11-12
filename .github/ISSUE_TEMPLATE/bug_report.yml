@@ -1,0 +1,41 @@
+name: Bug report
+description: Something does not work as expected
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem. Please check the Help section of the program first.
+        In the program: About > Feedback > Report a problem fills the version and the system for you.
+  - type: input
+    id: version
+    attributes:
+      label: Version of ngPost Deluxe
+      placeholder: "1.2"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Operating system and Qt version
+      placeholder: "Windows 11, Qt 5.15.2"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you expect and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ... 2. ... 3. ..."
+  - type: markdown
+    attributes:
+      value: |
+        If you can, attach the diagnostic report (button "Diagnostic report" under the log of Quick Post, or the button of the Feedback window).
+        Passwords, usernames and file names are masked in the report.

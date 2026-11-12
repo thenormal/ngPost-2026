@@ -73,6 +73,10 @@
         <source>Fork maintained by %1</source>
         <translation>Fork mantenuto da %1</translation>
     </message>
+    <message>
+        <source>Feedback</source>
+        <translation>Feedback</translation>
+    </message>
 </context>
 <context>
     <name>AutoPostWidget</name>
@@ -4180,6 +4184,37 @@ Clicca su «Aggiungi» per configurare il tuo provider Usenet.</translation>
     <message>
         <source>add...</source>
         <translation>aggiungi...</translation>
+    </message>
+</context>
+<context>
+    <name>FeedbackDialog</name>
+    <message>
+        <source>Feedback</source>
+        <translation>Feedback</translation>
+    </message>
+    <message>
+        <source>Found a problem or have an idea? The page of GitHub opens in your browser, already filled with the version and the system. Nothing is sent by the program: you check the page and send it yourself (a free GitHub account is needed).</source>
+        <translation>Hai trovato un problema o hai un&apos;idea? Si apre nel browser la pagina di GitHub, già compilata con la versione e il sistema. Il programma non invia nulla: controlli la pagina e la invii tu (serve un account GitHub gratuito).</translation>
+    </message>
+    <message>
+        <source>Report a problem</source>
+        <translation>Segnala un problema</translation>
+    </message>
+    <message>
+        <source>Suggest an idea</source>
+        <translation>Proponi un&apos;idea</translation>
+    </message>
+    <message>
+        <source>For a problem, save the diagnostic report and attach it to the page. Passwords, usernames and file names are masked in it.</source>
+        <translation>Per un problema, salva il report diagnostico e allegalo alla pagina. Password, nomi utente e nomi dei file sono mascherati.</translation>
+    </message>
+    <message>
+        <source>Save the diagnostic report</source>
+        <translation>Salva il report diagnostico</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Chiudi</translation>
     </message>
 </context>
 </TS>

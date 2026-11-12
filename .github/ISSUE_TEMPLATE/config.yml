@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Help section of the program
+    url: https://github.com/thenormal/ngPost-Deluxe#readme
+    about: Read the README and the Help section of the program before opening a ticket.
