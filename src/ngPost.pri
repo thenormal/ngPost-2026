@@ -93,6 +93,7 @@ SOURCES += \
         utils/CmdOrGuiApp.cpp \
         utils/Diagnostics.cpp \
         utils/LatencyStats.cpp \
+        utils/NfoWriter.cpp \
         utils/Yenc.cpp
 
 
@@ -121,6 +122,7 @@ HEADERS += \
     utils/CmdOrGuiApp.h \
     utils/Diagnostics.h \
     utils/LatencyStats.h \
+    utils/NfoWriter.h \
     utils/Macros.h \
     utils/PureStaticClass.h \
     utils/Yenc.h

@@ -204,6 +204,10 @@ private:
     bool        _queueTried   = false; //!< we tried to open it (only once)
     bool        _queueEnabled = true;  //!< key "queue" of the config
     bool        _resumeQueue  = false; //!< command line: post again the unfinished posts (--resume_queue or key "resume_queue")
+    bool        _genNfo       = false; //!< write an NFO file next to the nzb (key "gen_nfo", --gen_nfo)
+    bool        _nfoInPost    = false; //!< and post it with the files (key "nfo_in_post", --nfo_in_post)
+    bool        _nfoPassword  = false; //!< write the password of the archive in it (key "nfo_password", --nfo_password)
+    QString     _nfoText;              //!< free text added to the NFO (key "nfo_text", --nfo_text file)
     bool        _checkDuplicates = true; //!< warn (GUI) / skip (auto, command line) a post already in the history (key "warn_duplicates", --allow_repost turns it off)
     bool        _closingApp   = false; //!< the posts are stopped because the application closes: keep them in the queue
     QList<QDir> _autoDirs;

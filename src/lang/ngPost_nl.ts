@@ -1578,6 +1578,30 @@ Later beslissen: ze blijven in de wachtrij en worden bij de volgende start opnie
         <source>Quick Post asks before posting it again; the auto posting skips it.</source>
         <translation>Quick Post vraagt het eerst; automatisch posten slaat de post over.</translation>
     </message>
+    <message>
+        <source>NFO file</source>
+        <translation>NFO-bestand</translation>
+    </message>
+    <message>
+        <source>Write an NFO file next to the nzb (name, date, files, archive, par2)</source>
+        <translation>Schrijf een NFO-bestand naast de nzb (naam, datum, bestanden, archief, par2)</translation>
+    </message>
+    <message>
+        <source>Also post the NFO file with the files</source>
+        <translation>Post het NFO-bestand ook mee met de bestanden</translation>
+    </message>
+    <message>
+        <source>Write the password of the archive in the NFO file</source>
+        <translation>Schrijf het wachtwoord van het archief in het NFO-bestand</translation>
+    </message>
+    <message>
+        <source>Text added at the end of the NFO file:</source>
+        <translation>Tekst die achter het NFO-bestand wordt gezet:</translation>
+    </message>
+    <message>
+        <source>When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. Careful: a password in a posted NFO is readable by everyone who downloads the post.</source>
+        <translation>Als de bestandsnamen verborgen zijn (versluiering), vermeldt de geposte NFO geen bestandsnamen. Let op: een wachtwoord in een geposte NFO is leesbaar voor iedereen die de post downloadt.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3028,6 +3052,34 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)</source>
         <translation>## Waarschuwen als een post al in de geschiedenis staat (zelfde naam en grootte): de GUI vraagt het, automatisch posten en de opdrachtregel slaan het over (ON of OFF)</translation>
     </message>
+    <message>
+        <source>write an NFO file (name, date, files, archive, par2) next to the nzb</source>
+        <translation>schrijft een NFO-bestand (naam, datum, bestanden, archief, par2) naast de nzb</translation>
+    </message>
+    <message>
+        <source>also post the NFO file with the files (implies --gen_nfo)</source>
+        <translation>post het NFO-bestand ook mee met de bestanden (impliceert --gen_nfo)</translation>
+    </message>
+    <message>
+        <source>write the password of the archive in the NFO file</source>
+        <translation>schrijft het wachtwoord van het archief in het NFO-bestand</translation>
+    </message>
+    <message>
+        <source>text file whose content is added at the end of the NFO file</source>
+        <translation>tekstbestand waarvan de inhoud achter het NFO-bestand wordt gezet</translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t read the file of the option --nfo_text: %1</source>
+        <translation>Fout: het bestand van de optie --nfo_text kan niet worden gelezen: %1</translation>
+    </message>
+    <message>
+        <source>## NFO file: written next to the nzb (gen_nfo), also posted with the files (nfo_in_post),</source>
+        <translation>## NFO-bestand: naast de nzb geschreven (gen_nfo), ook meegepost met de bestanden (nfo_in_post),</translation>
+    </message>
+    <message>
+        <source>## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \n = new line)</source>
+        <translation>## met het wachtwoord van het archief (nfo_password) en een eigen tekst (nfo_text, op één regel, \n = nieuwe regel)</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3590,6 +3642,22 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
     <message>
         <source>par2 generated in %1</source>
         <translation>par2 gegenereerd in %1</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t create a temporary folder for the NFO file: it is not posted</source>
+        <translation>Tijdelijke map voor het NFO-bestand kon niet worden gemaakt: het wordt niet gepost</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t write the NFO file: it is not posted</source>
+        <translation>NFO-bestand kon niet worden geschreven: het wordt niet gepost</translation>
+    </message>
+    <message>
+        <source>NFO file written: %1</source>
+        <translation>NFO-bestand geschreven: %1</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t write the NFO file next to the nzb: %1</source>
+        <translation>NFO-bestand naast de nzb kon niet worden geschreven: %1</translation>
     </message>
 </context>
 <context>

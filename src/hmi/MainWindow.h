@@ -40,6 +40,7 @@ class QGridLayout;
 class QFrame;
 class QLineEdit;
 class QCheckBox;
+class QPlainTextEdit;
 class HistoryWidget;
 class HelpWidget;
 class GroupsEdit;
@@ -85,6 +86,12 @@ private:
     QPushButton    *_historyPathButton;
     QLabel         *_historyHint;
     QCheckBox      *_queueCB;
+    QCheckBox      *_nfoCB;
+    QCheckBox      *_nfoInPostCB;
+    QCheckBox      *_nfoPassCB;
+    QLabel         *_nfoTextLbl;
+    QPlainTextEdit *_nfoText;
+    QLabel         *_nfoHint;
     QLabel         *_queueHint;
     QLabel         *_supportHint;
     QPushButton    *_supportButton;
@@ -185,6 +192,7 @@ private slots:
     void onHistoryPathClicked();
     void onAutoSave();
     void onDiagnosticReport();
+    void _updateNfoSettings();
 
     void onObfucateToggled(bool checked);
 

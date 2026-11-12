@@ -23,6 +23,7 @@
 #include "RepostInfo.h"
 
 #include <QFileInfoList>
+#include <QTemporaryDir>
 #include <QVector>
 #include <QSet>
 #include <QQueue>
@@ -158,6 +159,8 @@ private:
 
     AtomicBool  _delFilesAfterPost;
     QFileInfoList       _originalFiles;
+    QString             _nfoContent;   //!< text of the NFO file (empty if none)
+    QTemporaryDir      *_nfoDir = nullptr; //!< the NFO that is posted lives here until the end of the post
     const int           _nbInputFiles; //!< number of files and folders given to post (for the history)
 
 
@@ -373,6 +376,9 @@ private:
     inline NntpFile *_getNextFile();
 
     void _initPosting();
+    void _prepareNfo();          //!< builds the NFO file (and adds it to the files to post if asked)
+    void _saveNfoNextToNzb();
+    bool _nfoHidesNames() const;
     void _postFiles();
     void _finishPosting();
 

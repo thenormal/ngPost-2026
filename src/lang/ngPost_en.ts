@@ -1558,6 +1558,30 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>Quick Post asks before posting it again; the auto posting skips it.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>NFO file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write an NFO file next to the nzb (name, date, files, archive, par2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Also post the NFO file with the files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write the password of the archive in the NFO file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text added at the end of the NFO file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. Careful: a password in a posted NFO is readable by everyone who downloads the post.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2995,6 +3019,34 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>write an NFO file (name, date, files, archive, par2) next to the nzb</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>also post the NFO file with the files (implies --gen_nfo)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>write the password of the archive in the NFO file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text file whose content is added at the end of the NFO file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t read the file of the option --nfo_text: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>## NFO file: written next to the nzb (gen_nfo), also posted with the files (nfo_in_post),</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \n = new line)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3549,6 +3601,22 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     </message>
     <message>
         <source>par2 generated in %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t create a temporary folder for the NFO file: it is not posted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t write the NFO file: it is not posted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>NFO file written: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t write the NFO file next to the nzb: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
