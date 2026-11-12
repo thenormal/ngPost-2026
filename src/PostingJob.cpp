@@ -27,6 +27,8 @@
 #include "nntp/NntpServerParams.h"
 #include "utils/Diagnostics.h"
 #include "utils/LatencyStats.h"
+#include "utils/NfoWriter.h"
+#include <QDirIterator>
 #include "nntp/NntpFile.h"
 #include "nntp/NntpArticle.h"
 #ifdef __USE_HMI__
@@ -149,6 +151,7 @@ PostingJob::PostingJob(NgPost *ngPost,
 
 PostingJob::~PostingJob()
 {
+    delete _nfoDir;
 
 #ifdef __DEBUG__
     _logAs(NgPost::LOG_DEBUG, "Destructing PostingJob");
@@ -375,9 +378,12 @@ void PostingJob::_postFiles()
         }
         emit archiveFileNames(archiveNames);
     }
+    if (!_isRepost && _ngPost->_genNfo)
+        _prepareNfo();
     _initPosting();
     if (!_isRepost)
     {
+        _saveNfoNextToNzb();
         _nzbPathFinal = true;          // _initPosting may have changed it (no overwrite: name_1.nzb)
         _ngPost->queueSaveJob(this);   // so a restart overwrites this nzb and not another one
     }
@@ -1086,6 +1092,86 @@ void PostingJob::_initPosting()
         _plannedSize += static_cast<quint64>(nntpFile->fileSize());
     }
     emit articlesNumber(_nbArticlesTotal);
+}
+
+void PostingJob::_prepareNfo()
+{
+    NfoWriter::NfoInfo info;
+    info.postName   = QFileInfo(_nzbFilePath).completeBaseName();
+    info.appName    = _ngPost->appName();
+    info.appVersion = NgPost::versionLabel();
+    info.date       = QDateTime::currentDateTime();
+    for (const QFileInfo &fi : _inputFiles)
+    {
+        if (fi.isDir())
+        {
+            QDir base(fi.absoluteFilePath());
+            QDirIterator it(base.absolutePath(), QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+            QList<NfoWriter::File> found;
+            while (it.hasNext())
+            {
+                it.next();
+                found.append({fi.fileName() + "/" + base.relativeFilePath(it.filePath()), it.fileInfo().size()});
+            }
+            std::sort(found.begin(), found.end(), [](const NfoWriter::File &a, const NfoWriter::File &b){ return a.name < b.name; });
+            info.files += found;
+        }
+        else
+            info.files.append({fi.fileName(), fi.size()});
+    }
+    // the names of the files must not appear in a post that hides them
+    info.hideNames  = _nfoHidesNames();
+    info.compressed = _doCompress;
+    info.archiveFormat = _use7z ? "7z" : "RAR";
+    info.par2       = _doPar2;
+    info.par2Pct    = _par2Pct;
+    for (const QFileInfo &fi : _files)
+    {
+        info.uploadedSize += fi.size();
+        if (_doCompress && !fi.fileName().endsWith(".par2", Qt::CaseInsensitive))
+            ++info.nbVolumes;
+    }
+    if (_ngPost->_nfoPassword)
+        info.password = _rarPass;
+    info.freeText = _ngPost->_nfoText;
+    _nfoContent   = NfoWriter::build(info);
+
+    if (!_ngPost->_nfoInPost)
+        return;
+    _nfoDir = new QTemporaryDir();
+    if (!_nfoDir->isValid())
+    {
+        _error(tr("Couldn't create a temporary folder for the NFO file: it is not posted"));
+        return;
+    }
+    // with obfuscated file names the NFO gets a random name too
+    QString name = _obfuscateFileName ? _ngPost->randomPass(_ngPost->_lengthName) : info.postName;
+    QFile nfo(_nfoDir->filePath(name + ".nfo"));
+    if (nfo.open(QIODevice::WriteOnly))
+    {
+        nfo.write(_nfoContent.toUtf8());
+        nfo.close();
+        _files << QFileInfo(nfo.fileName());
+    }
+    else
+        _error(tr("Couldn't write the NFO file: it is not posted"));
+}
+
+bool PostingJob::_nfoHidesNames() const
+{
+    return _ngPost->_nfoInPost && (_obfuscateFileName || _obfuscateArticles);
+}
+
+void PostingJob::_saveNfoNextToNzb()
+{
+    if (_nfoContent.isEmpty())
+        return;
+    QFileInfo nzb(_nzbFilePath);
+    QSaveFile file(QString("%1/%2.nfo").arg(nzb.absolutePath(), nzb.completeBaseName()));
+    if (file.open(QIODevice::WriteOnly) && file.write(_nfoContent.toUtf8()) >= 0 && file.commit())
+        _log(tr("NFO file written: %1").arg(QDir::toNativeSeparators(QFileInfo(file.fileName()).absoluteFilePath())));
+    else
+        _error(tr("Couldn't write the NFO file next to the nzb: %1").arg(QDir::toNativeSeparators(file.fileName())));
 }
 
 void PostingJob::_finishPosting()

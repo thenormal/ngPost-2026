@@ -1576,6 +1576,30 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>Quick Post asks before posting it again; the auto posting skips it.</source>
         <translation>Quick Post 会先询问再重新发布；自动发布会跳过。</translation>
     </message>
+    <message>
+        <source>NFO file</source>
+        <translation>NFO 文件</translation>
+    </message>
+    <message>
+        <source>Write an NFO file next to the nzb (name, date, files, archive, par2)</source>
+        <translation>在 nzb 旁边写入 NFO 文件（名称、日期、文件、压缩包、par2）</translation>
+    </message>
+    <message>
+        <source>Also post the NFO file with the files</source>
+        <translation>同时将 NFO 文件与文件一起发布</translation>
+    </message>
+    <message>
+        <source>Write the password of the archive in the NFO file</source>
+        <translation>在 NFO 中写入压缩包的密码</translation>
+    </message>
+    <message>
+        <source>Text added at the end of the NFO file:</source>
+        <translation>添加在 NFO 文件末尾的文字：</translation>
+    </message>
+    <message>
+        <source>When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. Careful: a password in a posted NFO is readable by everyone who downloads the post.</source>
+        <translation>当文件名被隐藏（混淆）时，发布的 NFO 不会列出任何文件名。注意：已发布 NFO 中的密码，任何下载该帖子的人都能看到。</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3023,6 +3047,34 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)</source>
         <translation>## 当帖子已在历史记录中（名称和大小相同）时提示：图形界面会询问，自动发布和命令行会跳过（ON 或 OFF）</translation>
     </message>
+    <message>
+        <source>write an NFO file (name, date, files, archive, par2) next to the nzb</source>
+        <translation>在 nzb 旁边写入 NFO 文件（名称、日期、文件、压缩包、par2）</translation>
+    </message>
+    <message>
+        <source>also post the NFO file with the files (implies --gen_nfo)</source>
+        <translation>同时将 NFO 文件与文件一起发布（隐含 --gen_nfo）</translation>
+    </message>
+    <message>
+        <source>write the password of the archive in the NFO file</source>
+        <translation>在 NFO 中写入压缩包的密码</translation>
+    </message>
+    <message>
+        <source>text file whose content is added at the end of the NFO file</source>
+        <translation>文本文件，其内容会添加到 NFO 末尾</translation>
+    </message>
+    <message>
+        <source>Error: can&apos;t read the file of the option --nfo_text: %1</source>
+        <translation>错误：无法读取选项 --nfo_text 的文件：%1</translation>
+    </message>
+    <message>
+        <source>## NFO file: written next to the nzb (gen_nfo), also posted with the files (nfo_in_post),</source>
+        <translation>## NFO 文件：写在 nzb 旁边（gen_nfo），也可随文件一起发布（nfo_in_post），</translation>
+    </message>
+    <message>
+        <source>## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \n = new line)</source>
+        <translation>## 可含压缩包密码（nfo_password）和您自己的文字（nfo_text，一行，\n = 换行）</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3585,6 +3637,22 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     <message>
         <source>par2 generated in %1</source>
         <translation>par2生成完成, 用时%1</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t create a temporary folder for the NFO file: it is not posted</source>
+        <translation>无法为 NFO 文件创建临时文件夹：不会发布</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t write the NFO file: it is not posted</source>
+        <translation>无法写入 NFO 文件：不会发布</translation>
+    </message>
+    <message>
+        <source>NFO file written: %1</source>
+        <translation>已写入 NFO 文件：%1</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t write the NFO file next to the nzb: %1</source>
+        <translation>无法在 nzb 旁边写入 NFO 文件：%1</translation>
     </message>
 </context>
 <context>

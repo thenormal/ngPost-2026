@@ -190,6 +190,10 @@ const QList<QCommandLineOption> NgPost::sCmdOptions = {
     { sOptionNames[Opt::MONITOR_DIR],         tr("monitor directory and post every new file/folder. You must use --compress, should add --gen_par2, --gen_name and --gen_pass"), sOptionNames[Opt::MONITOR_DIR]},
     { sOptionNames[Opt::DEL_AUTO],            tr("delete file/folder once posted. You must use --auto or --monitor with this option.")},
     { "resume_queue",                         tr("post again the posts that were not finished (queue saved next to the config file)")},
+    { "gen_nfo",                              tr("write an NFO file (name, date, files, archive, par2) next to the nzb")},
+    { "nfo_in_post",                          tr("also post the NFO file with the files (implies --gen_nfo)")},
+    { "nfo_password",                         tr("write the password of the archive in the NFO file")},
+    { "nfo_text",                             tr("text file whose content is added at the end of the NFO file"), "nfo_text"},
     { "allow_repost",                         tr("post again the files that are already in the history (by default they are skipped)")},
 
 // quick posting (several files/folders)
@@ -1629,6 +1633,23 @@ bool NgPost::parseCommandLine(int argc, char *argv[])
         _resumeQueue = true;
     if (parser.isSet("allow_repost"))
         _checkDuplicates = false;
+    if (parser.isSet("gen_nfo") || parser.isSet("nfo_in_post"))
+        _genNfo = true;
+    if (parser.isSet("nfo_in_post"))
+        _nfoInPost = true;
+    if (parser.isSet("nfo_password"))
+        _nfoPassword = true;
+    if (parser.isSet("nfo_text"))
+    {
+        QFile textFile(parser.value("nfo_text"));
+        if (textFile.open(QIODevice::ReadOnly|QIODevice::Text))
+            _nfoText = QString::fromUtf8(textFile.readAll());
+        else
+        {
+            _error(tr("Error: can't read the file of the option --nfo_text: %1").arg(parser.value("nfo_text")), ERROR_CODE::ERR_WRONG_ARG);
+            return false;
+        }
+    }
 
     if (!parser.isSet(sOptionNames[Opt::INPUT]) && !parser.isSet(sOptionNames[Opt::AUTO_DIR]) && !parser.isSet(sOptionNames[Opt::MONITOR_DIR])
             && !_resumeQueue)
@@ -2406,6 +2427,16 @@ QString NgPost::_parseConfig(const QString &configPath)
                         val = val.toLower();
                         _queueEnabled = !(val == "off" || val == "false" || val == "0" || val == "no");
                     }
+                    else if (opt == "gen_nfo" || opt == "nfo_in_post" || opt == "nfo_password")
+                    {
+                        val = val.toLower();
+                        bool on = (val == "on" || val == "true" || val == "1" || val == "yes");
+                        (opt == "gen_nfo" ? _genNfo : opt == "nfo_in_post" ? _nfoInPost : _nfoPassword) = on;
+                    }
+                    else if (opt == "nfo_text")
+                    {
+                        _nfoText = val.replace("\\n", "\n"); // saved on one line
+                    }
                     else if (opt == "warn_duplicates")
                     {
                         val = val.toLower();
@@ -2985,6 +3016,13 @@ void NgPost::saveConfig(bool quiet)
                << tr("## the file contains the archive passwords in clear text: keep it private") << "\n"
                << "history = " << (_historyEnabled ? "ON" : "OFF") << "\n"
                << tr("## by default the history is saved in ngPost_history.csv next to this file") << "\n"
+               << "\n"
+               << tr("## NFO file: written next to the nzb (gen_nfo), also posted with the files (nfo_in_post),")  << "\n"
+               << tr("## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \\n = new line)") << "\n"
+               << "gen_nfo = " << (_genNfo ? "ON" : "OFF") << "\n"
+               << "nfo_in_post = " << (_nfoInPost ? "ON" : "OFF") << "\n"
+               << "nfo_password = " << (_nfoPassword ? "ON" : "OFF") << "\n"
+               << (_nfoText.trimmed().isEmpty() ? "#" : "") << "nfo_text = " << QString(_nfoText).replace("\r", "").replace("\n", "\\n") << "\n"
                << "\n"
                << tr("## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)") << "\n"
                << "warn_duplicates = " << (_checkDuplicates ? "ON" : "OFF") << "\n"

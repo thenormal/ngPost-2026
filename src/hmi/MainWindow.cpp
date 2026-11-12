@@ -39,6 +39,7 @@
 #include <QTimer>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QPlainTextEdit>
 #include <QSpinBox>
 #include <QComboBox>
 #include <QFileDialog>
@@ -88,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveQuickTab(false),
     _autoSaveAutoTab(false),
     _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
-    _history(nullptr), _help(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _duplicatesCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
+    _history(nullptr), _help(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _duplicatesCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _nfoCB(nullptr), _nfoInPostCB(nullptr), _nfoPassCB(nullptr), _nfoTextLbl(nullptr), _nfoText(nullptr), _nfoHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
     _themeButton(nullptr), _aboutButton(nullptr),
     _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
     _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
@@ -211,6 +212,15 @@ void MainWindow::init(NgPost *ngPost)
     connect(_historyCB,         &QAbstractButton::toggled, this, &MainWindow::onHistoryToggled);
     _duplicatesCB->setChecked(_ngPost->_checkDuplicates);
     connect(_duplicatesCB,      &QAbstractButton::toggled, this, [this](bool checked){ _ngPost->_checkDuplicates = checked; });
+    _nfoCB->setChecked(_ngPost->_genNfo);
+    _nfoInPostCB->setChecked(_ngPost->_nfoInPost);
+    _nfoPassCB->setChecked(_ngPost->_nfoPassword);
+    _nfoText->setPlainText(_ngPost->_nfoText);
+    _updateNfoSettings();
+    connect(_nfoCB,       &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_genNfo = on; _updateNfoSettings(); });
+    connect(_nfoInPostCB, &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_nfoInPost = on; });
+    connect(_nfoPassCB,   &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_nfoPassword = on; });
+    connect(_nfoText,     &QPlainTextEdit::textChanged, this, [this](){ _ngPost->_nfoText = _nfoText->toPlainText(); });
     _queueCB->setChecked(_ngPost->_queueEnabled);
     connect(_queueCB,           &QAbstractButton::toggled, this, &MainWindow::onQueueToggled);
     QTimer::singleShot(1500, this, &MainWindow::_offerQueue); // after the windows of the start
@@ -1527,6 +1537,25 @@ QWidget *MainWindow::_buildSettingsPage()
     g->setColumnStretch(1, 1);
     left->insertWidget(left->count() - 1, history); // before the stretch of the left column
 
+    // NFO file
+    QFrame *nfo = _card("nfo", g);
+    _nfoCB       = new QCheckBox(nfo);
+    _nfoInPostCB = new QCheckBox(nfo);
+    _nfoPassCB   = new QCheckBox(nfo);
+    _nfoTextLbl  = new QLabel(nfo);
+    _nfoText     = new QPlainTextEdit(nfo);
+    _nfoText->setMaximumHeight(90);
+    _nfoHint     = newLabel("hint", nfo);
+    _nfoHint->setWordWrap(true);
+    g->addWidget(_nfoCB, 0, 0);
+    g->addWidget(_nfoInPostCB, 1, 0);
+    g->addWidget(_nfoPassCB, 2, 0);
+    g->addWidget(_nfoTextLbl, 3, 0);
+    g->addWidget(_nfoText, 4, 0);
+    g->addWidget(_nfoHint, 5, 0);
+    g->setColumnStretch(0, 1);
+    left->insertWidget(left->count() - 1, nfo);
+
     // queue of the posts
     QFrame *queue = _card("queue", g);
     _queueCB = new QCheckBox(queue);
@@ -1600,6 +1629,13 @@ void MainWindow::_retranslateShell()
     _cardTitles["privacy"]->setText(tr("Privacy"));
     _cardTitles["interface"]->setText(tr("Interface"));
     _cardTitles["history"]->setText(tr("History of the uploads"));
+    _cardTitles["nfo"]->setText(tr("NFO file"));
+    _nfoCB->setText(tr("Write an NFO file next to the nzb (name, date, files, archive, par2)"));
+    _nfoInPostCB->setText(tr("Also post the NFO file with the files"));
+    _nfoPassCB->setText(tr("Write the password of the archive in the NFO file"));
+    _nfoTextLbl->setText(tr("Text added at the end of the NFO file:"));
+    _nfoHint->setText(tr("When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. "
+                         "Careful: a password in a posted NFO is readable by everyone who downloads the post."));
     _cardTitles["queue"]->setText(tr("Queue of the posts"));
     _queueCB->setText(tr("Save the posts that are not finished, to post them again after a restart"));
     _queueHint->setText(tr("The queue also records the password of each archive in clear text (like the history). "
@@ -1910,6 +1946,14 @@ void MainWindow::_offerQueue()
             closeTab(tab);
         }
     }
+}
+
+void MainWindow::_updateNfoSettings()
+{
+    _nfoInPostCB->setEnabled(_ngPost->_genNfo);
+    _nfoPassCB->setEnabled(_ngPost->_genNfo);
+    _nfoText->setEnabled(_ngPost->_genNfo);
+    _nfoTextLbl->setEnabled(_ngPost->_genNfo);
 }
 
 void MainWindow::onHistoryToggled(bool checked)

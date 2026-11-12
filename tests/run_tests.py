@@ -791,6 +791,65 @@ def test_duplicate_is_skipped(work):
         stub.stop()
 
 
+def test_nfo_file(work):
+    # the NFO: next to the nzb, with the password only if asked, in the post if asked, no names when they are hidden
+    stub = NntpStub().start()
+    try:
+        folder = os.path.join(work, "album")
+        os.makedirs(folder)
+        make_file(os.path.join(folder, "track1.dat"), 120_000, 21)
+        make_file(os.path.join(folder, "track2.dat"), 80_000, 22)
+        single = os.path.join(work, "movie.bin")
+        make_file(single, 100_000, 23)
+        text = os.path.join(work, "note.txt")
+        with open(text, "w") as f:
+            f.write("Hello from the poster\nsecond line")
+
+        # 1. next to the nzb, not in the post, with the free text
+        nzb = os.path.join(work, "one.nzb")
+        r = run_ngpost(stub, work, [single, folder], nzb, extra=["--gen_nfo", "--nfo_text", text])
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        nfo = os.path.join(work, "one.nfo")
+        check(os.path.exists(nfo), "no NFO next to the nzb\n" + LAST_OUTPUT)
+        content = open(nfo, encoding="utf-8").read()
+        for needle in ("one", "movie.bin", "track1.dat", "track2.dat", "3 file(s)", "Hello from the poster", "second line"):
+            check(needle in content, "'%s' is missing in the NFO:\n%s" % (needle, content))
+        check("Password" not in content, "a password is in the NFO:\n" + content)
+        check(".nfo" not in open(nzb, encoding="utf-8").read(), "the NFO is in the nzb but was not asked")
+        nb = len(stub.accepted)
+
+        # 2. in the post: the nzb lists it and more articles are posted
+        nzb2 = os.path.join(work, "two.nzb")
+        r = run_ngpost(stub, work, [single], nzb2, extra=["--nfo_in_post"])
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        check(os.path.exists(os.path.join(work, "two.nfo")), "no NFO next to the nzb (nfo_in_post)")
+        check("two.nfo" in open(nzb2, encoding="utf-8").read(), "the NFO is not in the nzb")
+
+        # 3. file names hidden: the NFO in the post must not list them
+        nzb3 = os.path.join(work, "three.nzb")
+        r = run_ngpost(stub, work, [single], nzb3, extra=["--nfo_in_post", "--obfuscate"])
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        hidden = open(os.path.join(work, "three.nfo"), encoding="utf-8").read()
+        check("movie.bin" not in hidden and "hidden" in hidden, "names are shown in a post that hides them:\n" + hidden)
+
+        # 4. password only with --nfo_password (compressed post)
+        seven = shutil.which("7z")
+        if seven:
+            tmp = os.path.join(work, "tmp")
+            os.makedirs(tmp)
+            conf_extra = "TMP_DIR = %s\nRAR_PATH = %s\nRAR_SIZE = 0\n" % (tmp, seven)
+            for flag, expected in (([], False), (["--nfo_password"], True)):
+                nzb4 = os.path.join(work, "pw%d.nzb" % expected)
+                r = run_ngpost_conf([stub], work, [single], nzb4, conns=1, threads=1, conf_extra=conf_extra,
+                                    extra=["--compress", "--rar_name", "nfoarch", "--rar_pass", "topsecret", "--gen_nfo"] + flag)
+                check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+                c = open(os.path.join(work, "pw%d.nfo" % expected), encoding="utf-8").read()
+                check(("topsecret" in c) == expected, "password in the NFO: %s (expected %s)\n%s" % ("topsecret" in c, expected, c))
+                check("Archive" in c, "no archive line in the NFO:\n" + c)
+    finally:
+        stub.stop()
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
@@ -800,7 +859,7 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
          test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
          test_help_pages, test_latency_is_measured, test_feedback_forms,
-         test_duplicate_is_skipped]
+         test_duplicate_is_skipped, test_nfo_file]
 
 
 def main():
