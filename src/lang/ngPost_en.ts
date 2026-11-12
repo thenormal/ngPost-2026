@@ -1550,6 +1550,14 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Warn when a post is already in the history (same name and size)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quick Post asks before posting it again; the auto posting skips it.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2971,6 +2979,22 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>ETA %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): skipped. Use --allow_repost (or warn_duplicates = off in the config) to post it again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>post again the files that are already in the history (by default they are skipped)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>input size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3933,6 +3957,23 @@ Would you like to overwrite it ?</source>
     </message>
     <message>
         <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already posted?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This post is already in the history (%1, posted on %2).
+Do you want to post it again?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post anyway</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

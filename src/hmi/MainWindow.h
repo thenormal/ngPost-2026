@@ -80,6 +80,7 @@ private:
     int             _jobNumber;   //!< post shown in the bottom bar (-1: none)
     bool            _pauseIcon;   //!< the pause button shows pause (true) or play
     QCheckBox      *_historyCB;
+    QCheckBox      *_duplicatesCB;
     QLineEdit      *_historyPathEdit;
     QPushButton    *_historyPathButton;
     QLabel         *_historyHint;

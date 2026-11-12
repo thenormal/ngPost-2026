@@ -24,6 +24,7 @@ Watch a folder and delete the files once posted:
 - `-S` server in one string
 - `--disp_progress` BAR or FILES
 - `--resume_queue` post again the posts not finished
+- `--allow_repost` post again the files that are already in the history (by default they are skipped)
 - `--help` the full list
 
 See [Auto Posting](08-auto-posting.md).

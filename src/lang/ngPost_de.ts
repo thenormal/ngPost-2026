@@ -1568,6 +1568,14 @@ Später entscheiden: Sie bleiben in der Warteschlange und werden beim nächsten 
         <source>Help</source>
         <translation>Hilfe</translation>
     </message>
+    <message>
+        <source>Warn when a post is already in the history (same name and size)</source>
+        <translation>Warnen, wenn ein Post bereits im Verlauf ist (gleicher Name und gleiche Größe)</translation>
+    </message>
+    <message>
+        <source>Quick Post asks before posting it again; the auto posting skips it.</source>
+        <translation>Quick Post fragt vor dem erneuten Posten nach; das Auto-Posting überspringt ihn.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -2999,6 +3007,22 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>ETA %1</source>
         <translation>Noch %1</translation>
     </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): skipped. Use --allow_repost (or warn_duplicates = off in the config) to post it again.</source>
+        <translation>%1 ist bereits im Verlauf (gepostet am %2): übersprungen. Mit --allow_repost (oder warn_duplicates = off in der Konfiguration) erneut posten.</translation>
+    </message>
+    <message>
+        <source>post again the files that are already in the history (by default they are skipped)</source>
+        <translation>Dateien erneut posten, die bereits im Verlauf sind (standardmäßig werden sie übersprungen)</translation>
+    </message>
+    <message>
+        <source>input size</source>
+        <translation>Originalgröße</translation>
+    </message>
+    <message>
+        <source>## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)</source>
+        <translation>## Warnen, wenn ein Post bereits im Verlauf ist (gleicher Name und gleiche Größe): die GUI fragt nach, Auto-Posting und Kommandozeile überspringen ihn (ON oder OFF)</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3969,6 +3993,24 @@ Would you like to overwrite it ?</source>
     <message>
         <source>Some Articles couldn&apos;t be posted. This posts only those ones again and fixes the nzb file.</source>
         <translation>Einige Artikel konnten nicht gepostet werden. Dies postet nur diese erneut und korrigiert die NZB-Datei.</translation>
+    </message>
+    <message>
+        <source>Already posted?</source>
+        <translation>Schon gepostet?</translation>
+    </message>
+    <message>
+        <source>This post is already in the history (%1, posted on %2).
+Do you want to post it again?</source>
+        <translation>Dieser Post ist bereits im Verlauf (%1, gepostet am %2).
+Möchten Sie ihn erneut posten?</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <source>Post anyway</source>
+        <translation>Trotzdem posten</translation>
     </message>
 </context>
 <context>

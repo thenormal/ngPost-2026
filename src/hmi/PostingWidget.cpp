@@ -192,6 +192,21 @@ void PostingWidget::postFiles(bool updateMainParams)
                 return;
         }
 
+        // already posted (same name and size in the history)?
+        QString posted = _ngPost->duplicateInPost(fiNzb.fileName(), files);
+        if (!posted.isEmpty())
+        {
+            QMessageBox box(QMessageBox::Question, tr("Already posted?"),
+                            tr("This post is already in the history (%1, posted on %2).\nDo you want to post it again?").arg(fiNzb.fileName(), posted),
+                            QMessageBox::NoButton, this);
+            QPushButton *cancel = box.addButton(tr("Cancel"), QMessageBox::RejectRole);
+            box.addButton(tr("Post anyway"), QMessageBox::AcceptRole);
+            box.setDefaultButton(cancel);
+            box.exec();
+            if (box.clickedButton() == cancel)
+                return;
+        }
+
         _postingFinished = false;
         _state = STATE::POSTING;
         forgetQueue();              // a new post: the missing Articles of the previous one are forgotten

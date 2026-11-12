@@ -45,7 +45,7 @@ Goal: the program should be simple for someone who opens it for the first time, 
 | Done | Fix: the "One release" note of Quick Post must not appear during or after the upload (the list then shows the volumes of the archive) |
 | Planned | Fix: in a Quick Post tab whose post is finished, adding new files should show the "One release" note again (the finished state is not reset when the user adds files) |
 | Done | **Feedback** entry in the About window: report a bug or suggest an idea. It opens the new-issue page of GitHub already filled in (no access key in the program, nothing is sent without the user seeing it), with the diagnostic report to attach and issue forms in the repository |
-| Planned | Warning when a post is already in the history (same content), before it is posted again |
+| Done | Warning when a post is already in the history (same name and size), before it is posted again (Quick Post asks, auto posting and command line skip it; `--allow_repost` and a Settings option turn it off) |
 | Planned | NFO file generator for a post |
 | Planned | **Notifications** when a post is done or fails (system tray, optional webhook for Telegram / Discord; the webhook address is treated like a password) |
 
