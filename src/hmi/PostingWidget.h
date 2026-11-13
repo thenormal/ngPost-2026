@@ -53,6 +53,7 @@ private:
     PostingJob        *_postingJob;
     STATE              _state;
     bool               _postingFinished;
+    bool               _filesAddedAfterPost; //!< files added to a finished tab: they make a new release, the reminder is shown again
 
     // ngPost Deluxe layout (built in code over the widgets of the .ui)
     QLabel            *_filesTitle;
