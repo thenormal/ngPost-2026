@@ -179,7 +179,11 @@ jobs:
           choco install innosetup -y --no-progress | Out-Null
           $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
           if (-not (Test-Path $iscc)) { throw "ISCC.exe not found" }
-          $ver = if ('${{ github.ref_name }}' -match '^v(.+)$' -and '${{ github.ref_type }}' -eq 'tag') { $Matches[1] } else { '1.1' }
+          # a release (tag v1.3) uses the tag; any other build uses the version of the program (src/ngPost.pri), never a number written here
+          $pri = Get-Content src\ngPost.pri -Raw
+          if ($pri -notmatch 'APP_VERSION=\\"([0-9.]+)') { throw "APP_VERSION not found in src/ngPost.pri" }
+          $ver = $Matches[1]
+          if ('${{ github.ref_type }}' -eq 'tag' -and '${{ github.ref_name }}' -match '^v(.+)$') { $ver = $Matches[1] }
           & $iscc "/DAppVersion=$ver" "/DArch=${{ matrix.arch }}" "/DSourceDir=$PWD\dist" "/DOutName=ngPostDeluxe-v$ver-${{ matrix.name }}-setup" installer\ngPostDeluxe.iss
           if ($LASTEXITCODE -ne 0) { throw "ISCC failed ($LASTEXITCODE)" }
           Get-ChildItem installer_out | Format-Table Name, Length
