@@ -36,7 +36,6 @@ Goal: the program should be simple for someone who opens it for the first time, 
 | Done | After posting, the user chooses: do nothing (default), **move to a "Posted" folder** (never overwrites, ignored by the scan and the watching; `--move_posted` and `move_posted` in the configuration file), or delete the files |
 | Done | Items already in the history found when posting a list (scan or choice): one window lists them (name, size, date of the previous post) with a "Post again" box, off by default, instead of one question for each post; the ones not posted again stay in the list, unchecked and grey. An existing NZB file now gets a number (`name_1.nzb`) instead of a question. The folder watching keeps skipping them with a line in the log |
 | Done | State of the folder watching always visible (folder, how many posts today), with a pause button |
-| Planned | One list of the posts (state, progress, size, NZB, password) instead of one tab for each; if it turns out too big for this version it moves to 1.4 |
 
 **Everything else**
 
@@ -57,6 +56,7 @@ Goal: the program should be simple for someone who opens it for the first time, 
 
 These are directions, not a list of promises. The points will be decided when 1.3 is done.
 
+- **One list of the posts** (state, progress, size, NZB, password) instead of one tab for each post: it changes how the whole interface handles the posts, so it was moved here from 1.3
 - **A post is finished when it is verified**: check that the Articles are on the server (button, optional automatic), show the result in the history, and post again by itself what is missing
 - A post that stops **continues from the last Article sent** instead of starting again
 - **Bandwidth limit** and time slots for the upload
