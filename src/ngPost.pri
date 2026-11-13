@@ -1,6 +1,6 @@
 QT += core network
 
-DEFINES += "APP_VERSION=\"1.2\""
+DEFINES += "APP_VERSION=\"1.3\""
 
 INCLUDEPATH += $$PWD
 TARGET = ngPost
@@ -28,7 +28,7 @@ win32: {
     RC_ICONS += ngPost.ico
 
 # information shown by Windows (Explorer > Properties > Details)
-    VERSION = 1.2.0.0
+    VERSION = 1.3.0.0
     QMAKE_TARGET_PRODUCT     = "ngPost Deluxe"
     QMAKE_TARGET_DESCRIPTION = "ngPost Deluxe - Usenet poster"
     QMAKE_TARGET_COPYRIGHT   = "Copyright (C) 2020 Matthieu Bruel - fork ngPost Deluxe"
