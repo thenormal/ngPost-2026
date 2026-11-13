@@ -814,6 +814,46 @@ Voeg bestanden of mappen toe, of scan een map, en laat aangevinkt wat je wilt po
         <source>Already posted on %1</source>
         <translation>Al gepost op %1</translation>
     </message>
+    <message>
+        <source>⏸ Paused: %1</source>
+        <translation>⏸ Gepauzeerd: %1</translation>
+    </message>
+    <message>
+        <source>%1 new file(s) waiting</source>
+        <translation>%1 nieuw(e) bestand(en) wachten</translation>
+    </message>
+    <message>
+        <source>Resume watching</source>
+        <translation>Bewaking hervatten</translation>
+    </message>
+    <message>
+        <source>Post the files that are waiting and go on watching</source>
+        <translation>Plaats de wachtende bestanden en blijf bewaken</translation>
+    </message>
+    <message>
+        <source>● Watching: %1</source>
+        <translation>● Bewaakt: %1</translation>
+    </message>
+    <message>
+        <source>Pause watching</source>
+        <translation>Bewaking pauzeren</translation>
+    </message>
+    <message>
+        <source>The new files wait until you resume. The posts already started go on.</source>
+        <translation>Nieuwe bestanden wachten tot u hervat. Reeds gestarte posts gaan door.</translation>
+    </message>
+    <message>
+        <source>%1 post(s) today</source>
+        <translation>%1 post(s) vandaag</translation>
+    </message>
+    <message>
+        <source>%1 with errors</source>
+        <translation>%1 met fouten</translation>
+    </message>
+    <message>
+        <source>%1 in progress or waiting</source>
+        <translation>%1 bezig of wachtend</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3393,6 +3433,18 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
     <message>
         <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
         <translation>## (een naam als Posted wordt naast elk bestand/elke map aangemaakt, een volledig pad wordt zoals het is gebruikt; zonder wordt niets verplaatst)</translation>
+    </message>
+    <message>
+        <source>Watching is paused: %1 waits until it is resumed</source>
+        <translation>Bewaking gepauzeerd: %1 wacht op hervatting</translation>
+    </message>
+    <message>
+        <source>Watching paused: the new files wait, the posts already started go on</source>
+        <translation>Bewaking gepauzeerd: nieuwe bestanden wachten, gestarte posts gaan door</translation>
+    </message>
+    <message>
+        <source>Watching resumed</source>
+        <translation>Bewaking hervat</translation>
     </message>
 </context>
 <context>

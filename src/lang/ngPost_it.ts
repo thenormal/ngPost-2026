@@ -812,6 +812,46 @@ Aggiungi file o cartelle, o scansiona una cartella, e lascia selezionato ciò ch
         <source>Already posted on %1</source>
         <translation>Già postato il %1</translation>
     </message>
+    <message>
+        <source>⏸ Paused: %1</source>
+        <translation>⏸ In pausa: %1</translation>
+    </message>
+    <message>
+        <source>%1 new file(s) waiting</source>
+        <translation>%1 nuovo/i file in attesa</translation>
+    </message>
+    <message>
+        <source>Resume watching</source>
+        <translation>Riprendi il monitoraggio</translation>
+    </message>
+    <message>
+        <source>Post the files that are waiting and go on watching</source>
+        <translation>Posta i file in attesa e continua a monitorare</translation>
+    </message>
+    <message>
+        <source>● Watching: %1</source>
+        <translation>● Monitoraggio: %1</translation>
+    </message>
+    <message>
+        <source>Pause watching</source>
+        <translation>Metti in pausa</translation>
+    </message>
+    <message>
+        <source>The new files wait until you resume. The posts already started go on.</source>
+        <translation>I nuovi file aspettano finché non riprendi. I post già avviati continuano.</translation>
+    </message>
+    <message>
+        <source>%1 post(s) today</source>
+        <translation>%1 post oggi</translation>
+    </message>
+    <message>
+        <source>%1 with errors</source>
+        <translation>%1 con errori</translation>
+    </message>
+    <message>
+        <source>%1 in progress or waiting</source>
+        <translation>%1 in corso o in attesa</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3389,6 +3429,18 @@ Usa --par2_pct oppure imposta PAR2_PCT o PAR2_ARGS nel file di configurazione.</
     <message>
         <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
         <translation>## (un nome come Posted viene creato accanto a ogni file/cartella, un percorso completo viene usato così com&apos;è; senza, nulla viene spostato)</translation>
+    </message>
+    <message>
+        <source>Watching is paused: %1 waits until it is resumed</source>
+        <translation>Monitoraggio in pausa: %1 aspetta la ripresa</translation>
+    </message>
+    <message>
+        <source>Watching paused: the new files wait, the posts already started go on</source>
+        <translation>Monitoraggio in pausa: i nuovi file aspettano, i post già avviati continuano</translation>
+    </message>
+    <message>
+        <source>Watching resumed</source>
+        <translation>Monitoraggio ripreso</translation>
     </message>
 </context>
 <context>

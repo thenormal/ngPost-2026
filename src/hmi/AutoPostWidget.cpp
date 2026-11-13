@@ -32,6 +32,7 @@
 #include <QKeyEvent>
 #include <QMimeData>
 #include <QTimer>
+#include <QDir>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QStorageInfo>
@@ -332,6 +333,8 @@ void AutoPostWidget::onMonitoringClicked()
         }
         _ui->filesList->clear2();
         _ngPost->_stopMonitoring();
+        _ngPost->clearPausedMonitoring();
+        _watchedFolders.clear();
         _ui->monitorButton->setText(tr("Start watching"));
     }
     else
@@ -358,6 +361,7 @@ void AutoPostWidget::onMonitoringClicked()
         udatePostingParams();
         _ui->filesList->addItem(new QListWidgetItem(QIcon(":/icons/monitor.png"), tr("Watching %1").arg(folderPath)));
         _ngPost->_startMonitoring(folderPath);
+        _watchedFolders = QStringList(folderPath);
         _ui->monitorButton->setText(tr("Stop watching"));
     }
 
@@ -393,6 +397,55 @@ void AutoPostWidget::onMonitoringClicked()
         _ui->filesList->setSelectionMode(QAbstractItemView::NoSelection);
     else
         _ui->filesList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+    _watchBar->setVisible(_isMonitoring);
+    if (_isMonitoring)
+        _watchTimer->start();
+    else
+        _watchTimer->stop();
+    _updateWatchBar();
+}
+
+void AutoPostWidget::_onWatchPause()
+{
+    if (_ngPost->isMonitoringPaused())
+        _ngPost->resumeMonitoring();
+    else
+        _ngPost->pauseMonitoring();
+    _updateWatchBar();
+}
+
+void AutoPostWidget::_updateWatchBar()
+{
+    if (!_isMonitoring)
+        return;
+    QString folders = _watchedFolders.isEmpty() ? QString() : QDir::toNativeSeparators(_watchedFolders.first());
+    if (_watchedFolders.size() > 1)
+        folders += QString(" (+%1)").arg(_watchedFolders.size() - 1);
+
+    int ok = 0, errors = 0;
+    _ngPost->watchStatsToday(ok, errors);
+    QString text;
+    if (_ngPost->isMonitoringPaused())
+    {
+        text = tr("⏸ Paused: %1").arg(folders);
+        text += QString(" · ") + tr("%1 new file(s) waiting").arg(_ngPost->nbPausedFiles());
+        _watchPauseButton->setText(tr("Resume watching"));
+        _watchPauseButton->setToolTip(tr("Post the files that are waiting and go on watching"));
+    }
+    else
+    {
+        text = tr("● Watching: %1").arg(folders);
+        _watchPauseButton->setText(tr("Pause watching"));
+        _watchPauseButton->setToolTip(tr("The new files wait until you resume. The posts already started go on."));
+    }
+    text += QString(" · ") + tr("%1 post(s) today").arg(ok + errors);
+    if (errors > 0)
+        text += QString(" · ") + tr("%1 with errors").arg(errors);
+    const int running = _ngPost->nbMonitoringJobs();
+    if (running > 0)
+        text += QString(" · ") + tr("%1 in progress or waiting").arg(running);
+    _watchLabel->setText(text);
 }
 
 void AutoPostWidget::newFileToProcess(const QFileInfo &fileInfo)
@@ -442,6 +495,8 @@ void AutoPostWidget::onAddMonitoringFolder()
         {
             _ui->filesList->addItem(new QListWidgetItem(QIcon(":/icons/monitor.png"), tr("Monitoring %1").arg(newDir.absoluteFilePath())));
             _ngPost->addMonitoringFolder(newDir.absoluteFilePath());
+            _watchedFolders << QDir::toNativeSeparators(newDir.absoluteFilePath());
+            _updateWatchBar();
         }
     }
 }
@@ -781,6 +836,24 @@ void AutoPostWidget::_buildLayout()
         connect(_modeButtons[i], &QAbstractButton::clicked, this, [this, m](){ _setMode(m); });
     }
     root->addLayout(modes);
+
+    // state of the watching: only visible while a folder is watched
+    _watchBar = new QFrame(page);
+    _watchBar->setObjectName("watchBar");
+    QHBoxLayout *wb = new QHBoxLayout(_watchBar);
+    wb->setContentsMargins(12, 6, 12, 6);
+    _watchLabel = new QLabel(_watchBar);
+    _watchLabel->setWordWrap(true);
+    _watchPauseButton = new QPushButton(_watchBar);
+    _watchPauseButton->setCursor(Qt::PointingHandCursor);
+    wb->addWidget(_watchLabel, 1);
+    wb->addWidget(_watchPauseButton);
+    _watchBar->hide();
+    root->addWidget(_watchBar);
+    _watchTimer = new QTimer(this);
+    _watchTimer->setInterval(1000);
+    connect(_watchTimer, &QTimer::timeout, this, &AutoPostWidget::_updateWatchBar);
+    connect(_watchPauseButton, &QAbstractButton::clicked, this, &AutoPostWidget::_onWatchPause);
 
     // list: title + list actions
     QHBoxLayout *head = new QHBoxLayout();

@@ -14,6 +14,8 @@ Choose a folder and press **Scan**: what is inside is listed. Folders need **com
 
 Choose the folder and press **Start watching**: each new file or folder is posted when it arrives. Press **Stop watching** to stop. Stopping with posts still waiting asks for confirmation.
 
+While watching, a bar under the three choices always shows the watched folder, how many posts finished today (and how many had errors) and how many are in progress or waiting. **Pause watching** makes the new files wait: they are posted when you press **Resume watching**; the posts already started go on. Stopping the watching forgets the files that were waiting.
+
 ## The list
 
 Each item has a box and its size. Uncheck an item to leave it out; only the checked items are posted. To remove items from the list, select them and press DEL. The line under the list shows how many items are selected, their size, the size to upload and, after a first post, the upload time.

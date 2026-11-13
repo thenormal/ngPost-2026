@@ -26,6 +26,7 @@
 #include <QVector>
 #include <QQueue>
 #include <QFileInfo>
+#include <QDate>
 #include <QTextStream>
 #include <QSettings>
 #include <QTime>
@@ -227,6 +228,10 @@ private:
 
     FoldersMonitorForNewFiles *_folderMonitor;
     QThread                   *_monitorThread;
+    bool                       _monitorPaused = false;
+    QList<QFileInfo>           _pausedFiles;       //!< new files received while the watching is paused
+    QDate                      _watchDay;
+    int                        _watchOk = 0, _watchErrors = 0;
     bool                       _delAuto;
     QString                    _movePosted;   //!< folder "Posted": the posted files are moved there instead of deleted (key move_posted, --move_posted)
 
@@ -425,6 +430,15 @@ public:
     void closeAllPostingJobs();
 
     bool hasMonitoringPostingJobs() const;
+
+    // state of the folder watching (shown by the Auto Posting page)
+    void pauseMonitoring();      //!< the new files wait, the posts already started go on
+    void resumeMonitoring();     //!< the files that waited are posted
+    void clearPausedMonitoring();//!< watching stopped: nothing waits anymore
+    bool isMonitoringPaused() const { return _monitorPaused; }
+    int  nbPausedFiles() const { return _pausedFiles.size(); }
+    int  nbMonitoringJobs() const; //!< posts of the watching in progress or waiting
+    void watchStatsToday(int &ok, int &withErrors); //!< posts of the watching finished today
     void closeAllMonitoringJobs();
 
 

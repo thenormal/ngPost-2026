@@ -22,6 +22,7 @@
 
 #include <QWidget>
 #include <QFileInfoList>
+#include <QStringList>
 #include "utils/PostProfile.h"
 #include "utils/PostChecker.h"
 class NgPost;
@@ -75,12 +76,19 @@ private:
     QPushButton        *_postedButton;
     QWidget            *_afterCard;
     QTimer             *_sizeTimer;
+    QFrame             *_watchBar = nullptr;     //!< state of the watching, visible while watching
+    QLabel             *_watchLabel = nullptr;
+    QPushButton        *_watchPauseButton = nullptr;
+    QTimer             *_watchTimer = nullptr;
+    QStringList         _watchedFolders;
     static constexpr int sSizeRole = Qt::UserRole + 2; //!< size in bytes of a list item (-1: not computed yet)
     void _setMode(Mode mode);
     void _applyMode();
     void _decorateItems();           //!< check box + size on the new items of the list
     void _computeNextSize();
     void _updateSummary();
+    void _updateWatchBar();
+    void _onWatchPause();
     QFileInfoList _checkedFiles(bool *hasFolder = nullptr) const;
     bool _checkBeforeStart(const QFileInfoList &files, bool hasFolder);
     bool _applyFix(PostChecker::Code code);

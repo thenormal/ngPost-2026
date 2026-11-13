@@ -811,6 +811,46 @@ Añade archivos o carpetas, o escanea una carpeta, y deja marcado lo que quieras
         <source>Already posted on %1</source>
         <translation>Ya publicado el %1</translation>
     </message>
+    <message>
+        <source>⏸ Paused: %1</source>
+        <translation>⏸ En pausa: %1</translation>
+    </message>
+    <message>
+        <source>%1 new file(s) waiting</source>
+        <translation>%1 archivo(s) nuevo(s) en espera</translation>
+    </message>
+    <message>
+        <source>Resume watching</source>
+        <translation>Reanudar la vigilancia</translation>
+    </message>
+    <message>
+        <source>Post the files that are waiting and go on watching</source>
+        <translation>Publica los archivos en espera y sigue vigilando</translation>
+    </message>
+    <message>
+        <source>● Watching: %1</source>
+        <translation>● Vigilando: %1</translation>
+    </message>
+    <message>
+        <source>Pause watching</source>
+        <translation>Pausar la vigilancia</translation>
+    </message>
+    <message>
+        <source>The new files wait until you resume. The posts already started go on.</source>
+        <translation>Los archivos nuevos esperan hasta que reanudes. Las publicaciones ya iniciadas continúan.</translation>
+    </message>
+    <message>
+        <source>%1 post(s) today</source>
+        <translation>%1 publicación(es) hoy</translation>
+    </message>
+    <message>
+        <source>%1 with errors</source>
+        <translation>%1 con errores</translation>
+    </message>
+    <message>
+        <source>%1 in progress or waiting</source>
+        <translation>%1 en curso o en espera</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3388,6 +3428,18 @@ O bien usa --par2_pct o establece PAR2_PCT o PAR2_ARGS en el fichero de configur
     <message>
         <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
         <translation>## (un nombre como Posted se crea junto a cada archivo/carpeta, una ruta completa se usa tal cual; sin él no se mueve nada)</translation>
+    </message>
+    <message>
+        <source>Watching is paused: %1 waits until it is resumed</source>
+        <translation>Vigilancia en pausa: %1 espera a que se reanude</translation>
+    </message>
+    <message>
+        <source>Watching paused: the new files wait, the posts already started go on</source>
+        <translation>Vigilancia en pausa: los archivos nuevos esperan, las publicaciones iniciadas continúan</translation>
+    </message>
+    <message>
+        <source>Watching resumed</source>
+        <translation>Vigilancia reanudada</translation>
     </message>
 </context>
 <context>
