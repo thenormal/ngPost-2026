@@ -694,18 +694,6 @@ Será irreversible...</translation>
         <translation>Arrastra aquí los archivos o carpetas a publicar, o elígelos: cada archivo o carpeta es una publicación.</translation>
     </message>
     <message>
-        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
-        <translation>Elige la carpeta a escanear: su contenido aparece aquí y después desmarcas lo que no quieras publicar.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
-        <translation>Elige la carpeta a vigilar y pulsa «Empezar a vigilar»: cada archivo o carpeta nuevo que llegue se publica.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch</source>
-        <translation>Elegir la carpeta a vigilar</translation>
-    </message>
-    <message>
         <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
         <translation>Desmarca lo que no quieras publicar. Para quitar elementos de la lista, selecciónalos y pulsa SUPR.</translation>
     </message>
@@ -734,6 +722,22 @@ Será irreversible...</translation>
 Add files or folders, or scan a folder, and keep checked what you want to post.</source>
         <translation>¡No hay nada que publicar!
 Añade archivos o carpetas, o escanea una carpeta, y deja marcado lo que quieras publicar.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>Elige abajo la carpeta a escanear y pulsa «Scan»: su contenido aparece aquí y después desmarcas lo que no quieras publicar.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>Elige abajo la carpeta a vigilar y pulsa «Empezar a vigilar»: cada archivo o carpeta nuevo que llegue se publica.</translation>
+    </message>
+    <message>
+        <source>Add another folder</source>
+        <translation>Añadir otra carpeta</translation>
+    </message>
+    <message>
+        <source>Watch one more folder while the watching is running</source>
+        <translation>Vigilar una carpeta más mientras la vigilancia está activa</translation>
     </message>
 </context>
 <context>

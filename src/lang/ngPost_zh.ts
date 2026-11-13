@@ -694,18 +694,6 @@ The posts already started and the files on disk are not touched.</source>
         <translation>将要发布的文件或文件夹拖到这里，或选择它们：每个文件或文件夹都会成为一个发布。</translation>
     </message>
     <message>
-        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
-        <translation>选择要扫描的文件夹：其内容会列在这里，然后取消勾选不想发布的项目。</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
-        <translation>选择要监视的文件夹，然后点击“开始监视”：每个新文件或文件夹都会被发布。</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch</source>
-        <translation>选择要监视的文件夹</translation>
-    </message>
-    <message>
         <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
         <translation>取消勾选不想发布的项目。要从列表中移除项目，请选中后按 DEL。</translation>
     </message>
@@ -734,6 +722,22 @@ The posts already started and the files on disk are not touched.</source>
 Add files or folders, or scan a folder, and keep checked what you want to post.</source>
         <translation>没有可发布的内容！
 请添加文件或文件夹，或扫描一个文件夹，并保持勾选想发布的项目。</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>在下方选择要扫描的文件夹并点击“Scan”：其内容会列在这里，然后取消勾选不想发布的项目。</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>在下方选择要监视的文件夹，然后点击“开始监视”：每个新文件或文件夹都会被发布。</translation>
+    </message>
+    <message>
+        <source>Add another folder</source>
+        <translation>添加另一个文件夹</translation>
+    </message>
+    <message>
+        <source>Watch one more folder while the watching is running</source>
+        <translation>在监视运行期间再监视一个文件夹</translation>
     </message>
 </context>
 <context>

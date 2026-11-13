@@ -695,18 +695,6 @@ I post già avviati e i file sul disco non vengono toccati.</translation>
         <translation>Trascina qui i file o le cartelle da postare, oppure sceglili: ogni file o cartella diventa un post.</translation>
     </message>
     <message>
-        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
-        <translation>Scegli la cartella da scansionare: il contenuto appare qui, poi deseleziona ciò che non vuoi postare.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
-        <translation>Scegli la cartella da controllare e premi «Avvia il controllo»: ogni nuovo file o cartella che arriva viene postato.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch</source>
-        <translation>Scegli la cartella da controllare</translation>
-    </message>
-    <message>
         <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
         <translation>Deseleziona ciò che non vuoi postare. Per togliere elementi dalla lista, selezionali e premi CANC.</translation>
     </message>
@@ -735,6 +723,22 @@ I post già avviati e i file sul disco non vengono toccati.</translation>
 Add files or folders, or scan a folder, and keep checked what you want to post.</source>
         <translation>Non c&apos;è niente da postare!
 Aggiungi file o cartelle, o scansiona una cartella, e lascia selezionato ciò che vuoi postare.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>Scegli qui sotto la cartella da scansionare e premi «Scan»: il contenuto appare qui, poi deseleziona ciò che non vuoi postare.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>Scegli qui sotto la cartella da controllare e premi «Avvia il controllo»: ogni nuovo file o cartella che arriva viene postato.</translation>
+    </message>
+    <message>
+        <source>Add another folder</source>
+        <translation>Aggiungi un&apos;altra cartella</translation>
+    </message>
+    <message>
+        <source>Watch one more folder while the watching is running</source>
+        <translation>Controlla una cartella in più mentre il controllo è attivo</translation>
     </message>
 </context>
 <context>

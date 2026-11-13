@@ -687,18 +687,6 @@ It will be irreversible...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -725,6 +713,22 @@ It will be irreversible...</source>
     <message>
         <source>There is nothing to post!
 Add files or folders, or scan a folder, and keep checked what you want to post.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add another folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watch one more folder while the watching is running</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

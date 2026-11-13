@@ -55,18 +55,7 @@ AutoPostWidget::AutoPostWidget(NgPost *ngPost, MainWindow *hmi) :
 {
     _ui->setupUi(this);
     _buildLayout();
-    connect(_ui->filesList, &SignedListWidget::emptyAction1, this, [this](){
-        if (_mode == Mode::Choose)
-            onSelectFilesClicked();
-        else
-        {
-            // choose the folder, then scan it directly (not when watching)
-            QString before = _ui->autoDirEdit->text();
-            onSelectAutoDirClicked();
-            if (_mode == Mode::Scan && !_ui->autoDirEdit->text().isEmpty() && _ui->autoDirEdit->text() != before)
-                onScanAutoDirClicked();
-        }
-    });
+    connect(_ui->filesList, &SignedListWidget::emptyAction1, this, &AutoPostWidget::onSelectFilesClicked);
     connect(_ui->filesList, &SignedListWidget::emptyAction2, this, [this](){
         QString dir = QFileDialog::getExistingDirectory(this, tr("Select a Folder"), _ngPost->_inputDir, QFileDialog::ShowDirsOnly);
         if (!dir.isEmpty())
@@ -753,8 +742,11 @@ void AutoPostWidget::_buildLayout()
 
     // monitoring
     QFrame *monitor = newAutoCard(_monitorTitle, g);
-    g->addLayout(autoRow({_ui->monitorButton, _ui->addMonitoringFolderButton}, true), 0, 0);
-    g->addWidget(_ui->delFilesCB, 1, 0);
+    g->addLayout(autoRow({_ui->monitorButton}, true), 0, 0);
+    g->addLayout(autoRow({_ui->addMonitoringFolderButton}, true), 1, 0);
+    g->addWidget(_ui->delFilesCB, 2, 0);
+    _ui->addMonitoringFolderButton->setMinimumSize(0, 0);
+    _ui->addMonitoringFolderButton->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
     cards->addWidget(monitor, 2);
     _monitorCard = monitor;
 
@@ -859,6 +851,8 @@ void AutoPostWidget::_retranslateLayout()
     _ui->scanAutoDirButton->setText(tr("Scan"));
     _ui->dirAllowedCB->setText(tr("post the folders"));
     _ui->delFilesCB->setText(tr("delete the files once posted"));
+    _ui->addMonitoringFolderButton->setText(tr("Add another folder"));
+    _ui->addMonitoringFolderButton->setToolTip(tr("Watch one more folder while the watching is running"));
     _ui->monitorButton->setText(_isMonitoring ? tr("Stop watching") : tr("Start watching"));
     _ui->compressCB->setText(tr("Compress"));
     _ui->keepRarCB->setText(tr("keep the archives"));
@@ -939,11 +933,11 @@ void AutoPostWidget::_applyMode()
         _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose them: each file or folder becomes a post."),
                                       tr("Select Files"), tr("Select a Folder"));
     else if (scan)
-        _ui->filesList->setEmptyState(tr("Choose the folder to scan: what is inside is listed here, then uncheck what you don't want to post."),
-                                      tr("Choose a folder to scan"), QString());
+        _ui->filesList->setEmptyState(tr("Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don't want to post."),
+                                      QString(), QString());
     else
-        _ui->filesList->setEmptyState(tr("Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted."),
-                                      tr("Choose the folder to watch"), QString());
+        _ui->filesList->setEmptyState(tr("Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted."),
+                                      QString(), QString());
     _updateSummary();
 }
 

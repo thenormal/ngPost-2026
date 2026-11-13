@@ -695,18 +695,6 @@ Es wird nicht mehr rückgängig zu machen sein...</translation>
         <translation>Ziehen Sie die zu postenden Dateien oder Ordner hierher oder wählen Sie sie aus: Jede Datei oder jeder Ordner wird ein Post.</translation>
     </message>
     <message>
-        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
-        <translation>Wählen Sie den zu scannenden Ordner: Der Inhalt wird hier aufgelistet, dann wählen Sie Unerwünschtes ab.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
-        <translation>Wählen Sie den zu überwachenden Ordner und drücken Sie „Überwachung starten“: Jede neue Datei oder jeder neue Ordner wird gepostet.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch</source>
-        <translation>Zu überwachenden Ordner wählen</translation>
-    </message>
-    <message>
         <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
         <translation>Wählen Sie ab, was nicht gepostet werden soll. Zum Entfernen aus der Liste markieren und ENTF drücken.</translation>
     </message>
@@ -735,6 +723,22 @@ Es wird nicht mehr rückgängig zu machen sein...</translation>
 Add files or folders, or scan a folder, and keep checked what you want to post.</source>
         <translation>Es gibt nichts zu posten!
 Fügen Sie Dateien oder Ordner hinzu oder scannen Sie einen Ordner und lassen Sie angehakt, was gepostet werden soll.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>Wählen Sie unten den zu scannenden Ordner und drücken Sie „Scan“: Der Inhalt wird hier aufgelistet, dann wählen Sie Unerwünschtes ab.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>Wählen Sie unten den zu überwachenden Ordner und drücken Sie „Überwachung starten“: Jede neue Datei oder jeder neue Ordner wird gepostet.</translation>
+    </message>
+    <message>
+        <source>Add another folder</source>
+        <translation>Weiteren Ordner hinzufügen</translation>
+    </message>
+    <message>
+        <source>Watch one more folder while the watching is running</source>
+        <translation>Einen weiteren Ordner überwachen, während die Überwachung läuft</translation>
     </message>
 </context>
 <context>

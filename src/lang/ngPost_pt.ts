@@ -694,18 +694,6 @@ As publicações já iniciadas e os ficheiros no disco não são alterados.</tra
         <translation>Arraste para aqui os arquivos ou pastas a publicar, ou escolha-os: cada arquivo ou pasta vira uma publicação.</translation>
     </message>
     <message>
-        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
-        <translation>Escolha a pasta a verificar: o conteúdo aparece aqui e depois desmarque o que não quiser publicar.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
-        <translation>Escolha a pasta a vigiar e clique em «Começar a vigiar»: cada novo arquivo ou pasta que chegar é publicado.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch</source>
-        <translation>Escolher a pasta a vigiar</translation>
-    </message>
-    <message>
         <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
         <translation>Desmarque o que não quiser publicar. Para remover itens da lista, selecione-os e pressione DEL.</translation>
     </message>
@@ -734,6 +722,22 @@ As publicações já iniciadas e os ficheiros no disco não são alterados.</tra
 Add files or folders, or scan a folder, and keep checked what you want to post.</source>
         <translation>Não há nada para publicar!
 Adicione arquivos ou pastas, ou verifique uma pasta, e deixe marcado o que quiser publicar.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>Escolha abaixo a pasta a verificar e clique em «Scan»: o conteúdo aparece aqui e depois desmarque o que não quiser publicar.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>Escolha abaixo a pasta a vigiar e clique em «Começar a vigiar»: cada novo arquivo ou pasta que chegar é publicado.</translation>
+    </message>
+    <message>
+        <source>Add another folder</source>
+        <translation>Adicionar outra pasta</translation>
+    </message>
+    <message>
+        <source>Watch one more folder while the watching is running</source>
+        <translation>Vigiar mais uma pasta enquanto a vigilância está ativa</translation>
     </message>
 </context>
 <context>

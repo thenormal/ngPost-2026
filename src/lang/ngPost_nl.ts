@@ -697,18 +697,6 @@ Al gestarte posts en de bestanden op schijf blijven ongemoeid.</translation>
         <translation>Sleep de te posten bestanden of mappen hierheen of kies ze: elk bestand of elke map wordt een post.</translation>
     </message>
     <message>
-        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
-        <translation>Kies de te scannen map: de inhoud verschijnt hier, vink daarna uit wat je niet wilt posten.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
-        <translation>Kies de te bewaken map en druk op ‘Bewaking starten’: elk nieuw bestand of elke nieuwe map wordt gepost.</translation>
-    </message>
-    <message>
-        <source>Choose the folder to watch</source>
-        <translation>Te bewaken map kiezen</translation>
-    </message>
-    <message>
         <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
         <translation>Vink uit wat je niet wilt posten. Om items uit de lijst te halen, selecteer ze en druk op DEL.</translation>
     </message>
@@ -737,6 +725,22 @@ Al gestarte posts en de bestanden op schijf blijven ongemoeid.</translation>
 Add files or folders, or scan a folder, and keep checked what you want to post.</source>
         <translation>Er is niets te posten!
 Voeg bestanden of mappen toe, of scan een map, en laat aangevinkt wat je wilt posten.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>Kies hieronder de te scannen map en druk op ‘Scan’: de inhoud verschijnt hier, vink daarna uit wat je niet wilt posten.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>Kies hieronder de te bewaken map en druk op ‘Bewaking starten’: elk nieuw bestand of elke nieuwe map wordt gepost.</translation>
+    </message>
+    <message>
+        <source>Add another folder</source>
+        <translation>Nog een map toevoegen</translation>
+    </message>
+    <message>
+        <source>Watch one more folder while the watching is running</source>
+        <translation>Een extra map bewaken terwijl de bewaking loopt</translation>
     </message>
 </context>
 <context>
