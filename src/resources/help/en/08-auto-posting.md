@@ -18,6 +18,10 @@ Choose the folder and press **Start watching**: each new file or folder is poste
 
 Each item has a box and its size. Uncheck an item to leave it out; only the checked items are posted. To remove items from the list, select them and press DEL. The line under the list shows how many items are selected, their size, the size to upload and, after a first post, the upload time.
 
+## Items already posted
+
+If some checked items are already in the history (same name and size), one window lists them with the date of the previous post. Check **Post again** for the ones you want to post once more; the others are not posted and stay in the list, unchecked and grey. If an NZB file with the same name already exists, the new one is named `name_1.nzb` and so on. When watching a folder, items already in the history are skipped with a line in the log. You can turn the warning off in **Settings** (History).
+
 ## Before it starts
 
 When you press **Post the list** or **Start watching**, the program checks the settings once for the whole group (a server and a newsgroup, compression for folders, the rar / 7z and par2 programs, the folder of the NZB, the temporary folder). Problems are shown in plain words with a button that fixes them; warnings can be ignored with **Post anyway**. It is the same window as in [Quick Post](04-quick-post.md).

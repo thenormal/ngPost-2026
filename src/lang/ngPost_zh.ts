@@ -759,6 +759,58 @@ Add files or folders, or scan a folder, and keep checked what you want to post.<
         <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
         <translation>像 Posted 这样的名称会在每个文件或文件夹旁边创建该文件夹；完整路径则按原样使用。只有全部无错误发布后才会移动文件。</translation>
     </message>
+    <message>
+        <source>Already posted</source>
+        <translation>已发布过</translation>
+    </message>
+    <message>
+        <source>This item is already in the history. It is not posted again unless you check it.</source>
+        <translation>此项目已在历史记录中。除非勾选，否则不会再次发布。</translation>
+    </message>
+    <message>
+        <source>These items are already in the history. They are not posted again unless you check them.</source>
+        <translation>这些项目已在历史记录中。除非勾选，否则不会再次发布。</translation>
+    </message>
+    <message>
+        <source>Post again</source>
+        <translation>再次发布</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>名称</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>大小</translation>
+    </message>
+    <message>
+        <source>Posted on</source>
+        <translation>发布时间</translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation>全选</translation>
+    </message>
+    <message>
+        <source>Select none</source>
+        <translation>全不选</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>Post</source>
+        <translation>发布</translation>
+    </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): not posted again.</source>
+        <translation>%1 已在历史记录中（发布于 %2）：不再重复发布。</translation>
+    </message>
+    <message>
+        <source>Already posted on %1</source>
+        <translation>已于 %1 发布</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

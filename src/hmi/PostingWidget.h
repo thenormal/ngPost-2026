@@ -72,6 +72,7 @@ private:
     void _buildLayout();
     void _retranslateLayout();
     void _showAdvanced(bool show);
+    bool    _fromAuto = false;
     bool    _afterAct = false;
     QString _afterMoveTo;
     bool _checkBeforePosting(const QFileInfoList &files, bool hasFolder); //!< checks (and fixes) before a post started with the button
@@ -91,6 +92,8 @@ public:
     void init();
     void genNameAndPassword(bool genName, bool genPass, bool doPar2, bool useRarMax);
     //! what to do with the original files once posted (Auto Posting): nothing, delete them, or move them to \a moveTo
+    //! the tab was created by Auto Posting: duplicates were already asked in one window, an existing nzb gets a number
+    void setFromAutoPosting() { _fromAuto = true; }
     void setAfterPost(bool act, const QString &moveTo) { _afterAct = act; _afterMoveTo = moveTo; }
     inline uint jobNumber() const;
 

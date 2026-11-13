@@ -40,6 +40,7 @@
 #include <QStyledItemDelegate>
 #include <QPainter>
 #include "PostCheckDialog.h"
+#include "DuplicatesDialog.h"
 #include "utils/NfoWriter.h"
 #include "utils/MediaInfoReader.h"
 #include "nntp/NntpServerParams.h"
@@ -173,6 +174,55 @@ void AutoPostWidget::onGenQuickPosts()
     _hmi->updateParams();
     udatePostingParams();
 
+    // items already in the history: one window for all of them (nothing is posted again unless it is checked)
+    if (_ngPost->_checkDuplicates)
+    {
+        QList<DuplicatesDialog::Item> dups;
+        for (const QFileInfo &file : files)
+        {
+            _ngPost->setNzbName(file);
+            QString posted = _ngPost->duplicateInPost(QString("%1.nzb").arg(_ngPost->_nzbName), {file});
+            if (!posted.isEmpty())
+                dups.append({file.filePath(), file.fileName(), NgPost::recursiveSize(file), posted});
+        }
+        if (!dups.isEmpty())
+        {
+            QSet<QString> again;
+            if (!DuplicatesDialog::run(this, dups, again))
+                return;
+            QFileInfoList kept;
+            for (const QFileInfo &file : files)
+                kept << file;
+            files.clear();
+            for (const QFileInfo &file : kept)
+            {
+                const DuplicatesDialog::Item *dup = nullptr;
+                for (const DuplicatesDialog::Item &d : dups)
+                    if (d.path == file.filePath())
+                        dup = &d;
+                if (!dup || again.contains(file.filePath()))
+                {
+                    files << file;
+                    continue;
+                }
+                _ngPost->_log(tr("%1 is already in the history (posted on %2): not posted again.").arg(file.fileName(), dup->postedOn));
+                for (int i = 0; i < _ui->filesList->count(); ++i)
+                {
+                    QListWidgetItem *item = _ui->filesList->item(i);
+                    if (item->text() == file.filePath())
+                    {
+                        item->setCheckState(Qt::Unchecked);
+                        item->setForeground(QColor(Qt::gray));
+                        item->setToolTip(tr("Already posted on %1").arg(dup->postedOn));
+                        break;
+                    }
+                }
+            }
+            if (files.isEmpty())
+                return;
+        }
+    }
+
     const QString afterMoveTo = movePostedTo();
     const bool afterAct = deleteFilesOncePosted() || !afterMoveTo.isEmpty();
     bool startPost = _ui->startJobsCB->isChecked(),
@@ -181,6 +231,7 @@ void AutoPostWidget::onGenQuickPosts()
     {
         PostingWidget *quickPostWidget = _hmi->addNewQuickTab(0, {file});
         quickPostWidget->init();
+        quickPostWidget->setFromAutoPosting();
         quickPostWidget->setAfterPost(afterAct, afterMoveTo);
         quickPostWidget->genNameAndPassword(_ngPost->_genName, _ngPost->_genPass, _ngPost->_doPar2, useRarMax);
 

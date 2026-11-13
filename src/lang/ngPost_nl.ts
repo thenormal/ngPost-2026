@@ -762,6 +762,58 @@ Voeg bestanden of mappen toe, of scan een map, en laat aangevinkt wat je wilt po
         <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
         <translation>Een naam als Posted maakt deze map naast elk bestand of elke map aan. Een volledig pad wordt zoals het is gebruikt. De bestanden worden alleen verplaatst als alles zonder fouten is gepost.</translation>
     </message>
+    <message>
+        <source>Already posted</source>
+        <translation>Al gepost</translation>
+    </message>
+    <message>
+        <source>This item is already in the history. It is not posted again unless you check it.</source>
+        <translation>Dit item staat al in de geschiedenis. Het wordt niet opnieuw gepost tenzij je het aanvinkt.</translation>
+    </message>
+    <message>
+        <source>These items are already in the history. They are not posted again unless you check them.</source>
+        <translation>Deze items staan al in de geschiedenis. Ze worden niet opnieuw gepost tenzij je ze aanvinkt.</translation>
+    </message>
+    <message>
+        <source>Post again</source>
+        <translation>Opnieuw posten</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Naam</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Grootte</translation>
+    </message>
+    <message>
+        <source>Posted on</source>
+        <translation>Gepost op</translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation>Alles selecteren</translation>
+    </message>
+    <message>
+        <source>Select none</source>
+        <translation>Niets selecteren</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuleren</translation>
+    </message>
+    <message>
+        <source>Post</source>
+        <translation>Posten</translation>
+    </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): not posted again.</source>
+        <translation>%1 staat al in de geschiedenis (gepost op %2): niet opnieuw gepost.</translation>
+    </message>
+    <message>
+        <source>Already posted on %1</source>
+        <translation>Al gepost op %1</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

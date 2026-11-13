@@ -760,6 +760,58 @@ Fügen Sie Dateien oder Ordner hinzu oder scannen Sie einen Ordner und lassen Si
         <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
         <translation>Ein Name wie Posted legt diesen Ordner neben jeder Datei oder jedem Ordner an. Ein vollständiger Pfad wird unverändert verwendet. Die Dateien werden nur verschoben, wenn alles fehlerfrei gepostet wurde.</translation>
     </message>
+    <message>
+        <source>Already posted</source>
+        <translation>Bereits gepostet</translation>
+    </message>
+    <message>
+        <source>This item is already in the history. It is not posted again unless you check it.</source>
+        <translation>Dieses Element ist bereits im Verlauf. Es wird nicht erneut gepostet, außer Sie haken es an.</translation>
+    </message>
+    <message>
+        <source>These items are already in the history. They are not posted again unless you check them.</source>
+        <translation>Diese Elemente sind bereits im Verlauf. Sie werden nicht erneut gepostet, außer Sie haken sie an.</translation>
+    </message>
+    <message>
+        <source>Post again</source>
+        <translation>Erneut posten</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Größe</translation>
+    </message>
+    <message>
+        <source>Posted on</source>
+        <translation>Gepostet am</translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation>Alle auswählen</translation>
+    </message>
+    <message>
+        <source>Select none</source>
+        <translation>Keine auswählen</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <source>Post</source>
+        <translation>Posten</translation>
+    </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): not posted again.</source>
+        <translation>%1 ist bereits im Verlauf (gepostet am %2): nicht erneut gepostet.</translation>
+    </message>
+    <message>
+        <source>Already posted on %1</source>
+        <translation>Bereits gepostet am %1</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

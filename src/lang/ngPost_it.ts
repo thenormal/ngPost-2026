@@ -760,6 +760,58 @@ Aggiungi file o cartelle, o scansiona una cartella, e lascia selezionato ciò ch
         <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
         <translation>Un nome come Posted crea questa cartella accanto a ogni file o cartella. Un percorso completo viene usato così com&apos;è. I file vengono spostati solo quando tutto è stato postato senza errori.</translation>
     </message>
+    <message>
+        <source>Already posted</source>
+        <translation>Già postato</translation>
+    </message>
+    <message>
+        <source>This item is already in the history. It is not posted again unless you check it.</source>
+        <translation>Questo elemento è già nella cronologia. Non viene postato di nuovo a meno che tu non lo selezioni.</translation>
+    </message>
+    <message>
+        <source>These items are already in the history. They are not posted again unless you check them.</source>
+        <translation>Questi elementi sono già nella cronologia. Non vengono postati di nuovo a meno che tu non li selezioni.</translation>
+    </message>
+    <message>
+        <source>Post again</source>
+        <translation>Posta di nuovo</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Nome</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Dimensione</translation>
+    </message>
+    <message>
+        <source>Posted on</source>
+        <translation>Postato il</translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation>Seleziona tutto</translation>
+    </message>
+    <message>
+        <source>Select none</source>
+        <translation>Deseleziona tutto</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annulla</translation>
+    </message>
+    <message>
+        <source>Post</source>
+        <translation>Posta</translation>
+    </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): not posted again.</source>
+        <translation>%1 è già nella cronologia (postato il %2): non viene postato di nuovo.</translation>
+    </message>
+    <message>
+        <source>Already posted on %1</source>
+        <translation>Già postato il %1</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

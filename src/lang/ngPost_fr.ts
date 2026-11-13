@@ -752,6 +752,58 @@ Ajoutez des fichiers ou dossiers, ou analysez un dossier, et laissez coché ce q
         <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
         <translation>Un nom comme Posted crée ce dossier à côté de chaque fichier ou dossier. Un chemin complet est utilisé tel quel. Les fichiers ne sont déplacés que si tout est posté sans erreur.</translation>
     </message>
+    <message>
+        <source>Already posted</source>
+        <translation>Déjà posté</translation>
+    </message>
+    <message>
+        <source>This item is already in the history. It is not posted again unless you check it.</source>
+        <translation>Cet élément est déjà dans l&apos;historique. Il n&apos;est pas reposté sauf si vous le cochez.</translation>
+    </message>
+    <message>
+        <source>These items are already in the history. They are not posted again unless you check them.</source>
+        <translation>Ces éléments sont déjà dans l&apos;historique. Ils ne sont pas repostés sauf si vous les cochez.</translation>
+    </message>
+    <message>
+        <source>Post again</source>
+        <translation>Reposter</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Nom</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Taille</translation>
+    </message>
+    <message>
+        <source>Posted on</source>
+        <translation>Posté le</translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation>Tout sélectionner</translation>
+    </message>
+    <message>
+        <source>Select none</source>
+        <translation>Ne rien sélectionner</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Post</source>
+        <translation>Poster</translation>
+    </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): not posted again.</source>
+        <translation>%1 est déjà dans l&apos;historique (posté le %2) : pas reposté.</translation>
+    </message>
+    <message>
+        <source>Already posted on %1</source>
+        <translation>Déjà posté le %1</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

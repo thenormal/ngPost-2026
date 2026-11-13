@@ -759,6 +759,58 @@ Añade archivos o carpetas, o escanea una carpeta, y deja marcado lo que quieras
         <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
         <translation>Un nombre como Posted crea esa carpeta junto a cada archivo o carpeta. Una ruta completa se usa tal cual. Los archivos solo se mueven cuando todo se ha publicado sin errores.</translation>
     </message>
+    <message>
+        <source>Already posted</source>
+        <translation>Ya publicado</translation>
+    </message>
+    <message>
+        <source>This item is already in the history. It is not posted again unless you check it.</source>
+        <translation>Este elemento ya está en el historial. No se publica de nuevo a menos que lo marques.</translation>
+    </message>
+    <message>
+        <source>These items are already in the history. They are not posted again unless you check them.</source>
+        <translation>Estos elementos ya están en el historial. No se publican de nuevo a menos que los marques.</translation>
+    </message>
+    <message>
+        <source>Post again</source>
+        <translation>Publicar de nuevo</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Nombre</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Tamaño</translation>
+    </message>
+    <message>
+        <source>Posted on</source>
+        <translation>Publicado el</translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation>Seleccionar todo</translation>
+    </message>
+    <message>
+        <source>Select none</source>
+        <translation>No seleccionar nada</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
+        <source>Post</source>
+        <translation>Publicar</translation>
+    </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): not posted again.</source>
+        <translation>%1 ya está en el historial (publicado el %2): no se publica de nuevo.</translation>
+    </message>
+    <message>
+        <source>Already posted on %1</source>
+        <translation>Ya publicado el %1</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
