@@ -21,7 +21,9 @@
 #define AUTOPOSTWIDGET_H
 
 #include <QWidget>
+#include <QFileInfoList>
 #include "utils/PostProfile.h"
+#include "utils/PostChecker.h"
 class NgPost;
 class MainWindow;
 class ProfileBar;
@@ -34,6 +36,8 @@ class AutoPostWidget;
 }
 class QLabel;
 class QPushButton;
+class QFrame;
+class QTimer;
 
 class AutoPostWidget : public QWidget
 {
@@ -55,6 +59,23 @@ private:
     NfoCard            *_nfoCard;
     QPushButton        *_advancedToggle;
     bool                _showAdvanced;
+    // the three ways of posting
+    enum class Mode { Choose, Scan, Watch };
+    Mode                _mode;
+    QPushButton        *_modeButtons[3];
+    QFrame             *_sourceCard;
+    QFrame             *_monitorCard;
+    QLabel             *_summary;
+    QTimer             *_sizeTimer;
+    static constexpr int sSizeRole = Qt::UserRole + 2; //!< size in bytes of a list item (-1: not computed yet)
+    void _setMode(Mode mode);
+    void _applyMode();
+    void _decorateItems();           //!< check box + size on the new items of the list
+    void _computeNextSize();
+    void _updateSummary();
+    QFileInfoList _checkedFiles(bool *hasFolder = nullptr) const;
+    bool _checkBeforeStart(const QFileInfoList &files, bool hasFolder);
+    bool _applyFix(PostChecker::Code code);
     void _buildLayout();
     void _retranslateLayout();
     int                 _currentPostIdx;

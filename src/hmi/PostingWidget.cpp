@@ -26,6 +26,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include "ProfileBar.h"
+#include "PostCheckDialog.h"
 #include "NfoCard.h"
 #include "utils/PostProfile.h"
 #include "utils/NfoWriter.h"
@@ -188,8 +189,7 @@ bool PostingWidget::_applyFix(PostChecker::Code code)
 
 bool PostingWidget::_checkBeforePosting(const QFileInfoList &files, bool hasFolder)
 {
-    for (int round = 0; round < 8; ++round) // a fix can show a new problem (compression on: is the rar program there?)
-    {
+    auto makeInput = [this, &files, hasFolder]() {
         udatePostingParams();
 
         PostChecker::Input in;
@@ -235,63 +235,9 @@ bool PostingWidget::_checkBeforePosting(const QFileInfoList &files, bool hasFold
                     break;
             }
         }
-
-        const QList<PostChecker::Issue> issues = PostChecker::check(in);
-        if (issues.isEmpty())
-            return true;
-
-        bool blocking = false;
-        for (const PostChecker::Issue &issue : issues)
-            blocking = blocking || issue.blocking;
-
-        QDialog dlg(this);
-        dlg.setWindowTitle(tr("Before posting"));
-        dlg.setMinimumWidth(520);
-        QVBoxLayout *v = new QVBoxLayout(&dlg);
-        v->setSpacing(10);
-        QLabel *head = new QLabel(blocking ? tr("This post can't start yet:") : tr("Please check before posting:"), &dlg);
-        head->setStyleSheet("font-weight: bold;");
-        v->addWidget(head);
-        for (int i = 0; i < issues.size(); ++i)
-        {
-            QHBoxLayout *h = new QHBoxLayout();
-            QLabel *text = new QLabel(QString::fromUtf8(issues[i].blocking ? "\u26D4  " : "\u26A0  ") + issues[i].text, &dlg);
-            text->setWordWrap(true);
-            h->addWidget(text, 1);
-            if (!issues[i].fixLabel.isEmpty())
-            {
-                QPushButton *fix = new QPushButton(issues[i].fixLabel, &dlg);
-                connect(fix, &QAbstractButton::clicked, &dlg, [&dlg, i](){ dlg.done(2 + i); });
-                h->addWidget(fix);
-            }
-            v->addLayout(h);
-        }
-        QHBoxLayout *buttons = new QHBoxLayout();
-        buttons->addStretch();
-        QPushButton *cancel = new QPushButton(tr("Cancel"), &dlg);
-        connect(cancel, &QAbstractButton::clicked, &dlg, [&dlg](){ dlg.done(0); });
-        buttons->addWidget(cancel);
-        if (!blocking)
-        {
-            QPushButton *anyway = new QPushButton(tr("Post anyway"), &dlg);
-            connect(anyway, &QAbstractButton::clicked, &dlg, [&dlg](){ dlg.done(1); });
-            buttons->addWidget(anyway);
-        }
-        cancel->setDefault(true);
-        v->addLayout(buttons);
-
-        int res = dlg.exec();
-        if (res == 1)
-            return true;
-        if (res >= 2)
-        {
-            if (!_applyFix(issues[res - 2].code))
-                return false;
-            continue;
-        }
-        return false;
-    }
-    return false;
+        return in;
+    };
+    return PostCheckDialog::run(this, makeInput, [this](PostChecker::Code code){ return _applyFix(code); });
 }
 
 void PostingWidget::_updateSummary(bool recomputeSize)

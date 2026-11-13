@@ -630,6 +630,107 @@ It will be irreversible...</source>
         <source>start the posts directly</source>
         <translation>start the posts directly</translation>
     </message>
+    <message>
+        <source>Post what I choose</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scan a folder once</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watch a folder and post what arrives</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add the files and folders you want, then post them.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List what is in a folder, uncheck what you don&apos;t want, then post.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Every new file or folder that arrives in the folder is posted automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watching</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watching %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Posts of the watched folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Folder to watch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start watching</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop watching</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post the list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Drag here the files or folders to post, or choose them: each file or folder becomes a post.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 of %2 selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>calculating the size...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There is nothing to post!
+Add files or folders, or scan a folder, and keep checked what you want to post.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan below and press Scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch below, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add another folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watch one more folder while the watching is running</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

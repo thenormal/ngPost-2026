@@ -85,6 +85,7 @@ void SignedListWidget::setEmptyState(const QString &hint, const QString &button1
 {
     _emptyHint->setText(hint);
     _emptyButton1->setText(button1);
+    _emptyButton1->setVisible(!button1.isEmpty());
     _emptyButton2->setText(button2);
     _emptyButton2->setVisible(!button2.isEmpty());
     _placeEmptyState();

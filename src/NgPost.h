@@ -217,6 +217,7 @@ private:
     QString     profilesText() const; //!< the lines "profile = ..." of the config file
     bool        _freshInstall = false; //!< there was no config file at the start: the GUI offers the profile "Recommended"
     double      _lastUploadSpeed = 0.; //!< bytes/s of the last upload of this session (0: none yet), for the estimated time
+    QString     _autoMode     = "choose"; //!< last mode of the Auto Posting page: choose, scan or watch (key "auto_mode")
     bool        _nfoMedia     = true;  //!< media information (MediaInfo) in the NFO (key "nfo_media", --no_nfo_media)
     QString     _mediaInfoPath;        //!< path of MediaInfo (key "mediainfo_path", --mediainfo_path), empty = automatic
     QString     _nfoText;              //!< free text added to the NFO (key "nfo_text", --nfo_text file)

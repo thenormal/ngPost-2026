@@ -29,10 +29,10 @@ Goal: the program should be simple for someone who opens it for the first time, 
 
 | | |
 |---|---|
-| Planned | Three clear choices at the top, in plain words: post what I choose, scan a folder once, watch a folder and post what arrives |
-| Planned | A ready profile, "Recommended for automatic posting" (compression, random name and password, par2 10 %), with the single settings under "Advanced options" |
-| Planned | Checks in plain words before starting (for example: folders need compression), fixed with one click instead of an error message |
-| Planned | Preview of what will be posted (sizes), with a box to leave an item out |
+| Done | Three clear choices at the top, in plain words: post what I choose, scan a folder once, watch a folder and post what arrives |
+| Done | A ready profile, "Recommended for automatic posting" (compression, random name and password, par2 10 %), with the single settings under "Advanced options" |
+| Done | Checks in plain words before starting (for example: folders need compression), fixed with one click instead of an error message |
+| Done | Preview of what will be posted (sizes), with a box to leave an item out |
 | Planned | After posting, the user chooses: do nothing (default), **move to a "Posted" folder**, or delete the files |
 | Planned | Items already in the history found by a one-time scan: one window lists them (name, date of the previous post) with a "Post again" box, off by default, instead of skipping them silently. The folder watching keeps skipping them with a line in the log |
 | Planned | State of the folder watching always visible (folder, how many posts today), with a pause button |
@@ -43,7 +43,7 @@ Goal: the program should be simple for someone who opens it for the first time, 
 | | |
 |---|---|
 | Done | **Profiles** of options (menu in Quick Post and Auto Posting: Recommended, Custom and the profiles saved by the user), one **NFO file** card shared by Quick Post and Auto Posting (moved from Settings), par2 starts at 10 % and the password is in the Archive card of Quick Post |
-| Done | **Quick Post**: checks before posting (a window in plain words with a one-click fix: no server or group, folders without compression, rar / 7z or par2 not found, empty password, NZB folder not writable; warnings with "Post anyway": temporary folder, MediaInfo) and a summary line (items, size, size to upload, upload time from the real speed of the last upload). Auto Posting will get them with its redesign |
+| Done | **Quick Post**: checks before posting (a window in plain words with a one-click fix: no server or group, folders without compression, rar / 7z or par2 not found, empty password, NZB folder not writable; warnings with "Post anyway": temporary folder, MediaInfo) and a summary line (items, size, size to upload, upload time from the real speed of the last upload). Auto Posting has the same checks, once for the whole group and also before watching a folder |
 | Done | Fix: the "One release" note of Quick Post must not appear during or after the upload (the list then shows the volumes of the archive) |
 | Planned | Fix: in a Quick Post tab whose post is finished, adding new files should show the "One release" note again (the finished state is not reset when the user adds files) |
 | Planned | Uninstaller: ask whether to also delete the settings and the history kept in `%APPDATA%\ngPost Deluxe` (default: keep them) |
