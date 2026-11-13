@@ -94,6 +94,7 @@ SOURCES += \
         utils/Diagnostics.cpp \
         utils/LatencyStats.cpp \
         utils/MediaInfoReader.cpp \
+        utils/PostProfile.cpp \
         utils/NfoWriter.cpp \
         utils/Notifier.cpp \
         utils/Yenc.cpp
@@ -125,6 +126,7 @@ HEADERS += \
     utils/Diagnostics.h \
     utils/LatencyStats.h \
     utils/MediaInfoReader.h \
+    utils/PostProfile.h \
     utils/NfoWriter.h \
     utils/Notifier.h \
     utils/Macros.h \

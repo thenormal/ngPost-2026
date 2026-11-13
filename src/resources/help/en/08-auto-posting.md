@@ -12,7 +12,7 @@ Choose a folder with **Choose a folder to scan**, then **Generate Posts**: each 
 
 ## Tips
 
-- Use compression, random names, random passwords and par2: this is the usual setup for automated posting.
+- Use compression, random names, random passwords and par2: this is the usual setup for automated posting. The **Recommended** profile (menu **Profile**) sets it with one click; see [Quick Post](04-quick-post.md).
 - You can choose to delete the files once posted (command line only, `--rm_posted`). Do it only when you are sure: the files are removed for good.
 - For a NAS or a server without screen, the command line and the Docker image do the same job.
 

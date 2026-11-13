@@ -1654,6 +1654,10 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>MediaInfo found: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Include media information (MediaInfo)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -4465,6 +4469,53 @@ Click on &quot;Add&quot; to configure your Usenet provider.</translation>
     </message>
     <message>
         <source>Notification (%1) failed: no answer from the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ProfileBar</name>
+    <message>
+        <source>Profile:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save as profile...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save the current options (compression, random name and password, par2, keep the archives) under a name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete the chosen profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recommended (compression, random name and password, par2 10 %)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save as profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name of the profile:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This name is reserved: choose another one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete the profile "%1"?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

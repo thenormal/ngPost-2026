@@ -21,9 +21,12 @@
 #define POSTINGWIDGET_H
 
 #include <QWidget>
+#include "utils/PostProfile.h"
 class NgPost;
 class NntpFile;
 class MainWindow;
+class ProfileBar;
+class NfoCard;
 class PostingJob;
 class QLabel;
 class QPushButton;
@@ -57,6 +60,8 @@ private:
     QLabel            *_archiveTitle;
     QLabel            *_advancedTitle;
     QWidget           *_advancedCard;
+    ProfileBar        *_profileBar;
+    NfoCard           *_nfoCard;
     QPushButton       *_advancedToggle;
     QPushButton       *_repostButton;  //!< post again the Articles that failed (only after a post with errors)
     RepostInfo         _repostInfo;    //!< what is missing after the last post (kept even if the PostingJob is deleted)
@@ -125,6 +130,8 @@ private slots: // for the HMI
 
     void onNzbPassToggled(bool checked);
     void onGenNzbPassword();
+    PostProfile currentProfile() const;            //!< the options of the Archive card (to save them as a profile)
+    void applyProfile(const PostProfile &profile); //!< a profile was chosen
 
 
     void onSelectFilesClicked();

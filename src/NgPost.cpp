@@ -295,7 +295,7 @@ NgPost::NgPost(int &argc, char *argv[]):
     _storage(nullptr), _ramPath(), _ramRatio(sRamRatioMin),
   #endif
     _tmpPath(), _rarPath(), _rarArgs(), _rarSize(0), _rarMax(sDefaultRarMax), _useRarMax(false),
-    _par2Pct(0), _par2Path(), _par2Args(), _par2PathConfig(),
+    _par2Pct(10), _par2Path(), _par2Args(), _par2PathConfig(),
     _doCompress(false), _doPar2(false), _genName(), _genPass(),
     _lengthName(sDefaultLengthName), _lengthPass(sDefaultLengthPass),
     _rarName(), _rarPass(), _rarPassFixed(),
@@ -2510,6 +2510,12 @@ QString NgPost::_parseConfig(const QString &configPath)
                         bool on = (val == "on" || val == "true" || val == "1" || val == "yes");
                         (opt == "gen_nfo" ? _genNfo : opt == "nfo_in_post" ? _nfoInPost : opt == "nfo_media" ? _nfoMedia : _nfoPassword) = on;
                     }
+                    else if (opt == "profile")
+                    {
+                        PostProfile p;
+                        if (PostProfile::fromLine(val, p))
+                            _profiles.append(p);
+                    }
                     else if (opt == "mediainfo_path")
                     {
                         _mediaInfoPath = val.trimmed();
@@ -2830,6 +2836,14 @@ void NgPost::_syntax(char *appName)
           << MB_FLUSH;
 }
 
+QString NgPost::profilesText() const
+{
+    QString text;
+    for (const PostProfile &p : _profiles)
+        text += "profile = " + p.toLine() + "\n";
+    return text;
+}
+
 QString NgPost::defaultConfigPath()
 {
 #if defined(WIN32) || defined(__MINGW64__)
@@ -2864,7 +2878,10 @@ QString NgPost::parseDefaultConfig()
         err = _parseConfig(conf);
     }
     else
+    {
+        _freshInstall = true;
         qCritical() << "The default config file doesn't exist: " << conf;
+    }
 
 #if defined(WIN32) || defined(__MINGW64__)
     // no nzb folder defined and the working folder is not writable (program installed in C:\Program Files)
@@ -3097,6 +3114,9 @@ void NgPost::saveConfig(bool quiet)
                << tr("## the file contains the archive passwords in clear text: keep it private") << "\n"
                << "history = " << (_historyEnabled ? "ON" : "OFF") << "\n"
                << tr("## by default the history is saved in ngPost_history.csv next to this file") << "\n"
+               << "\n"
+               << "## Profiles of options (GUI), one line each: profile = name|compress|random name|random password|par2|par2 %|keep the archives (1 or 0)" << "\n"
+               << profilesText()
                << "\n"
                << tr("## Notifications when the posts end: events (notify_ok, notify_errors), system notification (notify_tray, GUI only),") << "\n"
                << tr("## notify_when = all_done (one message when all the posts are done) or each (after each post)") << "\n"

@@ -36,6 +36,7 @@
 #include <QProcess>
 #include <QNetworkAccessManager>
 #include "utils/Notifier.h"
+#include "utils/PostProfile.h"
 #include <functional>
 #include <QNetworkProxy>
 class QTranslator;
@@ -78,6 +79,8 @@ class NgPost : public QObject, public CmdOrGuiApp
     friend class MainWindow; //!< so it can access all parameters
     friend class PostingWidget;
     friend class AutoPostWidget;
+    friend class ProfileBar;
+    friend class NfoCard;
     friend class PostingJob;
     friend class AboutNgPost;
 
@@ -210,6 +213,9 @@ private:
     bool        _genNfo       = false; //!< write an NFO file next to the nzb (key "gen_nfo", --gen_nfo)
     bool        _nfoInPost    = false; //!< and post it with the files (key "nfo_in_post", --nfo_in_post)
     bool        _nfoPassword  = false; //!< write the password of the archive in it (key "nfo_password", --nfo_password)
+    QList<PostProfile> _profiles;      //!< the profiles saved by the user (key "profile")
+    QString     profilesText() const; //!< the lines "profile = ..." of the config file
+    bool        _freshInstall = false; //!< there was no config file at the start: the GUI offers the profile "Recommended"
     bool        _nfoMedia     = true;  //!< media information (MediaInfo) in the NFO (key "nfo_media", --no_nfo_media)
     QString     _mediaInfoPath;        //!< path of MediaInfo (key "mediainfo_path", --mediainfo_path), empty = automatic
     QString     _nfoText;              //!< free text added to the NFO (key "nfo_text", --nfo_text file)
@@ -473,6 +479,8 @@ signals:
     void log(QString msg, bool newline); //!< in case we signal from another thread
     void logLevel(QString msg, int level); //!< same with a level (LOG_LEVEL)
     void error(QString msg); //!< in case we signal from another thread
+    void profilesChanged();   //!< a profile was saved or deleted
+    void nfoOptionsChanged(); //!< the options of the NFO were changed (the cards of the GUI follow)
 
 public slots:
     void onCheckForNewVersion();

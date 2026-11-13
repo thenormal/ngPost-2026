@@ -1672,6 +1672,10 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>MediaInfo found: %1</source>
         <translation>已找到 MediaInfo：%1</translation>
     </message>
+    <message>
+        <source>Include media information (MediaInfo)</source>
+        <translation>包含媒体信息 (MediaInfo)</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -4503,6 +4507,53 @@ Click on &quot;Add&quot; to configure your Usenet provider.</source>
     <message>
         <source>Notification (%1) failed: no answer from the server</source>
         <translation>通知（%1）失败：服务器无响应</translation>
+    </message>
+</context>
+<context>
+    <name>ProfileBar</name>
+    <message>
+        <source>Profile:</source>
+        <translation>配置：</translation>
+    </message>
+    <message>
+        <source>Save as profile...</source>
+        <translation>另存为配置...</translation>
+    </message>
+    <message>
+        <source>Save the current options (compression, random name and password, par2, keep the archives) under a name</source>
+        <translation>以名称保存当前选项（压缩、随机名称和密码、par2、保留压缩包）</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <source>Delete the chosen profile</source>
+        <translation>删除所选配置</translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation>自定义</translation>
+    </message>
+    <message>
+        <source>Recommended (compression, random name and password, par2 10 %)</source>
+        <translation>推荐（压缩、随机名称和密码、par2 10 %）</translation>
+    </message>
+    <message>
+        <source>Save as profile</source>
+        <translation>另存为配置</translation>
+    </message>
+    <message>
+        <source>Name of the profile:</source>
+        <translation>配置名称：</translation>
+    </message>
+    <message>
+        <source>This name is reserved: choose another one.</source>
+        <translation>此名称已被保留：请选择其他名称。</translation>
+    </message>
+    <message>
+        <source>Delete the profile "%1"?</source>
+        <translation>删除配置"%1"？</translation>
     </message>
 </context>
 </TS>

@@ -21,6 +21,8 @@ SOURCES += \
     hmi/FeedbackDialog.cpp \
     hmi/GroupsEdit.cpp \
     hmi/HelpWidget.cpp \
+    hmi/NfoCard.cpp \
+    hmi/ProfileBar.cpp \
     hmi/PostingWidget.cpp \
     hmi/SignedListWidget.cpp \
     hmi/ServersWidget.cpp \
@@ -33,6 +35,8 @@ HEADERS += \
     hmi/CheckBoxCenterWidget.h \
     hmi/FeedbackDialog.h \
     hmi/GroupsEdit.h \
+    hmi/NfoCard.h \
+    hmi/ProfileBar.h \
     hmi/HelpWidget.h \
     hmi/PostingWidget.h \
     hmi/SignedListWidget.h \

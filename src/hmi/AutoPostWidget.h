@@ -21,8 +21,11 @@
 #define AUTOPOSTWIDGET_H
 
 #include <QWidget>
+#include "utils/PostProfile.h"
 class NgPost;
 class MainWindow;
+class ProfileBar;
+class NfoCard;
 class QFileInfo;
 
 
@@ -48,6 +51,8 @@ private:
     QLabel             *_advancedTitle;
     QLabel             *_monitorTitle;
     QWidget            *_advancedCard;
+    ProfileBar         *_profileBar;
+    NfoCard            *_nfoCard;
     QPushButton        *_advancedToggle;
     bool                _showAdvanced;
     void _buildLayout();
@@ -67,6 +72,8 @@ public:
 
 
     void udatePostingParams();
+    PostProfile currentProfile() const;            //!< the options of the Archive card (to save them as a profile)
+    void applyProfile(const PostProfile &profile); //!< a profile was chosen
 
     void newFileToProcess(const QFileInfo &fileInfo);
     void updateFinishedJob(const QString &path, uint nbArticles, uint nbUploaded, uint nbFailed);
