@@ -804,6 +804,46 @@ Ajoutez des fichiers ou dossiers, ou analysez un dossier, et laissez coché ce q
         <source>Already posted on %1</source>
         <translation>Déjà posté le %1</translation>
     </message>
+    <message>
+        <source>⏸ Paused: %1</source>
+        <translation>⏸ En pause : %1</translation>
+    </message>
+    <message>
+        <source>%1 new file(s) waiting</source>
+        <translation>%1 nouveau(x) fichier(s) en attente</translation>
+    </message>
+    <message>
+        <source>Resume watching</source>
+        <translation>Reprendre la surveillance</translation>
+    </message>
+    <message>
+        <source>Post the files that are waiting and go on watching</source>
+        <translation>Poster les fichiers en attente et continuer la surveillance</translation>
+    </message>
+    <message>
+        <source>● Watching: %1</source>
+        <translation>● Surveillance : %1</translation>
+    </message>
+    <message>
+        <source>Pause watching</source>
+        <translation>Mettre en pause</translation>
+    </message>
+    <message>
+        <source>The new files wait until you resume. The posts already started go on.</source>
+        <translation>Les nouveaux fichiers attendent la reprise. Les envois déjà commencés continuent.</translation>
+    </message>
+    <message>
+        <source>%1 post(s) today</source>
+        <translation>%1 envoi(s) aujourd&apos;hui</translation>
+    </message>
+    <message>
+        <source>%1 with errors</source>
+        <translation>%1 avec erreurs</translation>
+    </message>
+    <message>
+        <source>%1 in progress or waiting</source>
+        <translation>%1 en cours ou en attente</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3378,6 +3418,18 @@ Soit utilisez --par2_pct, soit renseignez PAR2_PCT ou PAR2_ARGS dans le fichier 
     <message>
         <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
         <translation>## (un nom comme Posted est créé à côté de chaque fichier/dossier, un chemin complet est utilisé tel quel ; sans lui rien n&apos;est déplacé)</translation>
+    </message>
+    <message>
+        <source>Watching is paused: %1 waits until it is resumed</source>
+        <translation>Surveillance en pause : %1 attend la reprise</translation>
+    </message>
+    <message>
+        <source>Watching paused: the new files wait, the posts already started go on</source>
+        <translation>Surveillance en pause : les nouveaux fichiers attendent, les envois commencés continuent</translation>
+    </message>
+    <message>
+        <source>Watching resumed</source>
+        <translation>Surveillance reprise</translation>
     </message>
 </context>
 <context>

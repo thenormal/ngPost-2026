@@ -35,7 +35,7 @@ Goal: the program should be simple for someone who opens it for the first time, 
 | Done | Preview of what will be posted (sizes), with a box to leave an item out |
 | Done | After posting, the user chooses: do nothing (default), **move to a "Posted" folder** (never overwrites, ignored by the scan and the watching; `--move_posted` and `move_posted` in the configuration file), or delete the files |
 | Done | Items already in the history found when posting a list (scan or choice): one window lists them (name, size, date of the previous post) with a "Post again" box, off by default, instead of one question for each post; the ones not posted again stay in the list, unchecked and grey. An existing NZB file now gets a number (`name_1.nzb`) instead of a question. The folder watching keeps skipping them with a line in the log |
-| Planned | State of the folder watching always visible (folder, how many posts today), with a pause button |
+| Done | State of the folder watching always visible (folder, how many posts today), with a pause button |
 | Planned | One list of the posts (state, progress, size, NZB, password) instead of one tab for each; if it turns out too big for this version it moves to 1.4 |
 
 **Everything else**

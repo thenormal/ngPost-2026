@@ -803,6 +803,46 @@ Add files or folders, or scan a folder, and keep checked what you want to post.<
         <source>Already posted on %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>⏸ Paused: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 new file(s) waiting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resume watching</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post the files that are waiting and go on watching</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>● Watching: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pause watching</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The new files wait until you resume. The posts already started go on.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 post(s) today</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 with errors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 in progress or waiting</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3358,6 +3398,18 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     </message>
     <message>
         <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watching is paused: %1 waits until it is resumed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watching paused: the new files wait, the posts already started go on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watching resumed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

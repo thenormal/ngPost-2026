@@ -795,6 +795,16 @@ void NgPost::onNewFileToProcess(const QFileInfo & fileInfo)
         return;
     }
 
+    if (_monitorPaused)
+    {
+        for (const QFileInfo &waiting : _pausedFiles)
+            if (waiting.absoluteFilePath() == fileInfo.absoluteFilePath())
+                return;
+        _pausedFiles << fileInfo;
+        _log(tr("Watching is paused: %1 waits until it is resumed").arg(fileInfo.absoluteFilePath()));
+        return;
+    }
+
 #ifdef __USE_HMI__
     if (_hmi)
     {
@@ -1186,6 +1196,15 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
 #endif
 #ifdef __USE_HMI__
         if (_hmi && !job->widget())
+        {
+            int ok = 0, errors = 0;
+            watchStatsToday(ok, errors); // (also starts a new day)
+            if (job->nbArticlesUploaded() > 0 && job->nbArticlesFailed() == 0)
+                ++_watchOk;
+            else
+                ++_watchErrors;
+        }
+        if (_hmi && !job->widget())
             _hmi->autoWidget()->updateFinishedJob(job->getFirstOriginalFile(),
                                                   job->nbArticlesTotal(),
                                                   job->nbArticlesUploaded(),
@@ -1548,6 +1567,55 @@ void NgPost::closeAllMonitoringJobs()
             _error(tr("Stopping monitoring job: %1").arg(_activeJob->getFirstOriginalFile()));
 
     }
+}
+
+void NgPost::pauseMonitoring()
+{
+    if (!_folderMonitor || _monitorPaused)
+        return;
+    _monitorPaused = true;
+    _log(tr("Watching paused: the new files wait, the posts already started go on"));
+}
+
+void NgPost::resumeMonitoring()
+{
+    if (!_monitorPaused)
+        return;
+    _monitorPaused = false;
+    _log(tr("Watching resumed"));
+    const QList<QFileInfo> waiting = _pausedFiles;
+    _pausedFiles.clear();
+    for (const QFileInfo &fi : waiting)
+        if (fi.exists())
+            onNewFileToProcess(fi);
+}
+
+void NgPost::clearPausedMonitoring()
+{
+    _monitorPaused = false;
+    _pausedFiles.clear();
+}
+
+int NgPost::nbMonitoringJobs() const
+{
+    int nb = 0;
+    if (_activeJob && !_activeJob->widget())
+        ++nb;
+    for (PostingJob *job : _pendingJobs)
+        if (!job->widget())
+            ++nb;
+    return nb;
+}
+
+void NgPost::watchStatsToday(int &ok, int &withErrors)
+{
+    if (_watchDay != QDate::currentDate())
+    {
+        _watchDay = QDate::currentDate();
+        _watchOk = _watchErrors = 0;
+    }
+    ok = _watchOk;
+    withErrors = _watchErrors;
 }
 
 bool NgPost::hasMonitoringPostingJobs() const

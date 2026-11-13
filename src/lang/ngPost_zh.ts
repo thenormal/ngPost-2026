@@ -811,6 +811,46 @@ Add files or folders, or scan a folder, and keep checked what you want to post.<
         <source>Already posted on %1</source>
         <translation>已于 %1 发布</translation>
     </message>
+    <message>
+        <source>⏸ Paused: %1</source>
+        <translation>⏸ 已暂停：%1</translation>
+    </message>
+    <message>
+        <source>%1 new file(s) waiting</source>
+        <translation>%1 个新文件等待中</translation>
+    </message>
+    <message>
+        <source>Resume watching</source>
+        <translation>继续监视</translation>
+    </message>
+    <message>
+        <source>Post the files that are waiting and go on watching</source>
+        <translation>发布等待中的文件并继续监视</translation>
+    </message>
+    <message>
+        <source>● Watching: %1</source>
+        <translation>● 正在监视：%1</translation>
+    </message>
+    <message>
+        <source>Pause watching</source>
+        <translation>暂停监视</translation>
+    </message>
+    <message>
+        <source>The new files wait until you resume. The posts already started go on.</source>
+        <translation>新文件会等待到您继续为止，已开始的发布会继续。</translation>
+    </message>
+    <message>
+        <source>%1 post(s) today</source>
+        <translation>今天 %1 个发布</translation>
+    </message>
+    <message>
+        <source>%1 with errors</source>
+        <translation>%1 个有错误</translation>
+    </message>
+    <message>
+        <source>%1 in progress or waiting</source>
+        <translation>%1 个进行中或等待中</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3388,6 +3428,18 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     <message>
         <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
         <translation>## （像 Posted 这样的名称会在每个文件/文件夹旁边创建，完整路径按原样使用；不设置则不移动任何内容）</translation>
+    </message>
+    <message>
+        <source>Watching is paused: %1 waits until it is resumed</source>
+        <translation>监视已暂停：%1 等待继续</translation>
+    </message>
+    <message>
+        <source>Watching paused: the new files wait, the posts already started go on</source>
+        <translation>监视已暂停：新文件等待，已开始的发布继续</translation>
+    </message>
+    <message>
+        <source>Watching resumed</source>
+        <translation>监视已继续</translation>
     </message>
 </context>
 <context>

@@ -812,6 +812,46 @@ Fügen Sie Dateien oder Ordner hinzu oder scannen Sie einen Ordner und lassen Si
         <source>Already posted on %1</source>
         <translation>Bereits gepostet am %1</translation>
     </message>
+    <message>
+        <source>⏸ Paused: %1</source>
+        <translation>⏸ Pausiert: %1</translation>
+    </message>
+    <message>
+        <source>%1 new file(s) waiting</source>
+        <translation>%1 neue Datei(en) warten</translation>
+    </message>
+    <message>
+        <source>Resume watching</source>
+        <translation>Überwachung fortsetzen</translation>
+    </message>
+    <message>
+        <source>Post the files that are waiting and go on watching</source>
+        <translation>Wartende Dateien posten und weiter überwachen</translation>
+    </message>
+    <message>
+        <source>● Watching: %1</source>
+        <translation>● Überwache: %1</translation>
+    </message>
+    <message>
+        <source>Pause watching</source>
+        <translation>Überwachung pausieren</translation>
+    </message>
+    <message>
+        <source>The new files wait until you resume. The posts already started go on.</source>
+        <translation>Neue Dateien warten, bis Sie fortsetzen. Bereits gestartete Posts laufen weiter.</translation>
+    </message>
+    <message>
+        <source>%1 post(s) today</source>
+        <translation>%1 Post(s) heute</translation>
+    </message>
+    <message>
+        <source>%1 with errors</source>
+        <translation>%1 mit Fehlern</translation>
+    </message>
+    <message>
+        <source>%1 in progress or waiting</source>
+        <translation>%1 in Arbeit oder wartend</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3388,6 +3428,18 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     <message>
         <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
         <translation>## (ein Name wie Posted wird neben jeder Datei/jedem Ordner angelegt, ein vollständiger Pfad wird unverändert verwendet; ohne Angabe wird nichts verschoben)</translation>
+    </message>
+    <message>
+        <source>Watching is paused: %1 waits until it is resumed</source>
+        <translation>Überwachung pausiert: %1 wartet auf die Fortsetzung</translation>
+    </message>
+    <message>
+        <source>Watching paused: the new files wait, the posts already started go on</source>
+        <translation>Überwachung pausiert: neue Dateien warten, bereits gestartete Posts laufen weiter</translation>
+    </message>
+    <message>
+        <source>Watching resumed</source>
+        <translation>Überwachung fortgesetzt</translation>
     </message>
 </context>
 <context>
