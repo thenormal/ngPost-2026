@@ -1602,6 +1602,58 @@ Later beslissen: ze blijven in de wachtrij en worden bij de volgende start opnie
         <source>When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. Careful: a password in a posted NFO is readable by everyone who downloads the post.</source>
         <translation>Als de bestandsnamen verborgen zijn (versluiering), vermeldt de geposte NFO geen bestandsnamen. Let op: een wachtwoord in een geposte NFO is leesbaar voor iedereen die de post downloadt.</translation>
     </message>
+    <message>
+        <source>Notifications</source>
+        <translation>Meldingen</translation>
+    </message>
+    <message>
+        <source>Notify when a post is finished</source>
+        <translation>Melden als een post klaar is</translation>
+    </message>
+    <message>
+        <source>Notify when a post has errors or fails</source>
+        <translation>Melden als een post fouten heeft of mislukt</translation>
+    </message>
+    <message>
+        <source>System notification (icon in the notification area)</source>
+        <translation>Systeemmelding (pictogram in het systeemvak)</translation>
+    </message>
+    <message>
+        <source>Send:</source>
+        <translation>Verzenden:</translation>
+    </message>
+    <message>
+        <source>one message when all the posts are done</source>
+        <translation>één bericht als alle posts klaar zijn</translation>
+    </message>
+    <message>
+        <source>a message after each post</source>
+        <translation>een bericht na elke post</translation>
+    </message>
+    <message>
+        <source>Discord webhook:</source>
+        <translation>Discord-webhook:</translation>
+    </message>
+    <message>
+        <source>Telegram bot token:</source>
+        <translation>Telegram-bottoken:</translation>
+    </message>
+    <message>
+        <source>Telegram chat id:</source>
+        <translation>Telegram-chat-id:</translation>
+    </message>
+    <message>
+        <source>Other webhook:</source>
+        <translation>Andere webhook:</translation>
+    </message>
+    <message>
+        <source>Send a test message</source>
+        <translation>Testbericht verzenden</translation>
+    </message>
+    <message>
+        <source>The messages never contain the password or the names of the files. The addresses and the token are saved in clear text in the configuration file (like the other passwords): keep it private.</source>
+        <translation>De berichten bevatten nooit het wachtwoord of de bestandsnamen. De adressen en het token worden leesbaar opgeslagen in het configuratiebestand (zoals de andere wachtwoorden): houd het privé.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3080,6 +3132,38 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \n = new line)</source>
         <translation>## met het wachtwoord van het archief (nfo_password) en een eigen tekst (nfo_text, op één regel, \n = nieuwe regel)</translation>
     </message>
+    <message>
+        <source>send a notification to this Discord webhook address when the posts are done</source>
+        <translation>stuurt een melding naar dit Discord-webhookadres als de posts klaar zijn</translation>
+    </message>
+    <message>
+        <source>token of the Telegram bot that sends the notifications (with --notify_telegram_chat)</source>
+        <translation>token van de Telegram-bot die de meldingen verstuurt (met --notify_telegram_chat)</translation>
+    </message>
+    <message>
+        <source>Telegram chat id that receives the notifications</source>
+        <translation>Telegram-chat-id die de meldingen ontvangt</translation>
+    </message>
+    <message>
+        <source>send a JSON POST {&quot;title&quot;, &quot;text&quot;} to this address when the posts are done</source>
+        <translation>stuurt een JSON-POST {&quot;title&quot;, &quot;text&quot;} naar dit adres als de posts klaar zijn</translation>
+    </message>
+    <message>
+        <source>notify &quot;each&quot; (after each post) or &quot;all_done&quot; (once, when all the posts are done, default)</source>
+        <translation>melden &quot;each&quot; (na elke post) of &quot;all_done&quot; (eenmalig, als alle posts klaar zijn, standaard)</translation>
+    </message>
+    <message>
+        <source>## Notifications when the posts end: events (notify_ok, notify_errors), system notification (notify_tray, GUI only),</source>
+        <translation>## Meldingen aan het eind van de posts: gebeurtenissen (notify_ok, notify_errors), systeemmelding (notify_tray, alleen GUI),</translation>
+    </message>
+    <message>
+        <source>## notify_when = all_done (one message when all the posts are done) or each (after each post)</source>
+        <translation>## notify_when = all_done (één bericht als alle posts klaar zijn) of each (na elke post)</translation>
+    </message>
+    <message>
+        <source>## Discord / Telegram / webhook addresses and tokens are secrets, like the passwords: keep this file private</source>
+        <translation>## Discord-/Telegram-/webhookadressen en tokens zijn geheim, zoals wachtwoorden: houd dit bestand privé</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -4329,6 +4413,69 @@ Klik op ‘Toevoegen’ om je Usenet-provider in te stellen.</translation>
     <message>
         <source>Close</source>
         <translation>Sluiten</translation>
+    </message>
+</context>
+<context>
+    <name>Notifier</name>
+    <message>
+        <source>finished</source>
+        <translation>klaar</translation>
+    </message>
+    <message>
+        <source>finished with errors</source>
+        <translation>klaar met fouten</translation>
+    </message>
+    <message>
+        <source>stopped or failed</source>
+        <translation>gestopt of mislukt</translation>
+    </message>
+    <message>
+        <source>%1 of %2 articles failed</source>
+        <translation>%1 van %2 artikelen mislukt</translation>
+    </message>
+    <message>
+        <source>%1: %2 post(s) done</source>
+        <translation>%1: %2 post(s) klaar</translation>
+    </message>
+    <message>
+        <source>%1 OK, %2 with errors, %3 stopped or failed</source>
+        <translation>%1 OK, %2 met fouten, %3 gestopt of mislukt</translation>
+    </message>
+    <message>
+        <source>... and %1 more</source>
+        <translation>... en nog %1</translation>
+    </message>
+    <message>
+        <source>%1: test</source>
+        <translation>%1: test</translation>
+    </message>
+    <message>
+        <source>This is a test message.</source>
+        <translation>Dit is een testbericht.</translation>
+    </message>
+    <message>
+        <source>system notification</source>
+        <translation>systeemmelding</translation>
+    </message>
+    <message>
+        <source>No notification channel is set.</source>
+        <translation>Er is geen meldingskanaal ingesteld.</translation>
+    </message>
+    <message>
+        <source>Test message sent: %1 (a failure is written in the log).</source>
+        <translation>Testbericht verzonden: %1 (een fout wordt in het logboek vermeld).</translation>
+    </message>
+    <message>
+        <source>Notification (%1) not sent: the address is not valid</source>
+        <translation>Melding (%1) niet verzonden: het adres is ongeldig</translation>
+    </message>
+    <message>
+        <source>Notification (%1) failed: the server answered %2</source>
+        <translation>Melding (%1) mislukt: de server antwoordde %2</translation>
+    </message>
+    <message>
+        <source>Notification (%1) failed: no answer from the server</source>
+        <translation>Melding (%1) mislukt: geen antwoord van de server</translation>
     </message>
 </context>
 </TS>

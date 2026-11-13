@@ -94,6 +94,7 @@ SOURCES += \
         utils/Diagnostics.cpp \
         utils/LatencyStats.cpp \
         utils/NfoWriter.cpp \
+        utils/Notifier.cpp \
         utils/Yenc.cpp
 
 
@@ -123,6 +124,7 @@ HEADERS += \
     utils/Diagnostics.h \
     utils/LatencyStats.h \
     utils/NfoWriter.h \
+    utils/Notifier.h \
     utils/Macros.h \
     utils/PureStaticClass.h \
     utils/Yenc.h

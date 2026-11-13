@@ -24,3 +24,19 @@ At the end of a post the log also shows the **latency**: the median time of a ro
 ## Diagnostic report
 
 If something does not work, the **Diagnostic report** button, below the log in Quick Post, saves a report of what the program did, with a **Latency** section for each server (connection, SSL, login, round trip: minimum, median, 95th percentile and maximum). It is a text file you can attach when you ask for help. Check it before sharing: it should not contain your password.
+
+## Notifications
+
+ngPost can tell you when your posts are done, so you do not have to watch the window. Turn it on in **Settings**, card **Notifications**.
+
+- **System notification**: a message from the icon in the notification area (desktop version only).
+- **Discord**: paste the address of a Discord webhook.
+- **Telegram**: the token of your bot and the id of the chat that receives the messages.
+- **Other webhook**: any address that accepts a JSON POST with a `title` and a `text` (Slack-like tools, ntfy, Home Assistant).
+
+Choose what is notified (finished, errors or failures) and how: **one message when all the posts are done** (default, best for Auto Posting) or **a message after each post**. The button **Send a test message** shows at once if it works.
+
+The message has the name of the post, the result, the size, the time and the speed. It never contains the password or the names of the files. The addresses and the token are saved in clear text in the configuration file, like the other passwords: keep it private. If a message cannot be sent, a line in the log says so and the post is not affected.
+
+On the command line, or in Docker, use the options `--notify_discord`, `--notify_telegram_token`, `--notify_telegram_chat`, `--notify_webhook` and `--notify_when each|all_done`, or the keys `notify_*` of the configuration file.
+

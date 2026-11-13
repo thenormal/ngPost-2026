@@ -190,6 +190,11 @@ const QList<QCommandLineOption> NgPost::sCmdOptions = {
     { sOptionNames[Opt::MONITOR_DIR],         tr("monitor directory and post every new file/folder. You must use --compress, should add --gen_par2, --gen_name and --gen_pass"), sOptionNames[Opt::MONITOR_DIR]},
     { sOptionNames[Opt::DEL_AUTO],            tr("delete file/folder once posted. You must use --auto or --monitor with this option.")},
     { "resume_queue",                         tr("post again the posts that were not finished (queue saved next to the config file)")},
+    { "notify_discord",                       tr("send a notification to this Discord webhook address when the posts are done"), "notify_discord"},
+    { "notify_telegram_token",                tr("token of the Telegram bot that sends the notifications (with --notify_telegram_chat)"), "notify_telegram_token"},
+    { "notify_telegram_chat",                 tr("Telegram chat id that receives the notifications"), "notify_telegram_chat"},
+    { "notify_webhook",                       tr("send a JSON POST {\"title\", \"text\"} to this address when the posts are done"), "notify_webhook"},
+    { "notify_when",                          tr("notify \"each\" (after each post) or \"all_done\" (once, when all the posts are done, default)"), "notify_when"},
     { "gen_nfo",                              tr("write an NFO file (name, date, files, archive, par2) next to the nzb")},
     { "nfo_in_post",                          tr("also post the NFO file with the files (implies --gen_nfo)")},
     { "nfo_password",                         tr("write the password of the archive in the NFO file")},
@@ -390,6 +395,8 @@ NgPost::NgPost(int &argc, char *argv[]):
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     connect(&_netMgr, &QNetworkAccessManager::networkAccessibleChanged, this, &NgPost::onNetworkAccessibleChanged);
+    _notifier.setAppName(sAppName);
+    connect(&_notifier, &Notifier::log, this, [this](const QString &line){ _log(line); });
 #endif
 }
 
@@ -1219,6 +1226,22 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
 #endif
 
         // command line only: post again the Articles that failed (used by the tests, the GUI has a button)
+        // result for the notifications (sent below, once we know if other posts are waiting)
+        Notifier::Result notifyResult;
+        notifyResult.name     = _activeJob->nzbName();
+        notifyResult.state    = !_activeJob->hasPostFinished() ? Notifier::State::FAILED :
+                                (_activeJob->nbArticlesFailed() ? Notifier::State::ERRORS : Notifier::State::OK);
+        notifyResult.size     = _activeJob->postSize();
+        notifyResult.speed    = _activeJob->avgSpeed().trimmed();
+        notifyResult.nbFailed = _activeJob->nbArticlesFailed();
+        notifyResult.nbTotal  = _activeJob->nbArticlesTotal();
+        {
+            qint64 sec = _activeJob->jobDurationMs() / 1000;
+            notifyResult.duration = QString("%1:%2:%3").arg(sec / 3600, 2, 10, QChar('0'))
+                                                       .arg((sec / 60) % 60, 2, 10, QChar('0'))
+                                                       .arg(sec % 60, 2, 10, QChar('0'));
+        }
+
         PostingJob *repostJob = nullptr;
         if (!_activeJob->widget() && !_activeJob->isRepost() && !_activeJob->repostInfo().isEmpty()
                 && !qgetenv("NGPOST_REPOST_MISSING").isEmpty())
@@ -1229,6 +1252,8 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
 
         if (repostJob)
             _pendingJobs.prepend(repostJob);
+
+        _notifier.jobEnded(notifyResult, _pendingJobs.isEmpty());
 
         if (_pendingJobs.size())
         {
@@ -1267,6 +1292,54 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
         }
         else if (_doShutdownWhenDone && !_shutdownCmd.isEmpty())
         {
+            _whenNotificationsSent([this](){ _runShutdown(); });
+        }
+#ifdef __USE_HMI__
+        else if (!_folderMonitor && !_hmi)
+#else
+        else if (!_folderMonitor)
+#endif
+        {
+	    if( debugFull())
+                _error(tr(" => closing application"));
+            _whenNotificationsSent([](){ qApp->quit(); }); // the notifications of the last post are sent first
+        }
+    }
+    else if (_preparePacking && job ==_packingJob)
+    {
+        _packingJob = nullptr;
+        _pendingJobs.dequeue(); // remove the packingJob
+        job->deleteLater();
+        _error(tr("packing job finished unexpectedly..."));
+        _prepareNextPacking();
+    }
+    else
+    {
+        // it was a Pending job that has been cancelled
+        if (debugFull())
+            _log(tr("Cancelled pending job?"));
+        _pendingJobs.removeOne(job);
+        job->deleteLater();
+    }
+}
+
+void NgPost::_whenNotificationsSent(const std::function<void()> &action)
+{
+    if (_notifier.pending() <= 0)
+    {
+        action();
+        return;
+    }
+    auto *conn = new QMetaObject::Connection;
+    *conn = connect(&_notifier, &Notifier::allSent, this, [action, conn, this](){
+        disconnect(*conn);
+        delete conn;
+        action();
+    });
+}
+
+void NgPost::_runShutdown()
+{
             //cf https://forum.qt.io/topic/111602/qprocess-signals-not-received-in-slots-except-in-debug-with-breakpoints/
 //            int exitCode = QProcess::execute("echo \\\"toto\\\" | /usr/bin/sudo -S /bin/ls -al");
 //            qDebug() << QString("Shutdown exit code: %1").arg(exitCode);
@@ -1293,34 +1366,6 @@ qDebug() << "[MB_TRACE][Issue#82][NgPost::onPostingJobFinished] job: " << job
             QString     cmd  = args.takeFirst();
             qDebug() << "cmd: " << cmd << ", args: " << args;
             _shutdownProc->start(cmd, args);
-        }
-#ifdef __USE_HMI__
-        else if (!_folderMonitor && !_hmi)
-#else
-        else if (!_folderMonitor)
-#endif
-        {
-	    if( debugFull())
-                _error(tr(" => closing application"));
-            qApp->quit();
-        }
-    }
-    else if (_preparePacking && job ==_packingJob)
-    {
-        _packingJob = nullptr;
-        _pendingJobs.dequeue(); // remove the packingJob
-        job->deleteLater();
-        _error(tr("packing job finished unexpectedly..."));
-        _prepareNextPacking();
-    }
-    else
-    {
-        // it was a Pending job that has been cancelled
-        if (debugFull())
-            _log(tr("Cancelled pending job?"));
-        _pendingJobs.removeOne(job);
-        job->deleteLater();
-    }
 }
 
 void NgPost::onShutdownProcReadyReadStandardOutput()
@@ -1633,6 +1678,16 @@ bool NgPost::parseCommandLine(int argc, char *argv[])
         _resumeQueue = true;
     if (parser.isSet("allow_repost"))
         _checkDuplicates = false;
+    if (parser.isSet("notify_discord"))
+        _notifier.settings().discord = parser.value("notify_discord");
+    if (parser.isSet("notify_telegram_token"))
+        _notifier.settings().telegramToken = parser.value("notify_telegram_token");
+    if (parser.isSet("notify_telegram_chat"))
+        _notifier.settings().telegramChat = parser.value("notify_telegram_chat");
+    if (parser.isSet("notify_webhook"))
+        _notifier.settings().webhook = parser.value("notify_webhook");
+    if (parser.isSet("notify_when"))
+        _notifier.settings().allDone = (parser.value("notify_when").toLower() != "each");
     if (parser.isSet("gen_nfo") || parser.isSet("nfo_in_post"))
         _genNfo = true;
     if (parser.isSet("nfo_in_post"))
@@ -2427,6 +2482,22 @@ QString NgPost::_parseConfig(const QString &configPath)
                         val = val.toLower();
                         _queueEnabled = !(val == "off" || val == "false" || val == "0" || val == "no");
                     }
+                    else if (opt == "notify_ok" || opt == "notify_errors" || opt == "notify_tray")
+                    {
+                        val = val.toLower();
+                        bool on = (val == "on" || val == "true" || val == "1" || val == "yes");
+                        (opt == "notify_ok" ? _notifier.settings().onSuccess : opt == "notify_errors" ? _notifier.settings().onErrors : _notifier.settings().tray) = on;
+                    }
+                    else if (opt == "notify_when")
+                        _notifier.settings().allDone = (val.trimmed().toLower() != "each");
+                    else if (opt == "notify_discord")
+                        _notifier.settings().discord = val.trimmed();
+                    else if (opt == "notify_telegram_token")
+                        _notifier.settings().telegramToken = val.trimmed();
+                    else if (opt == "notify_telegram_chat")
+                        _notifier.settings().telegramChat = val.trimmed();
+                    else if (opt == "notify_webhook")
+                        _notifier.settings().webhook = val.trimmed();
                     else if (opt == "gen_nfo" || opt == "nfo_in_post" || opt == "nfo_password")
                     {
                         val = val.toLower();
@@ -3016,6 +3087,18 @@ void NgPost::saveConfig(bool quiet)
                << tr("## the file contains the archive passwords in clear text: keep it private") << "\n"
                << "history = " << (_historyEnabled ? "ON" : "OFF") << "\n"
                << tr("## by default the history is saved in ngPost_history.csv next to this file") << "\n"
+               << "\n"
+               << tr("## Notifications when the posts end: events (notify_ok, notify_errors), system notification (notify_tray, GUI only),") << "\n"
+               << tr("## notify_when = all_done (one message when all the posts are done) or each (after each post)") << "\n"
+               << tr("## Discord / Telegram / webhook addresses and tokens are secrets, like the passwords: keep this file private") << "\n"
+               << "notify_ok = " << (_notifier.settings().onSuccess ? "ON" : "OFF") << "\n"
+               << "notify_errors = " << (_notifier.settings().onErrors ? "ON" : "OFF") << "\n"
+               << "notify_tray = " << (_notifier.settings().tray ? "ON" : "OFF") << "\n"
+               << "notify_when = " << (_notifier.settings().allDone ? "all_done" : "each") << "\n"
+               << (_notifier.settings().discord.isEmpty() ? "#" : "") << "notify_discord = " << _notifier.settings().discord << "\n"
+               << (_notifier.settings().telegramToken.isEmpty() ? "#" : "") << "notify_telegram_token = " << _notifier.settings().telegramToken << "\n"
+               << (_notifier.settings().telegramChat.isEmpty() ? "#" : "") << "notify_telegram_chat = " << _notifier.settings().telegramChat << "\n"
+               << (_notifier.settings().webhook.isEmpty() ? "#" : "") << "notify_webhook = " << _notifier.settings().webhook << "\n"
                << "\n"
                << tr("## NFO file: written next to the nzb (gen_nfo), also posted with the files (nfo_in_post),")  << "\n"
                << tr("## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \\n = new line)") << "\n"

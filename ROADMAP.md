@@ -48,7 +48,7 @@ Goal: the program should be simple for someone who opens it for the first time, 
 | Done | **Feedback** entry in the About window: report a bug or suggest an idea. It opens the new-issue page of GitHub already filled in (no access key in the program, nothing is sent without the user seeing it), with the diagnostic report to attach and issue forms in the repository |
 | Done | Warning when a post is already in the history (same name and size), before it is posted again (Quick Post asks, auto posting and command line skip it; `--allow_repost` and a Settings option turn it off) |
 | Done | NFO file generator for a post: written next to the nzb, optionally posted with the files, optional password and free text (Settings, card NFO file; `--gen_nfo`). The media information (MediaInfo) comes in a second step, and the options will move into the shared options card of Quick Post and Auto Posting |
-| Planned | **Notifications** when a post is done or fails (system tray, optional webhook for Telegram / Discord; the webhook address is treated like a password) |
+| Done | **Notifications** when the posts are done or fail: system notification (GUI), Discord, Telegram and a generic webhook; one message when all the posts are done (default) or after each post; the addresses and tokens are treated like passwords |
 
 ## Version 1.4 - Verification and control (first thoughts)
 

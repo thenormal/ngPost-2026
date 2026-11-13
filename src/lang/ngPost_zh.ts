@@ -1600,6 +1600,58 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. Careful: a password in a posted NFO is readable by everyone who downloads the post.</source>
         <translation>当文件名被隐藏（混淆）时，发布的 NFO 不会列出任何文件名。注意：已发布 NFO 中的密码，任何下载该帖子的人都能看到。</translation>
     </message>
+    <message>
+        <source>Notifications</source>
+        <translation>通知</translation>
+    </message>
+    <message>
+        <source>Notify when a post is finished</source>
+        <translation>帖子完成时通知</translation>
+    </message>
+    <message>
+        <source>Notify when a post has errors or fails</source>
+        <translation>帖子有错误或失败时通知</translation>
+    </message>
+    <message>
+        <source>System notification (icon in the notification area)</source>
+        <translation>系统通知（通知区域图标）</translation>
+    </message>
+    <message>
+        <source>Send:</source>
+        <translation>发送：</translation>
+    </message>
+    <message>
+        <source>one message when all the posts are done</source>
+        <translation>所有帖子完成后发送一条消息</translation>
+    </message>
+    <message>
+        <source>a message after each post</source>
+        <translation>每个帖子之后发送一条消息</translation>
+    </message>
+    <message>
+        <source>Discord webhook:</source>
+        <translation>Discord webhook：</translation>
+    </message>
+    <message>
+        <source>Telegram bot token:</source>
+        <translation>Telegram 机器人令牌：</translation>
+    </message>
+    <message>
+        <source>Telegram chat id:</source>
+        <translation>Telegram 聊天 ID：</translation>
+    </message>
+    <message>
+        <source>Other webhook:</source>
+        <translation>其他 webhook：</translation>
+    </message>
+    <message>
+        <source>Send a test message</source>
+        <translation>发送测试消息</translation>
+    </message>
+    <message>
+        <source>The messages never contain the password or the names of the files. The addresses and the token are saved in clear text in the configuration file (like the other passwords): keep it private.</source>
+        <translation>消息中从不包含密码或文件名。地址和令牌以明文保存在配置文件中（与其他密码相同）：请妥善保管。</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3075,6 +3127,38 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \n = new line)</source>
         <translation>## 可含压缩包密码（nfo_password）和您自己的文字（nfo_text，一行，\n = 换行）</translation>
     </message>
+    <message>
+        <source>send a notification to this Discord webhook address when the posts are done</source>
+        <translation>帖子完成时向此 Discord webhook 地址发送通知</translation>
+    </message>
+    <message>
+        <source>token of the Telegram bot that sends the notifications (with --notify_telegram_chat)</source>
+        <translation>发送通知的 Telegram 机器人令牌（与 --notify_telegram_chat 配合使用）</translation>
+    </message>
+    <message>
+        <source>Telegram chat id that receives the notifications</source>
+        <translation>接收通知的 Telegram 聊天 ID</translation>
+    </message>
+    <message>
+        <source>send a JSON POST {&quot;title&quot;, &quot;text&quot;} to this address when the posts are done</source>
+        <translation>帖子完成时向此地址发送 JSON POST {&quot;title&quot;, &quot;text&quot;}</translation>
+    </message>
+    <message>
+        <source>notify &quot;each&quot; (after each post) or &quot;all_done&quot; (once, when all the posts are done, default)</source>
+        <translation>通知 &quot;each&quot;（每个帖子之后）或 &quot;all_done&quot;（所有帖子完成后一次，默认）</translation>
+    </message>
+    <message>
+        <source>## Notifications when the posts end: events (notify_ok, notify_errors), system notification (notify_tray, GUI only),</source>
+        <translation>## 帖子结束时的通知：事件（notify_ok、notify_errors）、系统通知（notify_tray，仅限图形界面），</translation>
+    </message>
+    <message>
+        <source>## notify_when = all_done (one message when all the posts are done) or each (after each post)</source>
+        <translation>## notify_when = all_done（所有帖子完成后发送一条消息）或 each（每个帖子之后）</translation>
+    </message>
+    <message>
+        <source>## Discord / Telegram / webhook addresses and tokens are secrets, like the passwords: keep this file private</source>
+        <translation>## Discord / Telegram / webhook 地址和令牌属于机密，与密码相同：请妥善保管此文件</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -4324,6 +4408,69 @@ Click on &quot;Add&quot; to configure your Usenet provider.</source>
     <message>
         <source>Close</source>
         <translation>关闭</translation>
+    </message>
+</context>
+<context>
+    <name>Notifier</name>
+    <message>
+        <source>finished</source>
+        <translation>已完成</translation>
+    </message>
+    <message>
+        <source>finished with errors</source>
+        <translation>已完成但有错误</translation>
+    </message>
+    <message>
+        <source>stopped or failed</source>
+        <translation>已停止或失败</translation>
+    </message>
+    <message>
+        <source>%1 of %2 articles failed</source>
+        <translation>%2 个文章中有 %1 个失败</translation>
+    </message>
+    <message>
+        <source>%1: %2 post(s) done</source>
+        <translation>%1：%2 个帖子已完成</translation>
+    </message>
+    <message>
+        <source>%1 OK, %2 with errors, %3 stopped or failed</source>
+        <translation>%1 个成功，%2 个有错误，%3 个已停止或失败</translation>
+    </message>
+    <message>
+        <source>... and %1 more</source>
+        <translation>……以及另外 %1 个</translation>
+    </message>
+    <message>
+        <source>%1: test</source>
+        <translation>%1：测试</translation>
+    </message>
+    <message>
+        <source>This is a test message.</source>
+        <translation>这是一条测试消息。</translation>
+    </message>
+    <message>
+        <source>system notification</source>
+        <translation>系统通知</translation>
+    </message>
+    <message>
+        <source>No notification channel is set.</source>
+        <translation>未设置任何通知渠道。</translation>
+    </message>
+    <message>
+        <source>Test message sent: %1 (a failure is written in the log).</source>
+        <translation>测试消息已发送：%1（如有失败会写入日志）。</translation>
+    </message>
+    <message>
+        <source>Notification (%1) not sent: the address is not valid</source>
+        <translation>通知（%1）未发送：地址无效</translation>
+    </message>
+    <message>
+        <source>Notification (%1) failed: the server answered %2</source>
+        <translation>通知（%1）失败：服务器返回 %2</translation>
+    </message>
+    <message>
+        <source>Notification (%1) failed: no answer from the server</source>
+        <translation>通知（%1）失败：服务器无响应</translation>
     </message>
 </context>
 </TS>
