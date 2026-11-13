@@ -43,7 +43,7 @@ Goal: the program should be simple for someone who opens it for the first time, 
 | | |
 |---|---|
 | Done | **Profiles** of options (menu in Quick Post and Auto Posting: Recommended, Custom and the profiles saved by the user), one **NFO file** card shared by Quick Post and Auto Posting (moved from Settings), par2 starts at 10 % and the password is in the Archive card of Quick Post |
-| Planned | **Quick Post**: checks before posting (in plain words, with a one-click fix) and a summary (files, size, estimated time) |
+| Done | **Quick Post**: checks before posting (a window in plain words with a one-click fix: no server or group, folders without compression, rar / 7z or par2 not found, empty password, NZB folder not writable; warnings with "Post anyway": temporary folder, MediaInfo) and a summary line (items, size, size to upload, upload time from the real speed of the last upload). Auto Posting will get them with its redesign |
 | Done | Fix: the "One release" note of Quick Post must not appear during or after the upload (the list then shows the volumes of the archive) |
 | Planned | Fix: in a Quick Post tab whose post is finished, adding new files should show the "One release" note again (the finished state is not reset when the user adds files) |
 | Planned | Uninstaller: ask whether to also delete the settings and the history kept in `%APPDATA%\ngPost Deluxe` (default: keep them) |

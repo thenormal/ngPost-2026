@@ -16,6 +16,17 @@ Quick Post sends the files and folders you choose. Each tab is one post, so you 
 - **par2**: creates recovery files. Set the redundancy in percent: more redundancy lets the downloader repair more missing articles, but uploads more data.
 - **Obfuscation**: hides the subjects of the articles. Without the NZB file nobody can find your post, not even you.
 
+## Checks and summary
+
+Under the cards a line tells you what is going to be posted: the number of items, their size and, with compression or par2, about how much is uploaded. The upload time appears after the first post of the session, from the real speed of that upload (before it, ngPost does not guess).
+
+When you press **Post Files**, ngPost checks the post first. If something is wrong a window explains it in plain words, with a button that fixes it:
+
+- **Errors** (the post can't start): no enabled server, no valid newsgroup, folders without compression, rar / 7z or par2 program not found, a password turned on but empty, an NZB folder that is not writable.
+- **Warnings** (you can choose **Post anyway**): the temporary folder is missing or may be too small, MediaInfo is not found for the media information of the NFO.
+
+After a fix the checks run again, so a new problem shows up at once instead of in the middle of the post. Auto Posting does not have this window yet.
+
 ## Profiles
 
 The **Profile** menu above the cards sets all the options at once.

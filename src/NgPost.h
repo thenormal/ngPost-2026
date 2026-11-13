@@ -216,6 +216,7 @@ private:
     QList<PostProfile> _profiles;      //!< the profiles saved by the user (key "profile")
     QString     profilesText() const; //!< the lines "profile = ..." of the config file
     bool        _freshInstall = false; //!< there was no config file at the start: the GUI offers the profile "Recommended"
+    double      _lastUploadSpeed = 0.; //!< bytes/s of the last upload of this session (0: none yet), for the estimated time
     bool        _nfoMedia     = true;  //!< media information (MediaInfo) in the NFO (key "nfo_media", --no_nfo_media)
     QString     _mediaInfoPath;        //!< path of MediaInfo (key "mediainfo_path", --mediainfo_path), empty = automatic
     QString     _nfoText;              //!< free text added to the NFO (key "nfo_text", --nfo_text file)

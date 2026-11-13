@@ -4206,6 +4206,34 @@ Wilt u hem opnieuw posten?</translation>
         <source>Post anyway</source>
         <translation>Toch posten</translation>
     </message>
+    <message>
+        <source>Before posting</source>
+        <translation>Voor het posten</translation>
+    </message>
+    <message>
+        <source>This post can&apos;t start yet:</source>
+        <translation>Deze post kan nog niet starten:</translation>
+    </message>
+    <message>
+        <source>Please check before posting:</source>
+        <translation>Controleer voor het posten:</translation>
+    </message>
+    <message>
+        <source>%1 item(s), %2</source>
+        <translation>%1 item(s), %2</translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation>ongeveer %1 te uploaden</translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation>uploadtijd: wordt getoond na de eerste post</translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation>uploadtijd: ongeveer %1</translation>
+    </message>
 </context>
 <context>
     <name>ServerTester</name>
@@ -4559,6 +4587,97 @@ Klik op ‘Toevoegen’ om je Usenet-provider in te stellen.</translation>
     <message>
         <source>Delete the profile "%1"?</source>
         <translation>Het profiel "%1" verwijderen?</translation>
+    </message>
+</context>
+<context>
+    <name>PostChecker</name>
+    <message>
+        <source>No server is enabled: add or enable one in Servers.</source>
+        <translation>Er is geen server ingeschakeld: voeg er een toe of schakel er een in bij Servers.</translation>
+    </message>
+    <message>
+        <source>Open Servers</source>
+        <translation>Servers openen</translation>
+    </message>
+    <message>
+        <source>There is no newsgroup: add at least one in Settings.</source>
+        <translation>Er is geen newsgroup: voeg er minstens één toe bij Instellingen.</translation>
+    </message>
+    <message>
+        <source>Open Settings</source>
+        <translation>Instellingen openen</translation>
+    </message>
+    <message>
+        <source>These newsgroups are not valid: %1. Fix them in Settings.</source>
+        <translation>Deze newsgroups zijn ongeldig: %1. Corrigeer ze bij Instellingen.</translation>
+    </message>
+    <message>
+        <source>The list has folders, and folders can only be posted with compression.</source>
+        <translation>De lijst bevat mappen, en mappen kunnen alleen met compressie worden gepost.</translation>
+    </message>
+    <message>
+        <source>Turn compression on</source>
+        <translation>Compressie inschakelen</translation>
+    </message>
+    <message>
+        <source>Compression is on but the rar / 7z program was not found.</source>
+        <translation>Compressie staat aan maar het programma rar / 7z is niet gevonden.</translation>
+    </message>
+    <message>
+        <source>Choose the program...</source>
+        <translation>Programma kiezen...</translation>
+    </message>
+    <message>
+        <source>par2 is on but the par2 program was not found.</source>
+        <translation>par2 staat aan maar het programma par2 is niet gevonden.</translation>
+    </message>
+    <message>
+        <source>Turn par2 off</source>
+        <translation>par2 uitschakelen</translation>
+    </message>
+    <message>
+        <source>The password is turned on but it is empty.</source>
+        <translation>Het wachtwoord staat aan maar is leeg.</translation>
+    </message>
+    <message>
+        <source>Generate a password</source>
+        <translation>Wachtwoord genereren</translation>
+    </message>
+    <message>
+        <source>The folder of the NZB file does not exist or is not writable.</source>
+        <translation>De map van het NZB-bestand bestaat niet of is niet beschrijfbaar.</translation>
+    </message>
+    <message>
+        <source>Choose another file...</source>
+        <translation>Ander bestand kiezen...</translation>
+    </message>
+    <message>
+        <source>The temporary folder does not exist or is not writable: the post will fail.</source>
+        <translation>De tijdelijke map bestaat niet of is niet beschrijfbaar: de post mislukt.</translation>
+    </message>
+    <message>
+        <source>The temporary folder may not have enough free space: about %1 needed, %2 free.</source>
+        <translation>De tijdelijke map heeft mogelijk te weinig vrije ruimte: ongeveer %1 nodig, %2 vrij.</translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file will have no media information.</source>
+        <translation>MediaInfo is niet gevonden: het NFO-bestand krijgt geen media-informatie.</translation>
+    </message>
+    <message>
+        <source>Turn media information off</source>
+        <translation>Media-informatie uitschakelen</translation>
+    </message>
+    <message>
+        <source>less than a minute</source>
+        <translation>minder dan een minuut</translation>
+    </message>
+    <message>
+        <source>%1 min</source>
+        <translation>%1 min</translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
+        <translation>%1 u %2 min</translation>
     </message>
 </context>
 </TS>

@@ -4201,6 +4201,34 @@ Do you want to post it again?</source>
         <source>Post anyway</source>
         <translation>仍然发布</translation>
     </message>
+    <message>
+        <source>Before posting</source>
+        <translation>发布之前</translation>
+    </message>
+    <message>
+        <source>This post can&apos;t start yet:</source>
+        <translation>此发布暂时无法开始：</translation>
+    </message>
+    <message>
+        <source>Please check before posting:</source>
+        <translation>发布之前请检查：</translation>
+    </message>
+    <message>
+        <source>%1 item(s), %2</source>
+        <translation>%1 项，%2</translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation>约需上传 %1</translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation>上传时间：首次发布后显示</translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation>上传时间：约 %1</translation>
+    </message>
 </context>
 <context>
     <name>ServerTester</name>
@@ -4554,6 +4582,97 @@ Click on &quot;Add&quot; to configure your Usenet provider.</source>
     <message>
         <source>Delete the profile "%1"?</source>
         <translation>删除配置"%1"？</translation>
+    </message>
+</context>
+<context>
+    <name>PostChecker</name>
+    <message>
+        <source>No server is enabled: add or enable one in Servers.</source>
+        <translation>没有启用的服务器：请在“服务器”中添加或启用一个。</translation>
+    </message>
+    <message>
+        <source>Open Servers</source>
+        <translation>打开服务器</translation>
+    </message>
+    <message>
+        <source>There is no newsgroup: add at least one in Settings.</source>
+        <translation>没有新闻组：请在“设置”中至少添加一个。</translation>
+    </message>
+    <message>
+        <source>Open Settings</source>
+        <translation>打开设置</translation>
+    </message>
+    <message>
+        <source>These newsgroups are not valid: %1. Fix them in Settings.</source>
+        <translation>这些新闻组无效：%1。请在“设置”中修正。</translation>
+    </message>
+    <message>
+        <source>The list has folders, and folders can only be posted with compression.</source>
+        <translation>列表中有文件夹，而文件夹只能在启用压缩时发布。</translation>
+    </message>
+    <message>
+        <source>Turn compression on</source>
+        <translation>开启压缩</translation>
+    </message>
+    <message>
+        <source>Compression is on but the rar / 7z program was not found.</source>
+        <translation>已开启压缩，但未找到 rar / 7z 程序。</translation>
+    </message>
+    <message>
+        <source>Choose the program...</source>
+        <translation>选择程序...</translation>
+    </message>
+    <message>
+        <source>par2 is on but the par2 program was not found.</source>
+        <translation>已开启 par2，但未找到 par2 程序。</translation>
+    </message>
+    <message>
+        <source>Turn par2 off</source>
+        <translation>关闭 par2</translation>
+    </message>
+    <message>
+        <source>The password is turned on but it is empty.</source>
+        <translation>已开启密码，但密码为空。</translation>
+    </message>
+    <message>
+        <source>Generate a password</source>
+        <translation>生成密码</translation>
+    </message>
+    <message>
+        <source>The folder of the NZB file does not exist or is not writable.</source>
+        <translation>NZB 文件所在的文件夹不存在或不可写。</translation>
+    </message>
+    <message>
+        <source>Choose another file...</source>
+        <translation>选择其他文件...</translation>
+    </message>
+    <message>
+        <source>The temporary folder does not exist or is not writable: the post will fail.</source>
+        <translation>临时文件夹不存在或不可写：发布将失败。</translation>
+    </message>
+    <message>
+        <source>The temporary folder may not have enough free space: about %1 needed, %2 free.</source>
+        <translation>临时文件夹的可用空间可能不足：约需 %1，可用 %2。</translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file will have no media information.</source>
+        <translation>未找到 MediaInfo：NFO 文件将没有媒体信息。</translation>
+    </message>
+    <message>
+        <source>Turn media information off</source>
+        <translation>关闭媒体信息</translation>
+    </message>
+    <message>
+        <source>less than a minute</source>
+        <translation>不到一分钟</translation>
+    </message>
+    <message>
+        <source>%1 min</source>
+        <translation>%1 分钟</translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
+        <translation>%1 小时 %2 分钟</translation>
     </message>
 </context>
 </TS>
