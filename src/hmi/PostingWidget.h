@@ -22,6 +22,7 @@
 
 #include <QWidget>
 #include "utils/PostProfile.h"
+#include "utils/PostChecker.h"
 class NgPost;
 class NntpFile;
 class MainWindow;
@@ -60,6 +61,8 @@ private:
     QLabel            *_archiveTitle;
     QLabel            *_advancedTitle;
     QWidget           *_advancedCard;
+    QLabel            *_summary;       //!< "12 items, 8.4 GB -> about ... to upload"
+    qint64             _sourceBytes;   //!< size of the list (computed when the list changes)
     ProfileBar        *_profileBar;
     NfoCard           *_nfoCard;
     QPushButton       *_advancedToggle;
@@ -69,6 +72,8 @@ private:
     void _buildLayout();
     void _retranslateLayout();
     void _showAdvanced(bool show);
+    bool _checkBeforePosting(const QFileInfoList &files, bool hasFolder); //!< checks (and fixes) before a post started with the button
+    bool _applyFix(PostChecker::Code code); //!< false: the user has to continue elsewhere (the post is cancelled)
     void _updateReleaseInfo();
     void _updateRepostButton();
     void _refreshFileItems(const RepostInfo &postedAgain);
@@ -130,6 +135,7 @@ private slots: // for the HMI
 
     void onNzbPassToggled(bool checked);
     void onGenNzbPassword();
+    void _updateSummary(bool recomputeSize = true);
     PostProfile currentProfile() const;            //!< the options of the Archive card (to save them as a profile)
     void applyProfile(const PostProfile &profile); //!< a profile was chosen
 

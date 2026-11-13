@@ -1723,6 +1723,11 @@ void MainWindow::_retranslateGroups()
     _groupPolicyCB->setToolTip(tr("When there are several groups: where the posts go. \"For each file\" needs the obfuscation of the Articles."));
 }
 
+QStringList MainWindow::invalidGroups() const { return _groupsEdit->invalidGroups(); }
+bool MainWindow::hasGroups() const { return !_groupsEdit->groups().isEmpty(); }
+void MainWindow::showServersPage()  { _navButtons[NAV_SERVERS]->click(); }
+void MainWindow::showSettingsPage() { _navButtons[NAV_SETTINGS]->click(); }
+
 bool MainWindow::checkGroups()
 {
     QStringList bad = _groupsEdit->invalidGroups();

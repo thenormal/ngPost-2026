@@ -128,6 +128,10 @@ public:
     void updateProgress(const ProgressInfo &info); //!< progress bar, text under it and title of the window
 
     void updateServers();
+    QStringList invalidGroups() const;  //!< the newsgroups that are not valid
+    bool hasGroups() const;
+    void showServersPage();
+    void showSettingsPage();
     bool checkGroups(); //!< false (and a message in the log) if the newsgroups can't be used to post
     void updateParams();
     void updateAutoPostingParams();

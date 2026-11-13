@@ -18,9 +18,19 @@
 //========================================================================
 
 #include "PostingWidget.h"
+#include <QDialog>
+#include <QDirIterator>
+#include <QStorageInfo>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 #include "ProfileBar.h"
 #include "NfoCard.h"
 #include "utils/PostProfile.h"
+#include "utils/NfoWriter.h"
+#include "nntp/NntpServerParams.h"
+#include "utils/MediaInfoReader.h"
 #include "ui_PostingWidget.h"
 #include "MainWindow.h"
 #include <QCoreApplication>
@@ -50,7 +60,7 @@ PostingWidget::PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber) :
     _state(STATE::IDLE),
     _postingFinished(false),
     _filesTitle(nullptr), _releaseInfo(nullptr), _nzbTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
-    _advancedCard(nullptr), _profileBar(nullptr), _nfoCard(nullptr), _advancedToggle(nullptr), _repostButton(nullptr), _repostInfo()
+    _advancedCard(nullptr), _profileBar(nullptr), _nfoCard(nullptr), _summary(nullptr), _sourceBytes(0), _advancedToggle(nullptr), _repostButton(nullptr), _repostInfo()
 {
     _ui->setupUi(this);
     _buildLayout();
@@ -115,6 +125,7 @@ void PostingWidget::onPostingJobDone()
     // This could happen especially when we exceed the number of connections allowed by a provider
     if (!_postingJob)
         return;
+    _updateSummary(false); // the speed of this upload is known now
 
     if (_postingJob->nbArticlesTotal() > 0)
     {
@@ -137,6 +148,179 @@ void PostingWidget::onPostingJobDone()
     _postingFinished = true;
     setIDLE();
     emit postingDone(uploadedOk);
+}
+
+bool PostingWidget::_applyFix(PostChecker::Code code)
+{
+    using Code = PostChecker::Code;
+    switch (code)
+    {
+    case Code::NoServer:
+        _hmi->showServersPage();
+        return false;
+    case Code::NoGroup:
+        _hmi->showSettingsPage();
+        return false;
+    case Code::FoldersNoCompress:
+        _ui->compressCB->setChecked(true);
+        break;
+    case Code::RarMissing:
+        onRarPathClicked();
+        break;
+    case Code::Par2Missing:
+        _ui->par2CB->setChecked(false);
+        break;
+    case Code::PasswordEmpty:
+        onGenNzbPassword();
+        break;
+    case Code::NzbFolderNotWritable:
+        onNzbFileClicked();
+        break;
+    case Code::MediaInfoMissing:
+        _ngPost->_nfoMedia = false;
+        emit _ngPost->nfoOptionsChanged();
+        break;
+    default:
+        break;
+    }
+    return true;
+}
+
+bool PostingWidget::_checkBeforePosting(const QFileInfoList &files, bool hasFolder)
+{
+    for (int round = 0; round < 8; ++round) // a fix can show a new problem (compression on: is the rar program there?)
+    {
+        udatePostingParams();
+
+        PostChecker::Input in;
+        for (NntpServerParams *srv : _ngPost->_nntpServers)
+            if (srv->enabled)
+                ++in.nbServers;
+        in.hasGroups     = _hmi->hasGroups();
+        in.invalidGroups = _hmi->invalidGroups().join(", ");
+        in.hasFolder     = hasFolder;
+        in.compress      = _ngPost->_doCompress;
+        in.rarPath       = _ngPost->_rarPath;
+        in.tmpPath       = _ngPost->_tmpPath;
+        in.par2          = _ngPost->_doPar2;
+        in.par2Path      = _ngPost->_par2Path;
+        in.par2Pct       = _ngPost->_par2Pct;
+        in.passwordChecked = _ui->nzbPassCB->isChecked();
+        in.password      = _ui->nzbPassEdit->text();
+        in.nzbFile       = _ngPost->nzbPath();
+        if (!in.nzbFile.endsWith(".nzb"))
+            in.nzbFile += ".nzb";
+        for (const QFileInfo &fi : files)
+            in.sourceBytes += NgPost::recursiveSize(fi);
+        if (in.compress || in.par2)
+        {
+            QStorageInfo storage(QFileInfo(in.tmpPath).exists() ? in.tmpPath : QDir::tempPath());
+            in.freeBytesTmp = storage.isValid() ? storage.bytesAvailable() : -1;
+        }
+        in.mediaInfoWanted = _ngPost->_genNfo && _ngPost->_nfoMedia;
+        if (in.mediaInfoWanted)
+        {
+            in.mediaInfoFound = !MediaInfoReader::findProgram(_ngPost->_mediaInfoPath).isEmpty();
+            for (const QFileInfo &fi : files)
+            {
+                if (fi.isDir())
+                {
+                    QDirIterator it(fi.absoluteFilePath(), QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+                    while (!in.hasMediaFiles && it.hasNext())
+                        in.hasMediaFiles = MediaInfoReader::isMediaFile(it.next());
+                }
+                else
+                    in.hasMediaFiles = MediaInfoReader::isMediaFile(fi.fileName());
+                if (in.hasMediaFiles)
+                    break;
+            }
+        }
+
+        const QList<PostChecker::Issue> issues = PostChecker::check(in);
+        if (issues.isEmpty())
+            return true;
+
+        bool blocking = false;
+        for (const PostChecker::Issue &issue : issues)
+            blocking = blocking || issue.blocking;
+
+        QDialog dlg(this);
+        dlg.setWindowTitle(tr("Before posting"));
+        dlg.setMinimumWidth(520);
+        QVBoxLayout *v = new QVBoxLayout(&dlg);
+        v->setSpacing(10);
+        QLabel *head = new QLabel(blocking ? tr("This post can't start yet:") : tr("Please check before posting:"), &dlg);
+        head->setStyleSheet("font-weight: bold;");
+        v->addWidget(head);
+        for (int i = 0; i < issues.size(); ++i)
+        {
+            QHBoxLayout *h = new QHBoxLayout();
+            QLabel *text = new QLabel(QString::fromUtf8(issues[i].blocking ? "\u26D4  " : "\u26A0  ") + issues[i].text, &dlg);
+            text->setWordWrap(true);
+            h->addWidget(text, 1);
+            if (!issues[i].fixLabel.isEmpty())
+            {
+                QPushButton *fix = new QPushButton(issues[i].fixLabel, &dlg);
+                connect(fix, &QAbstractButton::clicked, &dlg, [&dlg, i](){ dlg.done(2 + i); });
+                h->addWidget(fix);
+            }
+            v->addLayout(h);
+        }
+        QHBoxLayout *buttons = new QHBoxLayout();
+        buttons->addStretch();
+        QPushButton *cancel = new QPushButton(tr("Cancel"), &dlg);
+        connect(cancel, &QAbstractButton::clicked, &dlg, [&dlg](){ dlg.done(0); });
+        buttons->addWidget(cancel);
+        if (!blocking)
+        {
+            QPushButton *anyway = new QPushButton(tr("Post anyway"), &dlg);
+            connect(anyway, &QAbstractButton::clicked, &dlg, [&dlg](){ dlg.done(1); });
+            buttons->addWidget(anyway);
+        }
+        cancel->setDefault(true);
+        v->addLayout(buttons);
+
+        int res = dlg.exec();
+        if (res == 1)
+            return true;
+        if (res >= 2)
+        {
+            if (!_applyFix(issues[res - 2].code))
+                return false;
+            continue;
+        }
+        return false;
+    }
+    return false;
+}
+
+void PostingWidget::_updateSummary(bool recomputeSize)
+{
+    if (!_summary)
+        return;
+    if (_ui->filesList->count() == 0)
+    {
+        _summary->hide();
+        return;
+    }
+    if (recomputeSize)
+    {
+        QFileInfoList files;
+        bool hasFolder = false;
+        _buildFilesList(files, hasFolder);
+        _sourceBytes = 0;
+        for (const QFileInfo &fi : files)
+            _sourceBytes += NgPost::recursiveSize(fi);
+    }
+    bool pack = _ui->compressCB->isChecked() || _ui->par2CB->isChecked();
+    QString text = tr("%1 item(s), %2").arg(_ui->filesList->count()).arg(NfoWriter::humanSize(_sourceBytes));
+    qint64 up = PostChecker::uploadBytes(_sourceBytes, _ui->par2CB->isChecked(), static_cast<uint>(_ui->redundancySB->value()));
+    if (pack)
+        text += QString::fromUtf8(" \u2192 ") + tr("about %1 to upload").arg(NfoWriter::humanSize(up));
+    QString time = PostChecker::durationText(up, _ngPost->_lastUploadSpeed);
+    text += QString::fromUtf8("  \u00b7  ") + (time.isEmpty() ? tr("upload time: shown after the first post") : tr("upload time: about %1").arg(time));
+    _summary->setText(text);
+    _summary->show();
 }
 
 void PostingWidget::onPostFiles()
@@ -163,19 +347,18 @@ void PostingWidget::postFiles(bool updateMainParams)
             return;
         }
 
-        if (hasFolder && !_ui->compressCB->isChecked())
+        if (updateMainParams)
+        {
+            // post started with the button: the checks explain what is wrong and fix it with one click
+            _hmi->updateServers();
+            _hmi->updateParams();
+            if (!_checkBeforePosting(files, hasFolder))
+                return;
+        }
+        else if (hasFolder && !_ui->compressCB->isChecked())
         {
             _hmi->logError(tr("You can't post folders without using compression..."));
             return;
-        }
-
-
-        if (updateMainParams)
-        {
-            if (!_hmi->checkGroups())
-                return;
-            _hmi->updateServers();
-            _hmi->updateParams();
         }
         udatePostingParams();
 
@@ -911,6 +1094,18 @@ void PostingWidget::_buildLayout()
     _ui->rarEdit->setMaximumWidth(QWIDGETSIZE_MAX);
     _ui->rarSizeEdit->setMaximumWidth(100);
     root->addWidget(_advancedCard);
+
+    // summary of the post (size, estimated upload time)
+    _summary = new QLabel(page);
+    _summary->setObjectName("hint");
+    _summary->hide();
+    root->addWidget(_summary);
+    connect(_ui->filesList->model(), &QAbstractItemModel::rowsInserted, this, [this](){ _updateSummary(true); });
+    connect(_ui->filesList->model(), &QAbstractItemModel::rowsRemoved,  this, [this](){ _updateSummary(true); });
+    connect(_ui->filesList->model(), &QAbstractItemModel::modelReset,   this, [this](){ _updateSummary(true); });
+    connect(_ui->compressCB, &QAbstractButton::toggled, this, [this](){ _updateSummary(false); });
+    connect(_ui->par2CB,     &QAbstractButton::toggled, this, [this](){ _updateSummary(false); });
+    connect(_ui->redundancySB, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](){ _updateSummary(false); });
 
     // bottom: advanced toggle on the left, Post button in the middle of the page
     QGridLayout *bottom = new QGridLayout();

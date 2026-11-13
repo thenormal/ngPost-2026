@@ -4164,6 +4164,34 @@ Do you want to post it again?</source>
         <source>Post anyway</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Before posting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This post can&apos;t start yet:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please check before posting:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 item(s), %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ServerTester</name>
@@ -4516,6 +4544,97 @@ Click on &quot;Add&quot; to configure your Usenet provider.</translation>
     </message>
     <message>
         <source>Delete the profile "%1"?</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PostChecker</name>
+    <message>
+        <source>No server is enabled: add or enable one in Servers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Servers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>There is no newsgroup: add at least one in Settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These newsgroups are not valid: %1. Fix them in Settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The list has folders, and folders can only be posted with compression.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn compression on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression is on but the rar / 7z program was not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the program...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>par2 is on but the par2 program was not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn par2 off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password is turned on but it is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generate a password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The folder of the NZB file does not exist or is not writable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose another file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The temporary folder does not exist or is not writable: the post will fail.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The temporary folder may not have enough free space: about %1 needed, %2 free.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file will have no media information.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn media information off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>less than a minute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

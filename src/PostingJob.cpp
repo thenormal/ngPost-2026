@@ -1552,6 +1552,8 @@ void PostingJob::_printStats() const
 
     int duration = static_cast<int>(_timeStart.elapsed() - _pauseDuration);
     double sec = duration/1000;
+    if (_uploadedSize > 5*1024*1024 && duration > 2000 && _nbArticlesFailed == 0)
+        _ngPost->_lastUploadSpeed = static_cast<double>(_uploadedSize) / (duration / 1000.);
 
     QString msgEnd("\n"), ts = QString("[%1] ").arg(timestamp());
     if (!_ngPost->useHMI())

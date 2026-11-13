@@ -4201,6 +4201,34 @@ Do you want to post it again?</source>
         <source>Post anyway</source>
         <translation>Publicar igualmente</translation>
     </message>
+    <message>
+        <source>Before posting</source>
+        <translation>Antes de publicar</translation>
+    </message>
+    <message>
+        <source>This post can&apos;t start yet:</source>
+        <translation>Este envío aún no puede empezar:</translation>
+    </message>
+    <message>
+        <source>Please check before posting:</source>
+        <translation>Revisa antes de publicar:</translation>
+    </message>
+    <message>
+        <source>%1 item(s), %2</source>
+        <translation>%1 elemento(s), %2</translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation>unos %1 por subir</translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation>tiempo de subida: se muestra tras el primer envío</translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation>tiempo de subida: unos %1</translation>
+    </message>
 </context>
 <context>
     <name>ServerTester</name>
@@ -4554,6 +4582,97 @@ Haz clic en «Añadir» para configurar tu proveedor de Usenet.</translation>
     <message>
         <source>Delete the profile "%1"?</source>
         <translation>¿Eliminar el perfil "%1"?</translation>
+    </message>
+</context>
+<context>
+    <name>PostChecker</name>
+    <message>
+        <source>No server is enabled: add or enable one in Servers.</source>
+        <translation>Ningún servidor está activo: añade o activa uno en Servidores.</translation>
+    </message>
+    <message>
+        <source>Open Servers</source>
+        <translation>Abrir Servidores</translation>
+    </message>
+    <message>
+        <source>There is no newsgroup: add at least one in Settings.</source>
+        <translation>No hay ningún newsgroup: añade al menos uno en Ajustes.</translation>
+    </message>
+    <message>
+        <source>Open Settings</source>
+        <translation>Abrir Ajustes</translation>
+    </message>
+    <message>
+        <source>These newsgroups are not valid: %1. Fix them in Settings.</source>
+        <translation>Estos newsgroups no son válidos: %1. Corrígelos en Ajustes.</translation>
+    </message>
+    <message>
+        <source>The list has folders, and folders can only be posted with compression.</source>
+        <translation>La lista tiene carpetas, y las carpetas solo se pueden publicar con compresión.</translation>
+    </message>
+    <message>
+        <source>Turn compression on</source>
+        <translation>Activar la compresión</translation>
+    </message>
+    <message>
+        <source>Compression is on but the rar / 7z program was not found.</source>
+        <translation>La compresión está activada pero no se encontró el programa rar / 7z.</translation>
+    </message>
+    <message>
+        <source>Choose the program...</source>
+        <translation>Elegir el programa...</translation>
+    </message>
+    <message>
+        <source>par2 is on but the par2 program was not found.</source>
+        <translation>par2 está activado pero no se encontró el programa par2.</translation>
+    </message>
+    <message>
+        <source>Turn par2 off</source>
+        <translation>Desactivar par2</translation>
+    </message>
+    <message>
+        <source>The password is turned on but it is empty.</source>
+        <translation>La contraseña está activada pero está vacía.</translation>
+    </message>
+    <message>
+        <source>Generate a password</source>
+        <translation>Generar una contraseña</translation>
+    </message>
+    <message>
+        <source>The folder of the NZB file does not exist or is not writable.</source>
+        <translation>La carpeta del archivo NZB no existe o no se puede escribir.</translation>
+    </message>
+    <message>
+        <source>Choose another file...</source>
+        <translation>Elegir otro archivo...</translation>
+    </message>
+    <message>
+        <source>The temporary folder does not exist or is not writable: the post will fail.</source>
+        <translation>La carpeta temporal no existe o no se puede escribir: el envío fallará.</translation>
+    </message>
+    <message>
+        <source>The temporary folder may not have enough free space: about %1 needed, %2 free.</source>
+        <translation>La carpeta temporal puede no tener suficiente espacio libre: se necesitan unos %1, libres %2.</translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file will have no media information.</source>
+        <translation>No se encontró MediaInfo: el NFO no tendrá información de los medios.</translation>
+    </message>
+    <message>
+        <source>Turn media information off</source>
+        <translation>Desactivar la información de los medios</translation>
+    </message>
+    <message>
+        <source>less than a minute</source>
+        <translation>menos de un minuto</translation>
+    </message>
+    <message>
+        <source>%1 min</source>
+        <translation>%1 min</translation>
+    </message>
+    <message>
+        <source>%1 h %2 min</source>
+        <translation>%1 h %2 min</translation>
     </message>
 </context>
 </TS>
