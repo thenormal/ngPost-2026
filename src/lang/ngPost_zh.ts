@@ -1652,6 +1652,26 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>The messages never contain the password or the names of the files. The addresses and the token are saved in clear text in the configuration file (like the other passwords): keep it private.</source>
         <translation>消息中从不包含密码或文件名。地址和令牌以明文保存在配置文件中（与其他密码相同）：请妥善保管。</translation>
     </message>
+    <message>
+        <source>Include media information (MediaInfo): duration, video, audio and subtitles</source>
+        <translation>包含媒体信息 (MediaInfo)：时长、视频、音频和字幕</translation>
+    </message>
+    <message>
+        <source>Path of MediaInfo (empty = automatic)</source>
+        <translation>MediaInfo 的路径（留空 = 自动）</translation>
+    </message>
+    <message>
+        <source>Choose the MediaInfo program</source>
+        <translation>选择 MediaInfo 程序</translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file will have no media information.</source>
+        <translation>未找到 MediaInfo：NFO 文件将没有媒体信息。</translation>
+    </message>
+    <message>
+        <source>MediaInfo found: %1</source>
+        <translation>已找到 MediaInfo：%1</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3159,6 +3179,14 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>## Discord / Telegram / webhook addresses and tokens are secrets, like the passwords: keep this file private</source>
         <translation>## Discord / Telegram / webhook 地址和令牌属于机密，与密码相同：请妥善保管此文件</translation>
     </message>
+    <message>
+        <source>don&apos;t write the media information (MediaInfo) in the NFO file</source>
+        <translation>不在 NFO 文件中写入媒体信息 (MediaInfo)</translation>
+    </message>
+    <message>
+        <source>path of the MediaInfo program (default: automatic)</source>
+        <translation>MediaInfo 程序的路径（默认：自动）</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3737,6 +3765,10 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     <message>
         <source>Couldn&apos;t write the NFO file next to the nzb: %1</source>
         <translation>无法在 nzb 旁边写入 NFO 文件：%1</translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file has no media information</source>
+        <translation>未找到 MediaInfo：NFO 文件没有媒体信息</translation>
     </message>
 </context>
 <context>

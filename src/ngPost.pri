@@ -93,6 +93,7 @@ SOURCES += \
         utils/CmdOrGuiApp.cpp \
         utils/Diagnostics.cpp \
         utils/LatencyStats.cpp \
+        utils/MediaInfoReader.cpp \
         utils/NfoWriter.cpp \
         utils/Notifier.cpp \
         utils/Yenc.cpp
@@ -123,6 +124,7 @@ HEADERS += \
     utils/CmdOrGuiApp.h \
     utils/Diagnostics.h \
     utils/LatencyStats.h \
+    utils/MediaInfoReader.h \
     utils/NfoWriter.h \
     utils/Notifier.h \
     utils/Macros.h \

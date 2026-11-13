@@ -69,6 +69,17 @@ QString NfoWriter::build(const NfoInfo &info)
             out += QString("   %1  %2\n").arg(f.name, -width).arg(humanSize(f.size), 10);
     }
 
+    if (info.mediaEnabled && info.hideNames)
+        out += "\n Media information\n -----------------\n The media information is not written (obfuscation is on).\n";
+    else if (info.mediaEnabled && !info.media.isEmpty())
+    {
+        out += "\n Media information\n -----------------\n" + info.media;
+        if (info.mediaTimedOut)
+            out += "   (reading stopped after 20 seconds: the other files are not described)\n";
+        else if (info.mediaFiles > info.mediaDescribed)
+            out += QString("   ... and %1 more media file(s)\n").arg(info.mediaFiles - info.mediaDescribed);
+    }
+
     if (!info.freeText.trimmed().isEmpty())
     {
         out += "\n" + QString(70, QChar('-')) + "\n";

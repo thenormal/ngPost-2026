@@ -1634,6 +1634,26 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>The messages never contain the password or the names of the files. The addresses and the token are saved in clear text in the configuration file (like the other passwords): keep it private.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Include media information (MediaInfo): duration, video, audio and subtitles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path of MediaInfo (empty = automatic)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the MediaInfo program</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file will have no media information.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MediaInfo found: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3131,6 +3151,14 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>## Discord / Telegram / webhook addresses and tokens are secrets, like the passwords: keep this file private</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>don&apos;t write the media information (MediaInfo) in the NFO file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>path of the MediaInfo program (default: automatic)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3701,6 +3729,10 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     </message>
     <message>
         <source>Couldn&apos;t write the NFO file next to the nzb: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file has no media information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

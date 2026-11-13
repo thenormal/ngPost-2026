@@ -1652,6 +1652,26 @@ Decidi dopo: restano in coda e verranno riproposti al prossimo avvio.</translati
         <source>The messages never contain the password or the names of the files. The addresses and the token are saved in clear text in the configuration file (like the other passwords): keep it private.</source>
         <translation>I messaggi non contengono mai la password né i nomi dei file. Gli indirizzi e il token sono salvati in chiaro nel file di configurazione (come le altre password): tienilo privato.</translation>
     </message>
+    <message>
+        <source>Include media information (MediaInfo): duration, video, audio and subtitles</source>
+        <translation>Includi le informazioni sui media (MediaInfo): durata, video, audio e sottotitoli</translation>
+    </message>
+    <message>
+        <source>Path of MediaInfo (empty = automatic)</source>
+        <translation>Percorso di MediaInfo (vuoto = automatico)</translation>
+    </message>
+    <message>
+        <source>Choose the MediaInfo program</source>
+        <translation>Scegli il programma MediaInfo</translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file will have no media information.</source>
+        <translation>MediaInfo non è stato trovato: l&apos;NFO non avrà le informazioni sui media.</translation>
+    </message>
+    <message>
+        <source>MediaInfo found: %1</source>
+        <translation>MediaInfo trovato: %1</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3160,6 +3180,14 @@ Usa --par2_pct oppure imposta PAR2_PCT o PAR2_ARGS nel file di configurazione.</
         <source>## Discord / Telegram / webhook addresses and tokens are secrets, like the passwords: keep this file private</source>
         <translation>## Gli indirizzi Discord / Telegram / webhook e i token sono segreti, come le password: tieni privato questo file</translation>
     </message>
+    <message>
+        <source>don&apos;t write the media information (MediaInfo) in the NFO file</source>
+        <translation>non scrive nell&apos;NFO le informazioni sui media (MediaInfo)</translation>
+    </message>
+    <message>
+        <source>path of the MediaInfo program (default: automatic)</source>
+        <translation>percorso del programma MediaInfo (predefinito: automatico)</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3738,6 +3766,10 @@ Usa --par2_pct oppure imposta PAR2_PCT o PAR2_ARGS nel file di configurazione.</
     <message>
         <source>Couldn&apos;t write the NFO file next to the nzb: %1</source>
         <translation>Impossibile scrivere il file NFO accanto all&apos;nzb: %1</translation>
+    </message>
+    <message>
+        <source>MediaInfo was not found: the NFO file has no media information</source>
+        <translation>MediaInfo non è stato trovato: l&apos;NFO non ha le informazioni sui media</translation>
     </message>
 </context>
 <context>

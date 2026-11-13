@@ -32,7 +32,7 @@ RUN echo "25da379e76f968608b6f24d332b93ca75e0c8a88b92a6ebbb21cbbb0d00c1f18  /par
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libqt5core5a libqt5network5 libssl3 ca-certificates p7zip-full \
+        libqt5core5a libqt5network5 libssl3 ca-certificates p7zip-full mediainfo \
     && rm -rf /var/lib/apt/lists/*
 
 # parpar must be next to ngPost: it is then used automatically

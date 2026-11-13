@@ -45,9 +45,11 @@ Goal: the program should be simple for someone who opens it for the first time, 
 | Planned | **Quick Post**: the same options card as Auto Posting (shared, so it is fixed once), the profiles, par2 starting at 10 %, the password in the Archive card, checks before posting and a summary (files, size, estimated time) |
 | Done | Fix: the "One release" note of Quick Post must not appear during or after the upload (the list then shows the volumes of the archive) |
 | Planned | Fix: in a Quick Post tab whose post is finished, adding new files should show the "One release" note again (the finished state is not reset when the user adds files) |
+| Planned | Uninstaller: ask whether to also delete the settings and the history kept in `%APPDATA%\ngPost Deluxe` (default: keep them) |
 | Done | **Feedback** entry in the About window: report a bug or suggest an idea. It opens the new-issue page of GitHub already filled in (no access key in the program, nothing is sent without the user seeing it), with the diagnostic report to attach and issue forms in the repository |
 | Done | Warning when a post is already in the history (same name and size), before it is posted again (Quick Post asks, auto posting and command line skip it; `--allow_repost` and a Settings option turn it off) |
-| Done | NFO file generator for a post: written next to the nzb, optionally posted with the files, optional password and free text (Settings, card NFO file; `--gen_nfo`). The media information (MediaInfo) comes in a second step, and the options will move into the shared options card of Quick Post and Auto Posting |
+| Done | NFO file generator for a post: written next to the nzb, optionally posted with the files, optional password and free text (Settings, card NFO file; `--gen_nfo`). The options will move into the shared options card of Quick Post and Auto Posting |
+| Done | Media information in the NFO file with MediaInfo (duration, video, audio, subtitles of up to 20 files; on by default, `--no_nfo_media`, `--mediainfo_path`). MediaInfo is shipped in the Windows installer and the Docker image |
 | Done | **Notifications** when the posts are done or fail: system notification (GUI), Discord, Telegram and a generic webhook; one message when all the posts are done (default) or after each post; the addresses and tokens are treated like passwords |
 
 ## Version 1.4 - Verification and control (first thoughts)

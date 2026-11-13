@@ -29,6 +29,8 @@ jobs:
             arch: x64
             sevenzip: 7z2605-x64.exe
             sevenzip_sha256: FD99E86F57D8F429EF5ED045BF98315AF962E2309B0F1BA87A147A44C71647D0
+            mediainfo: MediaInfo_CLI_26.10_Windows_x64.zip
+            mediainfo_sha256: 4CC94BD272903914C04F4F9A9F53A6C94B5EA6C6454CF738D29FA182C41E8A29
           - name: win32
             qt_arch: win32_mingw81
             qt_tools: 'tools_mingw,qt.tools.win32_mingw810'
@@ -40,6 +42,8 @@ jobs:
             arch: x86
             sevenzip: 7z2605.exe
             sevenzip_sha256: 6435A470FE7C4769962DBED8A60C641EE21401C833CED06077C80E33E7845A5E
+            mediainfo: MediaInfo_CLI_26.10_Windows_i386.zip
+            mediainfo_sha256: BCD2BF7F3A5BA826E6F5EBD3D914980CDFCA8EF3D64D2624958660F67B87B710
     steps:
       - uses: actions/checkout@v4
 
@@ -113,6 +117,14 @@ jobs:
           7z x 7zip-setup.exe -o7zip_tmp -y | Out-Null
           New-Item -ItemType Directory dist/7-Zip | Out-Null
           Copy-Item 7zip_tmp/7z.exe, 7zip_tmp/7z.dll, 7zip_tmp/License.txt dist/7-Zip/
+          # MediaInfo (command line, BSD-2-Clause): the media information of the NFO file. The official ZIP is in the repository (release/libs)
+          Copy-Item release/libs/${{ matrix.mediainfo }} mediainfo.zip
+          $miHash = (Get-FileHash mediainfo.zip -Algorithm SHA256).Hash
+          if ($miHash -ne '${{ matrix.mediainfo_sha256 }}') { throw "release/libs/${{ matrix.mediainfo }} has an unexpected SHA256: $miHash" }
+          Expand-Archive mediainfo.zip -DestinationPath mediainfo_tmp
+          New-Item -ItemType Directory dist/MediaInfo | Out-Null
+          Copy-Item mediainfo_tmp/MediaInfo.exe, mediainfo_tmp/License.html, mediainfo_tmp/LICENSE dist/MediaInfo/
+          if (Test-Path mediainfo_tmp/LIBCURL.DLL) { Copy-Item mediainfo_tmp/LIBCURL.DLL dist/MediaInfo/ }
           Copy-Item ngPost.conf, LICENSE dist/
           Get-ChildItem dist | Format-Table Name, Length
 
@@ -181,7 +193,7 @@ jobs:
           $p = Start-Process -FilePath $setup -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=`"$dir`" /LOG=C:\ngtest-install.log" -Wait -PassThru
           if ($p.ExitCode -ne 0) { Get-Content C:\ngtest-install.log -ErrorAction SilentlyContinue | Select-Object -Last 30; throw "install failed ($($p.ExitCode))" }
           Get-ChildItem $dir | Format-Table Name, Length
-          foreach ($f in 'ngPostDeluxe.exe','7-Zip\7z.exe','7-Zip\7z.dll','7-Zip\License.txt','unins000.exe') {
+          foreach ($f in 'ngPostDeluxe.exe','7-Zip\7z.exe','7-Zip\7z.dll','7-Zip\License.txt','MediaInfo\MediaInfo.exe','MediaInfo\License.html','unins000.exe') {
             if (-not (Test-Path "$dir\$f")) { throw "missing after install: $f" }
           }
           if (Test-Path "$dir\ngPost.conf") { throw "the sample ngPost.conf must not be installed" }

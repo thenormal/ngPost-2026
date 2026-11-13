@@ -90,6 +90,10 @@ private:
     QCheckBox      *_nfoCB;
     QCheckBox      *_nfoInPostCB;
     QCheckBox      *_nfoPassCB;
+    QCheckBox      *_nfoMediaCB;
+    QLineEdit      *_nfoMediaPath;
+    QPushButton    *_nfoMediaButton;
+    QLabel         *_nfoMediaStatus;
     QLabel         *_nfoTextLbl;
     QPlainTextEdit *_nfoText;
     QLabel         *_nfoHint;
@@ -204,6 +208,7 @@ private slots:
     void onAutoSave();
     void onDiagnosticReport();
     void _updateNfoSettings();
+    void _updateMediaInfoStatus();
     void _showTrayMessage(const QString &title, const QString &text);
 
     void onObfucateToggled(bool checked);
