@@ -1,7 +1,7 @@
 ﻿; Inno Setup script of the ngPost Deluxe installer (built by the GitHub workflow, see .github/workflows/build-windows.yml)
-;   ISCC /DAppVersion=1.2 /DArch=x64 /DSourceDir=..\dist /DOutName=ngPostDeluxe-v1.2-win64-setup installer\ngPostDeluxe.iss
+;   ISCC /DAppVersion=1.3 /DArch=x64 /DSourceDir=..\dist /DOutName=ngPostDeluxe-v1.3-win64-setup installer\ngPostDeluxe.iss
 #ifndef AppVersion
-  #define AppVersion "1.2"
+  #define AppVersion "1.3"
 #endif
 #ifndef Arch
   #define Arch "x64"
