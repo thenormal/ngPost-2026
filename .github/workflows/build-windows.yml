@@ -209,9 +209,14 @@ jobs:
           Start-Sleep -Seconds 8
           if ($g.HasExited) { throw "the installed GUI closed by itself, exit code $($g.ExitCode)" }
           Stop-Process -Id $g.Id -Force
+          # the settings and the history are kept by a silent uninstall (the question is only asked in the normal one)
+          $data = Join-Path $env:APPDATA 'ngPost Deluxe'
+          New-Item -ItemType Directory -Force $data | Out-Null
+          Set-Content -Path "$data\ngPost_history.csv" -Value 'test'
           $u = Start-Process -FilePath "$dir\unins000.exe" -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART' -Wait -PassThru
           Start-Sleep -Seconds 3
           if (Test-Path "$dir\ngPostDeluxe.exe") { throw "ngPostDeluxe.exe still there after the uninstall" }
+          if (-not (Test-Path "$data\ngPost_history.csv")) { throw "a silent uninstall must keep the settings and the history" }
           Write-Host "install / start / uninstall OK"
 
       - uses: actions/upload-artifact@v4
