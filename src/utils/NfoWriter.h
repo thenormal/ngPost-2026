@@ -51,6 +51,11 @@ public:
         uint           par2Pct = 0;
         QString        password;       //!< empty = not written
         QString        freeText;
+        bool           mediaEnabled = false; //!< "Include media information" is on
+        QString        media;          //!< text read by MediaInfo (empty = nothing read)
+        int            mediaFiles = 0;     //!< media files in the post
+        int            mediaDescribed = 0; //!< files described in \a media
+        bool           mediaTimedOut = false; //!< the time limit stopped the reading
     };
 
     static QString build(const NfoInfo &info);

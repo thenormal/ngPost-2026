@@ -198,6 +198,8 @@ const QList<QCommandLineOption> NgPost::sCmdOptions = {
     { "gen_nfo",                              tr("write an NFO file (name, date, files, archive, par2) next to the nzb")},
     { "nfo_in_post",                          tr("also post the NFO file with the files (implies --gen_nfo)")},
     { "nfo_password",                         tr("write the password of the archive in the NFO file")},
+    { "no_nfo_media",                         tr("don't write the media information (MediaInfo) in the NFO file")},
+    { "mediainfo_path",                       tr("path of the MediaInfo program (default: automatic)"), "mediainfo_path"},
     { "nfo_text",                             tr("text file whose content is added at the end of the NFO file"), "nfo_text"},
     { "allow_repost",                         tr("post again the files that are already in the history (by default they are skipped)")},
 
@@ -1694,6 +1696,10 @@ bool NgPost::parseCommandLine(int argc, char *argv[])
         _nfoInPost = true;
     if (parser.isSet("nfo_password"))
         _nfoPassword = true;
+    if (parser.isSet("no_nfo_media"))
+        _nfoMedia = false;
+    if (parser.isSet("mediainfo_path"))
+        _mediaInfoPath = parser.value("mediainfo_path");
     if (parser.isSet("nfo_text"))
     {
         QFile textFile(parser.value("nfo_text"));
@@ -2498,11 +2504,15 @@ QString NgPost::_parseConfig(const QString &configPath)
                         _notifier.settings().telegramChat = val.trimmed();
                     else if (opt == "notify_webhook")
                         _notifier.settings().webhook = val.trimmed();
-                    else if (opt == "gen_nfo" || opt == "nfo_in_post" || opt == "nfo_password")
+                    else if (opt == "gen_nfo" || opt == "nfo_in_post" || opt == "nfo_password" || opt == "nfo_media")
                     {
                         val = val.toLower();
                         bool on = (val == "on" || val == "true" || val == "1" || val == "yes");
-                        (opt == "gen_nfo" ? _genNfo : opt == "nfo_in_post" ? _nfoInPost : _nfoPassword) = on;
+                        (opt == "gen_nfo" ? _genNfo : opt == "nfo_in_post" ? _nfoInPost : opt == "nfo_media" ? _nfoMedia : _nfoPassword) = on;
+                    }
+                    else if (opt == "mediainfo_path")
+                    {
+                        _mediaInfoPath = val.trimmed();
                     }
                     else if (opt == "nfo_text")
                     {
@@ -3105,6 +3115,8 @@ void NgPost::saveConfig(bool quiet)
                << "gen_nfo = " << (_genNfo ? "ON" : "OFF") << "\n"
                << "nfo_in_post = " << (_nfoInPost ? "ON" : "OFF") << "\n"
                << "nfo_password = " << (_nfoPassword ? "ON" : "OFF") << "\n"
+               << "nfo_media = " << (_nfoMedia ? "ON" : "OFF") << "\n"
+               << (_mediaInfoPath.isEmpty() ? "#" : "") << "mediainfo_path = " << _mediaInfoPath << "\n"
                << (_nfoText.trimmed().isEmpty() ? "#" : "") << "nfo_text = " << QString(_nfoText).replace("\r", "").replace("\n", "\\n") << "\n"
                << "\n"
                << tr("## Warn when a post is already in the history (same name and size): the GUI asks, the auto posting and the command line skip it (ON or OFF)") << "\n"

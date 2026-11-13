@@ -159,6 +159,9 @@ private:
 
     AtomicBool  _delFilesAfterPost;
     QFileInfoList       _originalFiles;
+    QString             _nfoMediaText; //!< media information read at the start of the post
+    int                 _nfoMediaFiles = 0, _nfoMediaDescribed = 0;
+    bool                _nfoMediaTimedOut = false;
     QString             _nfoContent;   //!< text of the NFO file (empty if none)
     QTemporaryDir      *_nfoDir = nullptr; //!< the NFO that is posted lives here until the end of the post
     const int           _nbInputFiles; //!< number of files and folders given to post (for the history)
@@ -376,6 +379,7 @@ private:
     inline NntpFile *_getNextFile();
 
     void _initPosting();
+    void _readMediaInfo();       //!< reads the media information of the original files (before they are compressed or renamed)
     void _prepareNfo();          //!< builds the NFO file (and adds it to the files to post if asked)
     void _saveNfoNextToNzb();
     bool _nfoHidesNames() const;

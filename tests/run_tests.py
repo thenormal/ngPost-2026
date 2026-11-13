@@ -850,6 +850,102 @@ def test_nfo_file(work):
         stub.stop()
 
 
+def test_nfo_media_info(work):
+    # MediaInfo in the NFO: layout, 20 files max, no names when hidden, program missing, can be switched off, real MediaInfo
+    import json
+    stub = NntpStub().start()
+    try:
+        fake = os.path.join(work, "fakemediainfo")
+        marker = os.path.join(work, "fake_was_called")
+        with open(fake, "w") as f:
+            f.write("""#!/usr/bin/env python3
+import sys, json
+open(%r, "a").write(sys.argv[-1] + "\\n")
+tracks = [{"@type": "General", "Duration": "6130.4", "FileSize": "8800000000"},
+          {"@type": "Video", "Format": "HEVC", "Format_Profile": "Main 10@L5.1@Main", "Width": "3840", "Height": "2160",
+           "FrameRate": "23.976", "HDR_Format": "SMPTE ST 2086", "HDR_Format_Compatibility": "HDR10"},
+          {"@type": "Audio", "Language": "en", "Format": "E-AC-3", "Channels": "6", "BitRate": "640000"},
+          {"@type": "Audio", "Language": "it", "Format": "AC-3", "Channels": "2", "BitRate": "192000"},
+          {"@type": "Text", "Language": "en", "Format": "UTF-8"},
+          {"@type": "Text", "Language": "it", "Format": "PGS"}]
+print(json.dumps({"media": {"@ref": sys.argv[-1], "track": tracks}}))
+""" % marker)
+        os.chmod(fake, 0o755)
+
+        movie = os.path.join(work, "movie.mkv")
+        make_file(movie, 100_000, 31)
+        other = os.path.join(work, "readme.dat")
+        make_file(other, 10_000, 32)
+
+        # 1. layout
+        nzb = os.path.join(work, "m1.nzb")
+        r = run_ngpost(stub, work, [movie, other], nzb, extra=["--gen_nfo", "--mediainfo_path", fake])
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        c = open(os.path.join(work, "m1.nfo"), encoding="utf-8").read()
+        for needle in ("Media information", "movie.mkv - 01:42:10, 8.20 GB", "Video     : HEVC Main 10, 3840x2160, 23.976 fps, HDR10",
+                       "Audio     : English, E-AC-3, 5.1, 640 kb/s", "Audio     : Italian, AC-3, 2.0, 192 kb/s",
+                       "Subtitles : English (SRT), Italian (PGS)"):
+            check(needle in c, "'%s' is missing in the NFO:\n%s" % (needle, c))
+        check("readme.dat -" not in c, "a file that is not a media file is described:\n" + c)
+        with open(marker) as f:
+            check(f.read().count("\n") == 1, "MediaInfo should only be run for the media file")
+
+        # 2. 20 files at most
+        many = os.path.join(work, "many")
+        os.makedirs(many)
+        for i in range(22):
+            make_file(os.path.join(many, "e%02d.mkv" % i), 5_000, 40 + i)
+        nzb = os.path.join(work, "m2.nzb")
+        r = run_ngpost(stub, work, [many], nzb, extra=["--gen_nfo", "--mediainfo_path", fake])
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        c = open(os.path.join(work, "m2.nfo"), encoding="utf-8").read()
+        check(c.count("Video     :") == 20, "20 files should be described, got %d" % c.count("Video     :"))
+        check("... and 2 more media file(s)" in c, "the note about the other files is missing:\n" + c)
+
+        # 3. names hidden: not written, MediaInfo not even run
+        os.remove(marker)
+        nzb = os.path.join(work, "m3.nzb")
+        r = run_ngpost(stub, work, [movie], nzb, extra=["--nfo_in_post", "--obfuscate", "--mediainfo_path", fake])
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        c = open(os.path.join(work, "m3.nfo"), encoding="utf-8").read()
+        check("movie.mkv" not in c and "HEVC" not in c and "not written" in c, "media information with hidden names:\n" + c)
+        check(not os.path.exists(marker), "MediaInfo was run although the names are hidden")
+
+        # 4. switched off
+        nzb = os.path.join(work, "m4.nzb")
+        r = run_ngpost(stub, work, [movie], nzb, extra=["--gen_nfo", "--no_nfo_media", "--mediainfo_path", fake])
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        c = open(os.path.join(work, "m4.nfo"), encoding="utf-8").read()
+        check("Media information" not in c, "media information although --no_nfo_media:\n" + c)
+        check(not os.path.exists(marker), "MediaInfo was run although --no_nfo_media")
+
+        # 5. program not found: the post works, the NFO has no media section, one line in the log
+        nzb = os.path.join(work, "m5.nzb")
+        r = run_ngpost(stub, work, [movie], nzb, extra=["--gen_nfo", "--mediainfo_path", os.path.join(work, "nothing_here")])
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        c = open(os.path.join(work, "m5.nfo"), encoding="utf-8").read()
+        check("movie.mkv" in c and "Media information" not in c, "unexpected NFO without MediaInfo:\n" + c)
+        check("MediaInfo was not found" in LAST_OUTPUT, "no message about the missing MediaInfo\n" + LAST_OUTPUT)
+
+        # 6. the real MediaInfo, on a small video made by ffmpeg
+        real, ffmpeg = shutil.which("mediainfo"), shutil.which("ffmpeg")
+        if real and ffmpeg:
+            video = os.path.join(work, "clip.mkv")
+            subprocess.run([ffmpeg, "-loglevel", "error", "-f", "lavfi", "-i", "testsrc=d=1:s=320x240:r=25",
+                            "-f", "lavfi", "-i", "sine=d=1", "-c:v", "mpeg4", "-c:a", "mp3",
+                            "-metadata:s:a:0", "language=ita", video], check=True)
+            nzb = os.path.join(work, "m6.nzb")
+            r = run_ngpost(stub, work, [video], nzb, extra=["--gen_nfo"])
+            check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+            c = open(os.path.join(work, "m6.nfo"), encoding="utf-8").read()
+            for needle in ("clip.mkv - 00:00:01", "320x240", "25 fps", "Italian"):
+                check(needle in c, "'%s' is missing in the NFO made with the real MediaInfo:\n%s" % (needle, c))
+        else:
+            print("      (real MediaInfo or ffmpeg not installed: this part is skipped)")
+    finally:
+        stub.stop()
+
+
 class HttpSink:
     """small HTTP server that keeps the POST requests it receives (for the notifications)"""
     def __init__(self):
@@ -974,7 +1070,7 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
          test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
          test_help_pages, test_latency_is_measured, test_feedback_forms,
-         test_duplicate_is_skipped, test_nfo_file, test_notifications,
+         test_duplicate_is_skipped, test_nfo_file, test_nfo_media_info, test_notifications,
          test_notification_when_all_done]
 
 

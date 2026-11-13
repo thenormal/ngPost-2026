@@ -1,0 +1,9 @@
+MediaInfo CLI 26.10 (Windows 64 bit and 32 bit), used to ship MediaInfo.exe and its licence with ngPost Deluxe
+(the media information of the NFO file)
+Source: https://mediaarea.net/en/MediaInfo/Download/Windows
+License: BSD 2-Clause (c) MediaArea.net SARL, see License.html installed next to MediaInfo.exe
+
+MediaInfo_CLI_26.10_Windows_x64.zip   (64 bit)  sha256: 4CC94BD272903914C04F4F9A9F53A6C94B5EA6C6454CF738D29FA182C41E8A29
+MediaInfo_CLI_26.10_Windows_i386.zip  (32 bit)  sha256: BCD2BF7F3A5BA826E6F5EBD3D914980CDFCA8EF3D64D2624958660F67B87B710
+
+They are kept in the repository so that the build does not depend on a download (the workflow checks the SHA256).

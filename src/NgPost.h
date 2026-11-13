@@ -210,6 +210,8 @@ private:
     bool        _genNfo       = false; //!< write an NFO file next to the nzb (key "gen_nfo", --gen_nfo)
     bool        _nfoInPost    = false; //!< and post it with the files (key "nfo_in_post", --nfo_in_post)
     bool        _nfoPassword  = false; //!< write the password of the archive in it (key "nfo_password", --nfo_password)
+    bool        _nfoMedia     = true;  //!< media information (MediaInfo) in the NFO (key "nfo_media", --no_nfo_media)
+    QString     _mediaInfoPath;        //!< path of MediaInfo (key "mediainfo_path", --mediainfo_path), empty = automatic
     QString     _nfoText;              //!< free text added to the NFO (key "nfo_text", --nfo_text file)
     bool        _checkDuplicates = true; //!< warn (GUI) / skip (auto, command line) a post already in the history (key "warn_duplicates", --allow_repost turns it off)
     bool        _closingApp   = false; //!< the posts are stopped because the application closes: keep them in the queue

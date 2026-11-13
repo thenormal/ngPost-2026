@@ -28,6 +28,7 @@
 #include "utils/Diagnostics.h"
 #include "utils/LatencyStats.h"
 #include "utils/NfoWriter.h"
+#include "utils/MediaInfoReader.h"
 #include <QDirIterator>
 #include "nntp/NntpFile.h"
 #include "nntp/NntpArticle.h"
@@ -268,6 +269,8 @@ qDebug() << "[MB_TRACE][Issue#82][PostingJob::onStartPosting] job: " << this
     else
 #endif
         _logAs(NgPost::LOG_PHASE, QString("\n\n[%1] %2: %3").arg(timestamp()).arg(_isRepost ? tr("Post again the missing Articles") : tr("Start posting")).arg(_nzbName));
+
+    _readMediaInfo();
 
     if (_doCompress)
     {
@@ -1094,6 +1097,42 @@ void PostingJob::_initPosting()
     emit articlesNumber(_nbArticlesTotal);
 }
 
+void PostingJob::_readMediaInfo()
+{
+    if (!_ngPost->_genNfo || !_ngPost->_nfoMedia || _nfoHidesNames() || _isRepost)
+        return;
+    QString program = MediaInfoReader::findProgram(_ngPost->_mediaInfoPath);
+    if (program.isEmpty())
+    {
+        _log(tr("MediaInfo was not found: the NFO file has no media information"));
+        return;
+    }
+    QList<QPair<QString, QString>> files;
+    for (const QFileInfo &fi : _inputFiles)
+    {
+        if (fi.isDir())
+        {
+            QDir base(fi.absoluteFilePath());
+            QDirIterator it(base.absolutePath(), QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+            QList<QPair<QString, QString>> found;
+            while (it.hasNext())
+            {
+                it.next();
+                found.append({fi.fileName() + "/" + base.relativeFilePath(it.filePath()), it.filePath()});
+            }
+            std::sort(found.begin(), found.end());
+            files += found;
+        }
+        else
+            files.append({fi.fileName(), fi.absoluteFilePath()});
+    }
+    MediaInfoReader::Result res = MediaInfoReader::read(program, files);
+    _nfoMediaText      = res.text;
+    _nfoMediaFiles     = res.nbMediaFiles;
+    _nfoMediaDescribed = res.nbDescribed;
+    _nfoMediaTimedOut  = res.timedOut;
+}
+
 void PostingJob::_prepareNfo()
 {
     NfoWriter::NfoInfo info;
@@ -1134,6 +1173,11 @@ void PostingJob::_prepareNfo()
     if (_ngPost->_nfoPassword)
         info.password = _rarPass;
     info.freeText = _ngPost->_nfoText;
+    info.mediaEnabled   = _ngPost->_nfoMedia;
+    info.media          = _nfoMediaText;
+    info.mediaFiles     = _nfoMediaFiles;
+    info.mediaDescribed = _nfoMediaDescribed;
+    info.mediaTimedOut  = _nfoMediaTimedOut;
     _nfoContent   = NfoWriter::build(info);
 
     if (!_ngPost->_nfoInPost)

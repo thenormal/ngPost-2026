@@ -30,7 +30,8 @@ An NFO is a small text file that describes the post: its name, the date, the fil
 
 - **Write an NFO file next to the nzb**: `name.nfo` is saved in the same folder as `name.nzb`.
 - **Also post the NFO file with the files**: it is uploaded with the post and appears in the NZB.
+- **Include media information (MediaInfo)**: on by default. For videos and audio files the NFO lists the duration, the video (format, size, frame rate, HDR), the audio tracks (language, format, channels, bit rate) and the subtitles. At most 20 files are described (the others are counted) and the reading stops after 20 seconds. It uses the free program MediaInfo: it comes with the Windows installer and the Docker image; on Linux and macOS install the `mediainfo` package, or choose the program in Settings. Without MediaInfo the NFO simply has no media section.
 - **Write the password of the archive**: off by default. In a posted NFO the password can be read by everyone who downloads the post.
 - **Text added at the end**: notes, links, anything you want to say. The same text is used for all the posts.
 
-When the names of the files are hidden (obfuscation of the articles or of the file names), the NFO that is posted does not list any file name, and the file itself gets a random name. On the command line use `--gen_nfo`, `--nfo_in_post`, `--nfo_password` and `--nfo_text file.txt`.
+When the names of the files are hidden (obfuscation of the articles or of the file names), the NFO that is posted does not list any file name or media information, and the file itself gets a random name. On the command line use `--gen_nfo`, `--nfo_in_post`, `--nfo_password` and `--nfo_text file.txt`, plus `--no_nfo_media` and `--mediainfo_path path`.
