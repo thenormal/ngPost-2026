@@ -2,7 +2,8 @@ name: Docker image
 
 # Builds the command line version of ngPost Deluxe as a Docker image (for NAS / servers, Unraid...).
 # - pull request or branch: the image is only built, to check that it works
-# - tag v* (v1.1, v1.2...): the image is published on ghcr.io/thenormal/ngpost-deluxe (tags 1.1 and latest)
+# - tag v* (v1.1, v1.2...): the image is published on ghcr.io/thenormal/ngpost-deluxe (tags 1.1 and latest);
+#   a release candidate (v1.3-rc1) gets only its own tag, never "latest"
 # - started by hand (Actions > Docker image > Run workflow) with "publish" ticked: same, with the version you type
 on:
   push:
@@ -46,7 +47,7 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/ngpost-deluxe
           tags: |
             type=match,pattern=v(.*),group=1
-            type=raw,value=latest,enable=${{ env.PUBLISH == 'true' }}
+            type=raw,value=latest,enable=${{ env.PUBLISH == 'true' && !(github.ref_type == 'tag' && contains(github.ref_name, '-')) }}
             type=raw,value=${{ inputs.version }},enable=${{ inputs.version != '' }}
             type=ref,event=branch
             type=ref,event=pr

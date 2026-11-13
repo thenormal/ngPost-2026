@@ -2,7 +2,8 @@ name: Build Windows (64 and 32 bit)
 
 # Builds ngPost Deluxe on a Windows runner (Qt 5.15.2 + MinGW 8.1) for Windows 64 bit and 32 bit and
 # publishes a ready-to-run folder as a downloadable artifact: Actions tab > the run > "Artifacts".
-# When a tag "v*" is pushed (v1.0, v1.1, v1.2...), a GitHub release is created with the two ZIP files.
+# When a tag "v*" is pushed (v1.0, v1.1, v1.2...), a GitHub release is created with the two ZIP files and the two installers.
+# A tag with a "-" (v1.3-rc1) is a release candidate: it is published as a pre-release.
 on:
   push:
     branches: [ master ]
@@ -184,7 +185,9 @@ jobs:
           if ($pri -notmatch 'APP_VERSION=\\"([0-9.]+)') { throw "APP_VERSION not found in src/ngPost.pri" }
           $ver = $Matches[1]
           if ('${{ github.ref_type }}' -eq 'tag' -and '${{ github.ref_name }}' -match '^v(.+)$') { $ver = $Matches[1] }
-          & $iscc "/DAppVersion=$ver" "/DArch=${{ matrix.arch }}" "/DSourceDir=$PWD\dist" "/DOutName=ngPostDeluxe-v$ver-${{ matrix.name }}-setup" installer\ngPostDeluxe.iss
+          # a release candidate (tag v1.3-rc1) keeps "-rc1" in the file name; the number inside the installer is only 1.3
+          $num = $ver -replace '-.*$', ''
+          & $iscc "/DAppVersion=$num" "/DArch=${{ matrix.arch }}" "/DSourceDir=$PWD\dist" "/DOutName=ngPostDeluxe-v$ver-${{ matrix.name }}-setup" installer\ngPostDeluxe.iss
           if ($LASTEXITCODE -ne 0) { throw "ISCC failed ($LASTEXITCODE)" }
           Get-ChildItem installer_out | Format-Table Name, Length
 
@@ -271,9 +274,14 @@ jobs:
             echo "::error::Expected 4 files (2 ZIP and 2 installers), found ${#files[@]}"
             exit 1
           fi
+          # a tag with a "-" (v1.3-rc1) is a release candidate: it is published as a pre-release, to be tested before the real release
+          if [[ "$tag" == *-* ]]; then pre=(--prerelease); else pre=(); fi
           if gh release view "$tag" >/dev/null 2>&1; then
             # the release was already created from the GitHub page ("Draft a new release"): add the files to it
             gh release upload "$tag" "${files[@]}" --clobber
+            if [ "${#pre[@]}" -gt 0 ]; then gh release edit "$tag" --prerelease; fi
+          elif [ "${#pre[@]}" -gt 0 ]; then
+            gh release create "$tag" "${files[@]}" "${pre[@]}" --title "ngPost Deluxe $tag" --notes "Release candidate: a version to test before the real release. Please report any problem in the Issues."
           else
             gh release create "$tag" "${files[@]}" --title "ngPost Deluxe $tag" --notes-file RELEASE_NOTES.md
           fi
