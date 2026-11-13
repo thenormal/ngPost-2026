@@ -157,7 +157,8 @@ private:
     const bool _obfuscateFileName;
 
 
-    AtomicBool  _delFilesAfterPost;
+    AtomicBool  _delFilesAfterPost;     //!< the originals are deleted, or moved if _movePostedTo is set, once everything is posted
+    QString     _movePostedTo;          //!< folder "Posted" (relative: next to each original)
     QFileInfoList       _originalFiles;
     QString             _nfoMediaText; //!< media information read at the start of the post
     int                 _nfoMediaFiles = 0, _nfoMediaDescribed = 0;
@@ -288,6 +289,7 @@ public:
     inline QString getFirstOriginalFile() const;
 
     inline void setDelFilesAfterPosted(bool delFiles);
+    void setMovePostedTo(const QString &folder) { _movePostedTo = folder; }
 
     inline QString groups() const;
     inline QString from() const;

@@ -18,6 +18,7 @@
 //========================================================================
 
 #include "PostingJob.h"
+#include "utils/PostedMover.h"
 #include <QSaveFile>
 #include <QJsonArray>
 #include <QDateTime>
@@ -904,6 +905,15 @@ void PostingJob::_delOriginalFiles()
     for (const QFileInfo &fi : _originalFiles)
     {
         QString path = fi.absoluteFilePath();
+        if (!_movePostedTo.isEmpty())
+        {
+            PostedMover::Result res = PostedMover::move(fi, _movePostedTo);
+            if (res.ok)
+                _log(tr("Moved the posted %1 %2 to %3").arg(fi.isDir()?tr("folder"):tr("file")).arg(path).arg(res.target));
+            else
+                _logAs(NgPost::LOG_WARN, tr("Couldn't move the posted %1: %2").arg(path).arg(res.error));
+            continue;
+        }
         _log(tr("Deleting posted %1: %2").arg(fi.isDir()?tr("folder"):tr("file")).arg(path));
         if (fi.isDir())
         {
@@ -1302,7 +1312,9 @@ qDebug() << "[MB_TRACE][PostingJob::_finishPosting]";
         if (_nbArticlesFailed == 0 && _repostInfo.isEmpty())
             _delOriginalFiles();
         else
-            _logAs(NgPost::LOG_WARN, tr("The original files have NOT been deleted because some Articles couldn't be posted."));
+            _logAs(NgPost::LOG_WARN, _movePostedTo.isEmpty()
+                   ? tr("The original files have NOT been deleted because some Articles couldn't be posted.")
+                   : tr("The original files have NOT been moved because some Articles couldn't be posted."));
     }
 
     if (_isRepost)
@@ -1328,6 +1340,7 @@ PostingJob *PostingJob::createRepostJob(NgPost *ngPost, const RepostInfo &info, 
     job->_repostSource   = info;
     job->_originalFiles  = info.originals;
     job->_delFilesAfterPost = info.delOriginals ? 0x1 : 0x0;
+    job->_movePostedTo      = info.movePostedTo;
     job->_packed         = true; // the archives already exist
     return job;
 }
@@ -1424,6 +1437,7 @@ void PostingJob::_fillRepostMeta()
     _repostInfo.compressDir       = _compressDir ? _compressDir->absolutePath() : QString();
     _repostInfo.keepRar           = _keepRar;
     _repostInfo.delOriginals      = MB_LoadAtomic(_delFilesAfterPost);
+    _repostInfo.movePostedTo      = _movePostedTo;
     _repostInfo.originals         = _originalFiles;
 }
 

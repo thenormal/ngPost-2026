@@ -731,6 +731,26 @@ Add files or folders, or scan a folder, and keep checked what you want to post.<
         <source>Watch one more folder while the watching is running</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>After posting:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do nothing with the files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move them to a "Posted" folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete them</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3264,6 +3284,30 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>path of the MediaInfo program (default: automatic)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>move the file/folder to this folder once posted (a name like Posted is created next to each file/folder, a full path is used as it is). You must use --auto or --monitor with this option.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error syntax: --move_posted option is only available with --auto or --monitor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error syntax: --rm_posted and --move_posted can&apos;t be used together</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignoring the Posted folder %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>## Auto Posting: last mode used (choose, scan or watch) and the folder where the posted files are moved</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3838,6 +3882,18 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     </message>
     <message>
         <source>MediaInfo was not found: the NFO file has no media information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Moved the posted %1 %2 to %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t move the posted %1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The original files have NOT been moved because some Articles couldn&apos;t be posted.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

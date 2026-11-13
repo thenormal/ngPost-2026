@@ -178,6 +178,7 @@ QJsonObject PostQueue::repostToJson(const RepostInfo &info)
     obj.insert("compressDir", info.compressDir);
     obj.insert("keepRar", info.keepRar);
     obj.insert("delOriginals", info.delOriginals);
+    obj.insert("movePostedTo", info.movePostedTo);
     QList<QString> originals;
     for (const QFileInfo &fi : info.originals)
         originals << fi.absoluteFilePath();
@@ -222,6 +223,7 @@ RepostInfo PostQueue::repostFromJson(const QJsonObject &obj)
     info.compressDir       = obj.value("compressDir").toString();
     info.keepRar           = obj.value("keepRar").toBool();
     info.delOriginals      = obj.value("delOriginals").toBool();
+    info.movePostedTo      = obj.value("movePostedTo").toString();
     for (const QString &path : toStringList(obj.value("originals")))
         info.originals << QFileInfo(path);
 

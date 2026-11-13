@@ -351,7 +351,8 @@ void PostingWidget::postFiles(bool updateMainParams)
                                      _ngPost->_rarSize, _ngPost->_useRarMax, _ngPost->_par2Pct,
                                      _ngPost->_doCompress, _ngPost->_doPar2,
                                      _ngPost->_rarName, _ngPost->_rarPass,
-                                     _ngPost->_keepRar);
+                                     _ngPost->_keepRar, _afterAct);
+        _postingJob->setMovePostedTo(_afterMoveTo);
 
         _showJobStarted(_ngPost->startPostingJob(_postingJob));
     }

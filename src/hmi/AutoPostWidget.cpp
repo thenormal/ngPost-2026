@@ -32,6 +32,8 @@
 #include <QKeyEvent>
 #include <QMimeData>
 #include <QTimer>
+#include <QComboBox>
+#include <QLineEdit>
 #include <QStorageInfo>
 #include <QDirIterator>
 #include <QButtonGroup>
@@ -51,7 +53,7 @@ AutoPostWidget::AutoPostWidget(NgPost *ngPost, MainWindow *hmi) :
     _currentPostIdx(1),
     _filesTitle(nullptr), _sourceTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
     _monitorTitle(nullptr), _advancedCard(nullptr), _profileBar(nullptr), _nfoCard(nullptr), _advancedToggle(nullptr), _showAdvanced(false),
-    _mode(Mode::Choose), _sourceCard(nullptr), _monitorCard(nullptr), _summary(nullptr), _sizeTimer(nullptr)
+    _mode(Mode::Choose), _sourceCard(nullptr), _monitorCard(nullptr), _summary(nullptr), _afterTitle(nullptr), _afterCombo(nullptr), _postedEdit(nullptr), _postedButton(nullptr), _afterCard(nullptr), _sizeTimer(nullptr)
 {
     _ui->setupUi(this);
     _buildLayout();
@@ -116,7 +118,6 @@ void AutoPostWidget::init()
 
     connect(_ui->monitorButton, &QAbstractButton::clicked, this, &AutoPostWidget::onMonitoringClicked);
 
-    connect(_ui->delFilesCB, &QAbstractButton::toggled, this, &AutoPostWidget::onDelFilesToggled);
 
 
     _ui->addMonitoringFolderButton->setEnabled(false);
@@ -126,6 +127,13 @@ void AutoPostWidget::init()
     _ui->extensionFilterEdit->setText(_ngPost->_monitorExtensions.isEmpty()? "" : _ngPost->_monitorExtensions.join(","));
     _ui->dirAllowedCB->setChecked(!_ngPost->_monitorIgnoreDir);
 
+    if (!_ngPost->_movePosted.isEmpty())
+    {
+        _postedEdit->setText(_ngPost->_movePosted);
+        _afterCombo->setCurrentIndex(1);
+        _postedEdit->setVisible(true);
+        _postedButton->setVisible(true);
+    }
     _sizeTimer = new QTimer(this);
     _sizeTimer->setSingleShot(true);
     connect(_sizeTimer, &QTimer::timeout, this, &AutoPostWidget::_computeNextSize);
@@ -165,12 +173,15 @@ void AutoPostWidget::onGenQuickPosts()
     _hmi->updateParams();
     udatePostingParams();
 
+    const QString afterMoveTo = movePostedTo();
+    const bool afterAct = deleteFilesOncePosted() || !afterMoveTo.isEmpty();
     bool startPost = _ui->startJobsCB->isChecked(),
          useRarMax = _ui->rarMaxCB->isChecked();
     for (const QFileInfo &file : files)
     {
         PostingWidget *quickPostWidget = _hmi->addNewQuickTab(0, {file});
         quickPostWidget->init();
+        quickPostWidget->setAfterPost(afterAct, afterMoveTo);
         quickPostWidget->genNameAndPassword(_ngPost->_genName, _ngPost->_genPass, _ngPost->_doPar2, useRarMax);
 
         // keep track of the result to be able to "Remove completed"
@@ -244,7 +255,8 @@ void AutoPostWidget::onScanAutoDirClicked()
         _ui->filesList->clear2();
         QDir::SortFlags sort = _ui->latestFilesFirstCB->isChecked() ? QDir::Time : QDir::Name;
         for (const QFileInfo &file : autoDir.entryInfoList(QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot, sort))
-            _ui->filesList->addPathIfNotInList(file.absoluteFilePath(), 0, file.isDir());
+            if (!_ngPost->isPostedFolder(file))
+                _ui->filesList->addPathIfNotInList(file.absoluteFilePath(), 0, file.isDir());
     }
     else
         QMessageBox::warning(nullptr,
@@ -319,7 +331,6 @@ void AutoPostWidget::onMonitoringClicked()
     _ui->passLengthSB->setEnabled(_isMonitoring);
 
     _ui->par2CB->setEnabled(_isMonitoring);
-//    _ui->delFilesCB->setEnabled(_isMonitoring);
 
     _ui->startJobsCB->setEnabled(_isMonitoring);
     _ui->postButton->setEnabled(_isMonitoring);
@@ -342,13 +353,27 @@ void AutoPostWidget::newFileToProcess(const QFileInfo &fileInfo)
     _ui->filesList->addItem(newItem);
 }
 
-void AutoPostWidget::onDelFilesToggled(bool checked)
+void AutoPostWidget::onAfterPostChanged()
 {
-    if (checked)
+    const int mode = _afterCombo->currentIndex();
+    _postedEdit->setVisible(mode == 1);
+    _postedButton->setVisible(mode == 1);
+    if (mode == 2)
         QMessageBox::warning(this,
                          tr("Deleting files/folders once posted"),
                          tr("You're about to delete files from your computer once they've been posted!\nUse it at your own risk!\nIt will be irreversible..."));
-    _ngPost->setDelFilesAfterPosted(checked);
+    _ngPost->setDelFilesAfterPosted(mode != 0);
+    _ngPost->setMovePosted(movePostedTo());
+}
+
+void AutoPostWidget::onPostedFolderClicked()
+{
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select a Folder"), _ui->autoDirEdit->text(), QFileDialog::ShowDirsOnly);
+    if (!path.isEmpty())
+    {
+        _postedEdit->setText(path);
+        onAfterPostChanged();
+    }
 }
 
 void AutoPostWidget::onAddMonitoringFolder()
@@ -532,7 +557,15 @@ void AutoPostWidget::onRemoveAll()
     }
 }
 
-bool AutoPostWidget::deleteFilesOncePosted() const { return _ui->delFilesCB->isChecked(); }
+bool AutoPostWidget::deleteFilesOncePosted() const { return _afterCombo && _afterCombo->currentIndex() == 2; }
+
+QString AutoPostWidget::movePostedTo() const
+{
+    if (!_afterCombo || _afterCombo->currentIndex() != 1)
+        return QString();
+    QString folder = _postedEdit->text().trimmed();
+    return folder.isEmpty() ? QStringLiteral("Posted") : folder;
+}
 
 void AutoPostWidget::retranslate()
 {
@@ -744,7 +777,7 @@ void AutoPostWidget::_buildLayout()
     QFrame *monitor = newAutoCard(_monitorTitle, g);
     g->addLayout(autoRow({_ui->monitorButton}, true), 0, 0);
     g->addLayout(autoRow({_ui->addMonitoringFolderButton}, true), 1, 0);
-    g->addWidget(_ui->delFilesCB, 2, 0);
+    _ui->delFilesCB->hide(); // replaced by the "After posting" card
     _ui->addMonitoringFolderButton->setMinimumSize(0, 0);
     _ui->addMonitoringFolderButton->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
     cards->addWidget(monitor, 2);
@@ -769,6 +802,33 @@ void AutoPostWidget::_buildLayout()
     // NFO file (shared with Quick Post)
     _nfoCard = new NfoCard(_ngPost, page);
     root->addWidget(_nfoCard);
+
+    // after posting: nothing (default), move to a "Posted" folder, or delete (one row, like the profile)
+    QWidget *afterRow = new QWidget(page);
+    _afterCard = afterRow;
+    QHBoxLayout *afterLayout = new QHBoxLayout(afterRow);
+    afterLayout->setContentsMargins(2, 0, 2, 0);
+    afterLayout->setSpacing(8);
+    _afterTitle = new QLabel(afterRow);
+    _afterCombo = new QComboBox(afterRow);
+    _afterCombo->addItems({QString(), QString(), QString()});
+    _postedEdit = new QLineEdit(afterRow);
+    _postedEdit->setText("Posted");
+    _postedButton = new QPushButton(afterRow);
+    _postedButton->setText("...");
+    _postedButton->setFixedWidth(40);
+    _postedEdit->setMaximumWidth(420);
+    afterLayout->addWidget(_afterTitle);
+    afterLayout->addWidget(_afterCombo);
+    afterLayout->addWidget(_postedEdit, 1);
+    afterLayout->addWidget(_postedButton);
+    afterLayout->addStretch(1);
+    _postedEdit->hide();
+    _postedButton->hide();
+    connect(_afterCombo, QOverload<int>::of(&QComboBox::activated), this, [this](){ onAfterPostChanged(); });
+    connect(_postedEdit, &QLineEdit::editingFinished, this, [this](){ onAfterPostChanged(); });
+    connect(_postedButton, &QAbstractButton::clicked, this, &AutoPostWidget::onPostedFolderClicked);
+    root->addWidget(_afterCard);
 
     // advanced options
     _advancedCard = newAutoCard(_advancedTitle, g);
@@ -843,6 +903,11 @@ void AutoPostWidget::_retranslateLayout()
     _filesTitle->setText(tr("Files and folders to post"));
     _archiveTitle->setText(tr("Archive"));
     _advancedTitle->setText(tr("Advanced options"));
+    _afterTitle->setText(tr("After posting:"));
+    _afterCombo->setItemText(0, tr("Do nothing with the files"));
+    _afterCombo->setItemText(1, tr("Move them to a \"Posted\" folder"));
+    _afterCombo->setItemText(2, tr("Delete them"));
+    _postedEdit->setToolTip(tr("A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error."));
     _advancedToggle->setText(_showAdvanced ? tr("▾ Hide advanced options") : tr("▸ Advanced options (temporary folder, rar / 7z, volumes)"));
 
     _ui->autoDirLbl->setText(tr("Folder"));
@@ -850,7 +915,6 @@ void AutoPostWidget::_retranslateLayout()
     _ui->extensionFilterEdit->setPlaceholderText(tr("all (ex: mkv,mp4,iso)"));
     _ui->scanAutoDirButton->setText(tr("Scan"));
     _ui->dirAllowedCB->setText(tr("post the folders"));
-    _ui->delFilesCB->setText(tr("delete the files once posted"));
     _ui->addMonitoringFolderButton->setText(tr("Add another folder"));
     _ui->addMonitoringFolderButton->setToolTip(tr("Watch one more folder while the watching is running"));
     _ui->monitorButton->setText(_isMonitoring ? tr("Stop watching") : tr("Start watching"));

@@ -983,6 +983,101 @@ def test_post_checker_unit(work):
     check(r.returncode == 0, "unit test failed\n" + r.stdout + r.stderr)
 
 
+def _post_and_move(work, fail, extra_name_in_posted=False):
+    """--auto --compress --move_posted Posted, with an article that fails everywhere if fail is on"""
+    stub = NntpStub(policy=lambda article, attempt: b"441 posting failed" if fail and article.part == 2 else None).start()
+    try:
+        folder = os.path.join(work, "in")
+        tmp = os.path.join(work, "tmp")
+        os.makedirs(os.path.join(folder, "Posted"))
+        os.makedirs(tmp)
+        make_file(os.path.join(folder, "Posted", "old.bin"), 1000, 41)   # an old post: must be ignored
+        src = os.path.join(folder, "mv.bin")
+        make_file(src, 200_000, 42)
+        if extra_name_in_posted:
+            make_file(os.path.join(folder, "Posted", "mv.bin"), 1234, 43)  # same name already there
+        r = run_ngpost_conf([stub], work, [], os.path.join(work, "out"), conns=2, threads=1,
+                            extra=["--auto", folder, "--compress", "--move_posted", "Posted"],
+                            env_extra={"NGPOST_SECOND_ROUND_DELAY_MS": "500"},
+                            conf_extra="TMP_DIR = %s\nRAR_PATH = %s\nRAR_SIZE = 0\n" % (tmp, shutil.which("7z")))
+        return r, folder, src
+    finally:
+        stub.stop()
+
+
+def test_move_posted(work):
+    # --move_posted: the posted file goes to the Posted folder next to it, the Posted folder is not posted itself
+    if not shutil.which("7z"):
+        print("SKIP  (7z is not installed)")
+        return
+    r, folder, src = _post_and_move(work, fail=False)
+    out = r.stdout + r.stderr
+    check(r.returncode == 0, "the post failed:\n" + out[-1500:])
+    check(not os.path.exists(src), "the file is still in the folder:\n" + out[-1500:])
+    check(os.path.exists(os.path.join(folder, "Posted", "mv.bin")), "the file is not in the Posted folder")
+    check(os.path.exists(os.path.join(folder, "Posted", "old.bin")), "the old content of the Posted folder was touched")
+    check("Moved the posted file" in out, "no message about the move")
+    nzbs = glob.glob(os.path.join(work, "**", "*.nzb"), recursive=True)
+    check(not any("Posted" in os.path.basename(n) for n in nzbs), "the Posted folder was posted as a post: %s" % nzbs)
+
+
+def test_move_posted_never_overwrites(work):
+    if not shutil.which("7z"):
+        print("SKIP  (7z is not installed)")
+        return
+    r, folder, src = _post_and_move(work, fail=False, extra_name_in_posted=True)
+    check(r.returncode == 0, "the post failed:\n" + (r.stdout + r.stderr)[-1500:])
+    check(os.path.getsize(os.path.join(folder, "Posted", "mv.bin")) == 1234, "a file of the Posted folder was overwritten")
+    check(os.path.getsize(os.path.join(folder, "Posted", "mv (2).bin")) == 200_000, "the file was not moved as 'mv (2).bin'")
+
+
+def test_move_posted_kept_when_articles_failed(work):
+    if not shutil.which("7z"):
+        print("SKIP  (7z is not installed)")
+        return
+    r, folder, src = _post_and_move(work, fail=True)
+    out = r.stdout + r.stderr
+    check(os.path.exists(src), "the file was moved although an article failed:\n" + out[-1500:])
+    check(not os.path.exists(os.path.join(folder, "Posted", "mv.bin")), "a copy is in the Posted folder")
+    check("have NOT been moved" in out, "no message about the file that was kept")
+
+
+def test_move_posted_options(work):
+    # --move_posted needs --auto or --monitor, and can't be used with --rm_posted
+    stub = NntpStub().start()
+    try:
+        folder = os.path.join(work, "in")
+        os.makedirs(folder)
+        src = os.path.join(work, "x.bin")
+        make_file(src, 1000, 1)
+        r = run_ngpost_conf([stub], work, [src], os.path.join(work, "o"), extra=["--move_posted", "Posted"])
+        check(r.returncode != 0 and "--move_posted option is only available" in r.stdout + r.stderr,
+              "--move_posted accepted without --auto:\n" + (r.stdout + r.stderr)[-800:])
+        r = run_ngpost_conf([stub], work, [], os.path.join(work, "o"),
+                            extra=["--auto", folder, "--compress", "--rm_posted", "--move_posted", "Posted"])
+        check(r.returncode != 0 and "can't be used together" in r.stdout + r.stderr,
+              "--rm_posted with --move_posted accepted:\n" + (r.stdout + r.stderr)[-800:])
+    finally:
+        stub.stop()
+
+
+def test_posted_mover_unit(work):
+    # the move of the posted files (names, other disk, never overwrite): a small program built with qmake
+    qmake = shutil.which("qmake") or shutil.which("qmake-qt5")
+    if not qmake:
+        print("      (qmake not found: this test is skipped)")
+        return
+    here = os.path.dirname(os.path.abspath(__file__))
+    build = os.path.join(work, "unit_mover")
+    os.makedirs(build)
+    r = subprocess.run([qmake, os.path.join(here, "unit", "posted_mover_test.pro")], cwd=build, capture_output=True, text=True)
+    check(r.returncode == 0, "qmake failed\n" + r.stdout + r.stderr)
+    r = subprocess.run(["make", "-j4"], cwd=build, capture_output=True, text=True)
+    check(r.returncode == 0, "build failed\n" + r.stdout[-2000:] + r.stderr[-2000:])
+    r = subprocess.run([os.path.join(build, "posted_mover_test")], capture_output=True, text=True)
+    check(r.returncode == 0, "unit test failed\n" + r.stdout + r.stderr)
+
+
 class HttpSink:
     """small HTTP server that keeps the POST requests it receives (for the notifications)"""
     def __init__(self):
@@ -1107,7 +1202,8 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
          test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
          test_help_pages, test_latency_is_measured, test_feedback_forms,
-         test_duplicate_is_skipped, test_nfo_file, test_nfo_media_info, test_profiles_and_par2_default, test_post_checker_unit, test_notifications,
+         test_duplicate_is_skipped, test_nfo_file, test_nfo_media_info, test_profiles_and_par2_default, test_post_checker_unit, test_move_posted, test_move_posted_never_overwrites,
+         test_move_posted_kept_when_articles_failed, test_move_posted_options, test_posted_mover_unit, test_notifications,
          test_notification_when_all_done]
 
 

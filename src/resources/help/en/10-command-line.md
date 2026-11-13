@@ -12,9 +12,11 @@ Post every item of a folder, one post each:
 
     ngPost --auto /data/folder1 --compress --gen_par2 --gen_name --gen_pass --rar_size 42
 
-Watch a folder and delete the files once posted:
+Watch a folder and move the files to a "Posted" folder once posted:
 
-    ngPost --monitor /data/folder1 --compress --gen_par2 --gen_name --gen_pass --rm_posted
+    ngPost --monitor /data/folder1 --compress --gen_par2 --gen_name --gen_pass --move_posted Posted
+
+`--move_posted` takes a name like `Posted` (the folder is created next to each file or folder) or a full path. Use `--rm_posted` instead to delete the files once posted. Both only apply when everything was posted without error.
 
 ## Useful options
 

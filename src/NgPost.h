@@ -93,7 +93,7 @@ public:
                     INPUT, OUTPUT, NZB_PATH, THREAD, NZB_UPLOAD_URL, NZB_POST_CMD,
                     MONITOR_FOLDERS, MONITOR_EXT, MONITOR_IGNORE_DIR, MONITOR_SEC_DELAY_SCAN,
                     MSG_ID, META, ARTICLE_SIZE, FROM, GROUPS, NB_RETRY, GEN_FROM,
-                    OBFUSCATE, INPUT_DIR, AUTO_DIR, MONITOR_DIR, DEL_AUTO,
+                    OBFUSCATE, INPUT_DIR, AUTO_DIR, MONITOR_DIR, DEL_AUTO, MOVE_POSTED,
                     TMP_DIR, RAR_PATH, RAR_EXTRA, RAR_SIZE, RAR_MAX, KEEP_RAR,
             #ifdef __USE_TMP_RAM__
                     TMP_RAM, TMP_RAM_RATIO,
@@ -228,6 +228,7 @@ private:
     FoldersMonitorForNewFiles *_folderMonitor;
     QThread                   *_monitorThread;
     bool                       _delAuto;
+    QString                    _movePosted;   //!< folder "Posted": the posted files are moved there instead of deleted (key move_posted, --move_posted)
 
     bool          _monitor_nzb_folders;
     QStringList   _monitorExtensions;
@@ -436,6 +437,8 @@ public:
     void saveConfig(bool quiet = false);
 
     void setDelFilesAfterPosted(bool delFiles);
+    void setMovePosted(const QString &folder); //!< empty: no move (the jobs not finished follow)
+    bool isPostedFolder(const QFileInfo &fi) const; //!< the "Posted" folder, ignored by the scans and the folder watching
     void addMonitoringFolder(const QString &dirPath);
 
     void changeLanguage(const QString &lang);

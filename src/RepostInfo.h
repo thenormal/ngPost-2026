@@ -68,7 +68,8 @@ struct RepostInfo
     // what to clean when everything has been posted
     QString        compressDir;           //!< folder with the archives and par2 (empty if nothing to clean)
     bool           keepRar       = false;
-    bool           delOriginals  = false; //!< the user asked to delete the original files after the post
+    bool           delOriginals  = false; //!< the user asked to delete (or move) the original files after the post
+    QString        movePostedTo;          //!< not empty: they are moved to this folder instead of deleted
     QFileInfoList  originals;
 
     QVector<RepostFile> files;
