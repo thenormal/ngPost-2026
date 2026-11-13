@@ -18,6 +18,9 @@
 //========================================================================
 
 #include "AutoPostWidget.h"
+#include "ProfileBar.h"
+#include "NfoCard.h"
+#include "utils/PostProfile.h"
 #include "ui_AutoPostWidget.h"
 #include "PostingWidget.h"
 #include "MainWindow.h"
@@ -37,7 +40,7 @@ AutoPostWidget::AutoPostWidget(NgPost *ngPost, MainWindow *hmi) :
     _isMonitoring(false),
     _currentPostIdx(1),
     _filesTitle(nullptr), _sourceTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
-    _monitorTitle(nullptr), _advancedCard(nullptr), _advancedToggle(nullptr), _showAdvanced(false)
+    _monitorTitle(nullptr), _advancedCard(nullptr), _profileBar(nullptr), _nfoCard(nullptr), _advancedToggle(nullptr), _showAdvanced(false)
 {
     _ui->setupUi(this);
     _buildLayout();
@@ -115,6 +118,8 @@ void AutoPostWidget::init()
 
     _ui->extensionFilterEdit->setText(_ngPost->_monitorExtensions.isEmpty()? "" : _ngPost->_monitorExtensions.join(","));
     _ui->dirAllowedCB->setChecked(!_ngPost->_monitorIgnoreDir);
+
+    _profileBar->applyRecommendedIfNew(); // first start of a new installation
 }
 
 
@@ -516,6 +521,10 @@ void AutoPostWidget::retranslate()
 {
     _ui->retranslateUi(this);
     _retranslateLayout();
+    if (_profileBar)
+        _profileBar->retranslate();
+    if (_nfoCard)
+        _nfoCard->retranslate();
     _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose the folder to scan: each file or folder becomes a post."),
                                   tr("Select Files"), tr("Choose a folder to scan"));
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
@@ -530,6 +539,30 @@ void AutoPostWidget::retranslate()
                                    tr("Right Click to add Files")).arg(
                                    tr("Click on the Scan Button")).arg(
                                    tr("Bare in mind you can select items in the list and press DEL to remove them")));
+}
+
+PostProfile AutoPostWidget::currentProfile() const
+{
+    PostProfile p;
+    p.compress = _ui->compressCB->isChecked();
+    p.genName  = _ui->genNameCB->isChecked();
+    p.genPass  = _ui->genPassCB->isChecked();
+    p.par2     = _ui->par2CB->isChecked();
+    p.par2Pct  = static_cast<uint>(_ui->redundancySB->value());
+    p.keepRar  = _ui->keepRarCB->isChecked();
+    return p;
+}
+
+void AutoPostWidget::applyProfile(const PostProfile &p)
+{
+    _ui->compressCB->setChecked(p.compress);
+    _ui->genNameCB->setChecked(p.genName);
+    _ui->genPassCB->setChecked(p.genPass);
+    _ui->par2CB->setChecked(p.par2);
+    if (_ngPost->_par2Args.isEmpty() && p.par2Pct > 0)
+        _ui->redundancySB->setValue(static_cast<int>(p.par2Pct));
+    _ui->keepRarCB->setChecked(p.keepRar);
+    onCompressToggled(p.compress);
 }
 
 void AutoPostWidget::setPackingAuto(bool enabled, const QStringList &keys){
@@ -651,6 +684,11 @@ void AutoPostWidget::_buildLayout()
     root->addLayout(head);
     root->addWidget(_ui->filesList, 1);
 
+    // profiles of options (shared with Quick Post)
+    _profileBar = new ProfileBar(_ngPost, page);
+    _profileBar->setHandlers([this](){ return currentProfile(); }, [this](const PostProfile &p){ applyProfile(p); });
+    root->addWidget(_profileBar);
+
     QHBoxLayout *cards = new QHBoxLayout();
     cards->setSpacing(12);
     QGridLayout *g = nullptr;
@@ -691,6 +729,10 @@ void AutoPostWidget::_buildLayout()
     cards->addWidget(archive, 3);
     root->addLayout(cards);
 
+    // NFO file (shared with Quick Post)
+    _nfoCard = new NfoCard(_ngPost, page);
+    root->addWidget(_nfoCard);
+
     // advanced options
     _advancedCard = newAutoCard(_advancedTitle, g);
     g->addWidget(_ui->compressPathLbl, 0, 0);
@@ -705,6 +747,13 @@ void AutoPostWidget::_buildLayout()
     _ui->rarSizeEdit->setMaximumWidth(100);
     _advancedCard->hide();
     root->addWidget(_advancedCard);
+
+    // a change made by hand: the profile is now "Custom"
+    for (QAbstractButton *b : {static_cast<QAbstractButton*>(_ui->compressCB), static_cast<QAbstractButton*>(_ui->genNameCB),
+                               static_cast<QAbstractButton*>(_ui->genPassCB), static_cast<QAbstractButton*>(_ui->par2CB),
+                               static_cast<QAbstractButton*>(_ui->keepRarCB)})
+        connect(b, &QAbstractButton::clicked, _profileBar, &ProfileBar::markCustom);
+    connect(_ui->redundancySB, QOverload<int>::of(&QSpinBox::valueChanged), _profileBar, &ProfileBar::markCustom);
 
     // bottom: advanced toggle, start option and Generate Posts
     QGridLayout *bottom = new QGridLayout();

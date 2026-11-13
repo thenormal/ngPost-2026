@@ -17,7 +17,6 @@
 //
 //========================================================================
 
-#include "utils/MediaInfoReader.h"
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "PostingWidget.h"
@@ -91,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _autoSaveQuickTab(false),
     _autoSaveAutoTab(false),
     _pages(nullptr), _nav(nullptr), _navButtons{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
-    _history(nullptr), _help(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _duplicatesCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _nfoCB(nullptr), _nfoInPostCB(nullptr), _nfoPassCB(nullptr), _nfoMediaCB(nullptr), _nfoMediaPath(nullptr), _nfoMediaButton(nullptr), _nfoMediaStatus(nullptr), _nfoTextLbl(nullptr), _nfoText(nullptr), _nfoHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
+    _history(nullptr), _help(nullptr), _jobNumber(-1), _pauseIcon(true), _historyCB(nullptr), _duplicatesCB(nullptr), _historyPathEdit(nullptr), _historyPathButton(nullptr), _historyHint(nullptr), _queueCB(nullptr), _queueHint(nullptr), _supportHint(nullptr), _supportButton(nullptr),
     _themeButton(nullptr), _aboutButton(nullptr),
     _postsTitle(nullptr), _serversTitle(nullptr), _serversSubtitle(nullptr),
     _settingsTitle(nullptr), _settingsSubtitle(nullptr), _appVersion(nullptr),
@@ -238,31 +237,6 @@ void MainWindow::init(NgPost *ngPost)
         });
         connect(&_ngPost->_notifier, &Notifier::trayMessage, this, &MainWindow::_showTrayMessage);
     }
-    _nfoCB->setChecked(_ngPost->_genNfo);
-    _nfoInPostCB->setChecked(_ngPost->_nfoInPost);
-    _nfoPassCB->setChecked(_ngPost->_nfoPassword);
-    _nfoMediaCB->setChecked(_ngPost->_nfoMedia);
-    _nfoMediaPath->setText(QDir::toNativeSeparators(_ngPost->_mediaInfoPath));
-    _nfoText->setPlainText(_ngPost->_nfoText);
-    _updateNfoSettings();
-    connect(_nfoCB,       &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_genNfo = on; _updateNfoSettings(); });
-    connect(_nfoInPostCB, &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_nfoInPost = on; });
-    connect(_nfoPassCB,   &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_nfoPassword = on; });
-    connect(_nfoMediaCB,  &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_nfoMedia = on; _updateNfoSettings(); });
-    connect(_nfoMediaPath, &QLineEdit::editingFinished, this, [this](){
-        _ngPost->_mediaInfoPath = QDir::fromNativeSeparators(_nfoMediaPath->text().trimmed());
-        _updateMediaInfoStatus();
-    });
-    connect(_nfoMediaButton, &QAbstractButton::clicked, this, [this](){
-        QString file = QFileDialog::getOpenFileName(this, tr("Choose the MediaInfo program"), _nfoMediaPath->text());
-        if (!file.isEmpty())
-        {
-            _nfoMediaPath->setText(QDir::toNativeSeparators(file));
-            _ngPost->_mediaInfoPath = file;
-            _updateMediaInfoStatus();
-        }
-    });
-    connect(_nfoText,     &QPlainTextEdit::textChanged, this, [this](){ _ngPost->_nfoText = _nfoText->toPlainText(); });
     _queueCB->setChecked(_ngPost->_queueEnabled);
     connect(_queueCB,           &QAbstractButton::toggled, this, &MainWindow::onQueueToggled);
     QTimer::singleShot(1500, this, &MainWindow::_offerQueue); // after the windows of the start
@@ -1579,32 +1553,6 @@ QWidget *MainWindow::_buildSettingsPage()
     g->setColumnStretch(1, 1);
     left->insertWidget(left->count() - 1, history); // before the stretch of the left column
 
-    // NFO file
-    QFrame *nfo = _card("nfo", g);
-    _nfoCB       = new QCheckBox(nfo);
-    _nfoInPostCB = new QCheckBox(nfo);
-    _nfoPassCB   = new QCheckBox(nfo);
-    _nfoMediaCB  = new QCheckBox(nfo);
-    _nfoMediaPath = new QLineEdit(nfo);
-    _nfoMediaButton = new QPushButton(" ... ", nfo);
-    _nfoMediaStatus = newLabel("hint", nfo);
-    _nfoMediaStatus->setWordWrap(true);
-    _nfoTextLbl  = new QLabel(nfo);
-    _nfoText     = new QPlainTextEdit(nfo);
-    _nfoText->setMaximumHeight(90);
-    _nfoHint     = newLabel("hint", nfo);
-    _nfoHint->setWordWrap(true);
-    g->addWidget(_nfoCB, 0, 0);
-    g->addWidget(_nfoInPostCB, 1, 0);
-    g->addWidget(_nfoPassCB, 2, 0);
-    g->addWidget(_nfoMediaCB, 3, 0);
-    g->addLayout(hbox({_nfoMediaPath, _nfoMediaButton}, false), 4, 0);
-    g->addWidget(_nfoMediaStatus, 5, 0);
-    g->addWidget(_nfoTextLbl, 6, 0);
-    g->addWidget(_nfoText, 7, 0);
-    g->addWidget(_nfoHint, 8, 0);
-    g->setColumnStretch(0, 1);
-    left->insertWidget(left->count() - 1, nfo);
 
     // notifications
     QFrame *notif = _card("notify", g);
@@ -1731,17 +1679,6 @@ void MainWindow::_retranslateShell()
     _notifyTestButton->setText(tr("Send a test message"));
     _notifyHint->setText(tr("The messages never contain the password or the names of the files. The addresses and the token are saved "
                             "in clear text in the configuration file (like the other passwords): keep it private."));
-    _cardTitles["nfo"]->setText(tr("NFO file"));
-    _nfoCB->setText(tr("Write an NFO file next to the nzb (name, date, files, archive, par2)"));
-    _nfoInPostCB->setText(tr("Also post the NFO file with the files"));
-    _nfoPassCB->setText(tr("Write the password of the archive in the NFO file"));
-    _nfoMediaCB->setText(tr("Include media information (MediaInfo): duration, video, audio and subtitles"));
-    _nfoMediaPath->setPlaceholderText(tr("Path of MediaInfo (empty = automatic)"));
-    _nfoMediaButton->setToolTip(tr("Choose the MediaInfo program"));
-    _updateMediaInfoStatus();
-    _nfoTextLbl->setText(tr("Text added at the end of the NFO file:"));
-    _nfoHint->setText(tr("When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. "
-                         "Careful: a password in a posted NFO is readable by everyone who downloads the post."));
     _cardTitles["queue"]->setText(tr("Queue of the posts"));
     _queueCB->setText(tr("Save the posts that are not finished, to post them again after a restart"));
     _queueHint->setText(tr("The queue also records the password of each archive in clear text (like the history). "
@@ -2065,26 +2002,6 @@ void MainWindow::_showTrayMessage(const QString &title, const QString &text)
         _tray->show();
     }
     _tray->showMessage(title, text, QSystemTrayIcon::Information, 10000);
-}
-
-void MainWindow::_updateNfoSettings()
-{
-    _nfoInPostCB->setEnabled(_ngPost->_genNfo);
-    _nfoPassCB->setEnabled(_ngPost->_genNfo);
-    _nfoText->setEnabled(_ngPost->_genNfo);
-    _nfoTextLbl->setEnabled(_ngPost->_genNfo);
-    _nfoMediaCB->setEnabled(_ngPost->_genNfo);
-    _nfoMediaPath->setEnabled(_ngPost->_genNfo && _ngPost->_nfoMedia);
-    _nfoMediaButton->setEnabled(_ngPost->_genNfo && _ngPost->_nfoMedia);
-    _nfoMediaStatus->setEnabled(_ngPost->_genNfo && _ngPost->_nfoMedia);
-}
-
-void MainWindow::_updateMediaInfoStatus()
-{
-    QString program = MediaInfoReader::findProgram(_ngPost->_mediaInfoPath);
-    _nfoMediaStatus->setText(program.isEmpty()
-        ? tr("MediaInfo was not found: the NFO file will have no media information.")
-        : tr("MediaInfo found: %1").arg(QDir::toNativeSeparators(program)));
 }
 
 void MainWindow::onHistoryToggled(bool checked)

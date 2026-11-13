@@ -18,6 +18,9 @@
 //========================================================================
 
 #include "PostingWidget.h"
+#include "ProfileBar.h"
+#include "NfoCard.h"
+#include "utils/PostProfile.h"
 #include "ui_PostingWidget.h"
 #include "MainWindow.h"
 #include <QCoreApplication>
@@ -47,7 +50,7 @@ PostingWidget::PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber) :
     _state(STATE::IDLE),
     _postingFinished(false),
     _filesTitle(nullptr), _releaseInfo(nullptr), _nzbTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
-    _advancedCard(nullptr), _advancedToggle(nullptr), _repostButton(nullptr), _repostInfo()
+    _advancedCard(nullptr), _profileBar(nullptr), _nfoCard(nullptr), _advancedToggle(nullptr), _repostButton(nullptr), _repostInfo()
 {
     _ui->setupUi(this);
     _buildLayout();
@@ -618,6 +621,8 @@ void PostingWidget::init()
     QString fixedPass = _hmi->fixedArchivePassword();
     if (!fixedPass.isEmpty())
         _ui->nzbPassEdit->setText(fixedPass);
+
+    _profileBar->applyRecommendedIfNew(); // first start of a new installation
 }
 
 void PostingWidget::genNameAndPassword(bool genName, bool genPass, bool doPar2, bool useRarMax)
@@ -684,6 +689,10 @@ void PostingWidget::retranslate()
 {
     _ui->retranslateUi(this);
     _retranslateLayout();
+    if (_profileBar)
+        _profileBar->retranslate();
+    if (_nfoCard)
+        _nfoCard->retranslate();
     _ui->filesList->setEmptyState(tr("Drag files or folders here, or choose them with the buttons below."),
                                   tr("Select Files"), tr("Select Folder"));
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
@@ -854,6 +863,11 @@ void PostingWidget::_buildLayout()
     connect(_ui->filesList->model(), &QAbstractItemModel::rowsRemoved,  this, &PostingWidget::_updateReleaseInfo);
     connect(_ui->filesList->model(), &QAbstractItemModel::modelReset,   this, &PostingWidget::_updateReleaseInfo);
 
+    // profiles of options (shared with Auto Posting)
+    _profileBar = new ProfileBar(_ngPost, page);
+    _profileBar->setHandlers([this](){ return currentProfile(); }, [this](const PostProfile &p){ applyProfile(p); });
+    root->addWidget(_profileBar);
+
     // NZB and Archive cards side by side
     QHBoxLayout *cards = new QHBoxLayout();
     cards->setSpacing(12);
@@ -862,11 +876,10 @@ void PostingWidget::_buildLayout()
     QFrame *nzb = newCard(_nzbTitle, g);
     g->addWidget(_ui->nzbFileLbl, 0, 0);
     g->addLayout(row({_ui->nzbFileEdit, _ui->nzbFileButton}), 0, 1);
-    g->addWidget(_ui->nzbPassCB, 1, 0);
-    g->addLayout(row({_ui->nzbPassEdit, _ui->passLengthSB, _ui->genPass}), 1, 1);
     g->setColumnStretch(1, 1);
     _ui->nzbFileEdit->setMaximumWidth(QWIDGETSIZE_MAX);
     _ui->nzbPassEdit->setMaximumWidth(QWIDGETSIZE_MAX);
+    static_cast<QVBoxLayout*>(nzb->layout())->addStretch(1); // the title and the file field stay at the top
     cards->addWidget(nzb, 1);
 
     QFrame *archive = newCard(_archiveTitle, g);
@@ -874,10 +887,16 @@ void PostingWidget::_buildLayout()
     g->addLayout(row({_ui->compressNameEdit, _ui->nameLengthSB, _ui->genCompressName}), 0, 1);
     g->addWidget(_ui->par2CB, 1, 0);
     g->addLayout(row({_ui->redundancyLbl, _ui->redundancySB, _ui->keepRarCB}, true), 1, 1);
+    g->addWidget(_ui->nzbPassCB, 2, 0);
+    g->addLayout(row({_ui->nzbPassEdit, _ui->passLengthSB, _ui->genPass}), 2, 1);
     g->setColumnStretch(1, 1);
     _ui->compressNameEdit->setMaximumWidth(QWIDGETSIZE_MAX);
     cards->addWidget(archive, 1);
     root->addLayout(cards);
+
+    // NFO file (shared with Auto Posting)
+    _nfoCard = new NfoCard(_ngPost, page);
+    root->addWidget(_nfoCard);
 
     // advanced options
     _advancedCard = newCard(_advancedTitle, g);
@@ -934,8 +953,48 @@ void PostingWidget::_buildLayout()
     outer->setContentsMargins(0, 0, 0, 0);
     outer->addWidget(page);
 
+    // a change made by hand: the profile is now "Custom"
+    for (QAbstractButton *b : {static_cast<QAbstractButton*>(_ui->compressCB), static_cast<QAbstractButton*>(_ui->par2CB),
+                               static_cast<QAbstractButton*>(_ui->keepRarCB), static_cast<QAbstractButton*>(_ui->nzbPassCB)})
+        connect(b, &QAbstractButton::clicked, _profileBar, &ProfileBar::markCustom);
+    connect(_ui->redundancySB, QOverload<int>::of(&QSpinBox::valueChanged), _profileBar, &ProfileBar::markCustom);
+
     _showAdvanced(sShowAdvanced);
     _retranslateLayout();
+}
+
+PostProfile PostingWidget::currentProfile() const
+{
+    PostProfile p;
+    p.compress = _ui->compressCB->isChecked();
+    p.genName  = p.compress && !_ui->compressNameEdit->text().isEmpty();
+    p.genPass  = _ui->nzbPassCB->isChecked();
+    p.par2     = _ui->par2CB->isChecked();
+    p.par2Pct  = static_cast<uint>(_ui->redundancySB->value());
+    p.keepRar  = _ui->keepRarCB->isChecked();
+    return p;
+}
+
+void PostingWidget::applyProfile(const PostProfile &p)
+{
+    _ui->compressCB->setChecked(p.compress);
+    _ui->par2CB->setChecked(p.par2);
+    if (_ngPost->_par2Args.isEmpty() && p.par2Pct > 0)
+        _ui->redundancySB->setValue(static_cast<int>(p.par2Pct));
+    _ui->keepRarCB->setChecked(p.keepRar);
+    _ui->nzbPassCB->setChecked(p.genPass);
+    if (p.compress)
+    {
+        if (p.genPass && _ui->nzbPassEdit->text().isEmpty())
+        {
+            if (_hmi->useFixedPassword())
+                _ui->nzbPassEdit->setText(_ngPost->_rarPassFixed);
+            else
+                onGenNzbPassword();
+        }
+        if (p.genName && _ui->compressNameEdit->text().isEmpty())
+            onGenCompressName();
+    }
 }
 
 void PostingWidget::_showAdvanced(bool show)

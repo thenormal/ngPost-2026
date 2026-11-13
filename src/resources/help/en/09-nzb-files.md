@@ -26,7 +26,7 @@ Before a post starts, ngPost looks in the history for a successful post with the
 
 ## NFO file
 
-An NFO is a small text file that describes the post: its name, the date, the files with their sizes, how it was prepared (archive and par2) and a text of yours. Turn it on in **Settings**, card **NFO file**.
+An NFO is a small text file that describes the post: its name, the date, the files with their sizes, how it was prepared (archive and par2) and a text of yours. Turn it on in the card **NFO file** of Quick Post or Auto Posting (it is the same card: the settings are shared).
 
 - **Write an NFO file next to the nzb**: `name.nfo` is saved in the same folder as `name.nzb`.
 - **Also post the NFO file with the files**: it is uploaded with the post and appears in the NZB.

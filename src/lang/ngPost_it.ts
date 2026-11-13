@@ -1672,6 +1672,10 @@ Decidi dopo: restano in coda e verranno riproposti al prossimo avvio.</translati
         <source>MediaInfo found: %1</source>
         <translation>MediaInfo trovato: %1</translation>
     </message>
+    <message>
+        <source>Include media information (MediaInfo)</source>
+        <translation>Includi le informazioni sui media (MediaInfo)</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -4504,6 +4508,53 @@ Clicca su «Aggiungi» per configurare il tuo provider Usenet.</translation>
     <message>
         <source>Notification (%1) failed: no answer from the server</source>
         <translation>Notifica (%1) non riuscita: nessuna risposta dal server</translation>
+    </message>
+</context>
+<context>
+    <name>ProfileBar</name>
+    <message>
+        <source>Profile:</source>
+        <translation>Profilo:</translation>
+    </message>
+    <message>
+        <source>Save as profile...</source>
+        <translation>Salva come profilo...</translation>
+    </message>
+    <message>
+        <source>Save the current options (compression, random name and password, par2, keep the archives) under a name</source>
+        <translation>Salva con un nome le opzioni attuali (compressione, nome e password casuali, par2, tieni gli archivi)</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>Elimina</translation>
+    </message>
+    <message>
+        <source>Delete the chosen profile</source>
+        <translation>Elimina il profilo scelto</translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation>Personalizzato</translation>
+    </message>
+    <message>
+        <source>Recommended (compression, random name and password, par2 10 %)</source>
+        <translation>Consigliato (compressione, nome e password casuali, par2 10 %)</translation>
+    </message>
+    <message>
+        <source>Save as profile</source>
+        <translation>Salva come profilo</translation>
+    </message>
+    <message>
+        <source>Name of the profile:</source>
+        <translation>Nome del profilo:</translation>
+    </message>
+    <message>
+        <source>This name is reserved: choose another one.</source>
+        <translation>Questo nome è riservato: scegline un altro.</translation>
+    </message>
+    <message>
+        <source>Delete the profile "%1"?</source>
+        <translation>Eliminare il profilo "%1"?</translation>
     </message>
 </context>
 </TS>

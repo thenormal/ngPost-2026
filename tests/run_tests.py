@@ -946,6 +946,26 @@ print(json.dumps({"media": {"@ref": sys.argv[-1], "track": tracks}}))
         stub.stop()
 
 
+def test_profiles_and_par2_default(work):
+    # the profiles of the GUI are lines "profile = ..." of the config file: bad lines are ignored, the post works;
+    # par2 starts at 10 %: --gen_par2 without a percentage is no longer refused for that reason
+    stub = NntpStub().start()
+    try:
+        f = os.path.join(work, "data.bin")
+        make_file(f, 50_000, 51)
+        conf_extra = "profile = Film|1|1|0|1|5|1\nprofile = broken line\nprofile = |1|1|1|1|10|0\nprofile = Big|1|1|1|1|900|0\n"
+        nzb = os.path.join(work, "prof.nzb")
+        r = run_ngpost_conf([stub], work, [f], nzb, conns=1, threads=1, conf_extra=conf_extra)
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        check(os.path.exists(nzb), "no nzb")
+
+        nzb2 = os.path.join(work, "par.nzb")
+        r = run_ngpost_conf([stub], work, [f], nzb2, conns=1, threads=1, extra=["--gen_par2"])
+        check("redundancy percentage is null" not in LAST_OUTPUT, "par2 should start at 10 %\n" + LAST_OUTPUT)
+    finally:
+        stub.stop()
+
+
 class HttpSink:
     """small HTTP server that keeps the POST requests it receives (for the notifications)"""
     def __init__(self):
@@ -1070,7 +1090,7 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
          test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
          test_help_pages, test_latency_is_measured, test_feedback_forms,
-         test_duplicate_is_skipped, test_nfo_file, test_nfo_media_info, test_notifications,
+         test_duplicate_is_skipped, test_nfo_file, test_nfo_media_info, test_profiles_and_par2_default, test_notifications,
          test_notification_when_all_done]
 
 

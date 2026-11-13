@@ -1674,6 +1674,10 @@ Later beslissen: ze blijven in de wachtrij en worden bij de volgende start opnie
         <source>MediaInfo found: %1</source>
         <translation>MediaInfo gevonden: %1</translation>
     </message>
+    <message>
+        <source>Include media information (MediaInfo)</source>
+        <translation>Media-informatie (MediaInfo) opnemen</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -4508,6 +4512,53 @@ Klik op ‘Toevoegen’ om je Usenet-provider in te stellen.</translation>
     <message>
         <source>Notification (%1) failed: no answer from the server</source>
         <translation>Melding (%1) mislukt: geen antwoord van de server</translation>
+    </message>
+</context>
+<context>
+    <name>ProfileBar</name>
+    <message>
+        <source>Profile:</source>
+        <translation>Profiel:</translation>
+    </message>
+    <message>
+        <source>Save as profile...</source>
+        <translation>Opslaan als profiel...</translation>
+    </message>
+    <message>
+        <source>Save the current options (compression, random name and password, par2, keep the archives) under a name</source>
+        <translation>Slaat de huidige opties (compressie, willekeurige naam en wachtwoord, par2, archieven bewaren) op onder een naam</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>Verwijderen</translation>
+    </message>
+    <message>
+        <source>Delete the chosen profile</source>
+        <translation>Verwijdert het gekozen profiel</translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation>Aangepast</translation>
+    </message>
+    <message>
+        <source>Recommended (compression, random name and password, par2 10 %)</source>
+        <translation>Aanbevolen (compressie, willekeurige naam en wachtwoord, par2 10 %)</translation>
+    </message>
+    <message>
+        <source>Save as profile</source>
+        <translation>Opslaan als profiel</translation>
+    </message>
+    <message>
+        <source>Name of the profile:</source>
+        <translation>Naam van het profiel:</translation>
+    </message>
+    <message>
+        <source>This name is reserved: choose another one.</source>
+        <translation>Deze naam is gereserveerd: kies een andere.</translation>
+    </message>
+    <message>
+        <source>Delete the profile "%1"?</source>
+        <translation>Het profiel "%1" verwijderen?</translation>
     </message>
 </context>
 </TS>
