@@ -751,6 +751,58 @@ Add files or folders, or scan a folder, and keep checked what you want to post.<
         <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Already posted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This item is already in the history. It is not posted again unless you check it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These items are already in the history. They are not posted again unless you check them.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Posted on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select none</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is already in the history (posted on %2): not posted again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already posted on %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

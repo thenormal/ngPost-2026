@@ -313,7 +313,7 @@ void PostingWidget::postFiles(bool updateMainParams)
         if (!nzbPath.endsWith(".nzb"))
             nzbPath += ".nzb";
         QFileInfo fiNzb(nzbPath);
-        if (fiNzb.exists())
+        if (!_fromAuto && fiNzb.exists())
         {
             int overwrite = QMessageBox::question(nullptr,
                                                   tr("Overwrite existing nzb file?"),
@@ -325,7 +325,7 @@ void PostingWidget::postFiles(bool updateMainParams)
         }
 
         // already posted (same name and size in the history)?
-        QString posted = _ngPost->duplicateInPost(fiNzb.fileName(), files);
+        QString posted = _fromAuto ? QString() : _ngPost->duplicateInPost(fiNzb.fileName(), files);
         if (!posted.isEmpty())
         {
             QMessageBox box(QMessageBox::Question, tr("Already posted?"),
@@ -351,7 +351,7 @@ void PostingWidget::postFiles(bool updateMainParams)
                                      _ngPost->_rarSize, _ngPost->_useRarMax, _ngPost->_par2Pct,
                                      _ngPost->_doCompress, _ngPost->_doPar2,
                                      _ngPost->_rarName, _ngPost->_rarPass,
-                                     _ngPost->_keepRar, _afterAct);
+                                     _ngPost->_keepRar, _afterAct, !_fromAuto);
         _postingJob->setMovePostedTo(_afterMoveTo);
 
         _showJobStarted(_ngPost->startPostingJob(_postingJob));
