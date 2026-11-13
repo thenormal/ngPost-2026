@@ -59,7 +59,7 @@ PostingWidget::PostingWidget(NgPost *ngPost, MainWindow *hmi, uint jobNumber) :
     _jobNumber(jobNumber),
     _postingJob(nullptr),
     _state(STATE::IDLE),
-    _postingFinished(false),
+    _postingFinished(false), _filesAddedAfterPost(false),
     _filesTitle(nullptr), _releaseInfo(nullptr), _nzbTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
     _advancedCard(nullptr), _profileBar(nullptr), _nfoCard(nullptr), _summary(nullptr), _sourceBytes(0), _advancedToggle(nullptr), _repostButton(nullptr), _repostInfo()
 {
@@ -147,6 +147,7 @@ void PostingWidget::onPostingJobDone()
     disconnect(_postingJob);
     _postingJob = nullptr; //!< we don't own it, NgPost will delete it
     _postingFinished = true;
+    _filesAddedAfterPost = false;
     setIDLE();
     emit postingDone(uploadedOk);
 }
@@ -537,6 +538,7 @@ void PostingWidget::onSelectFolderClicked()
 void PostingWidget::onClearFilesClicked()
 {
     _ui->filesList->clear2();
+    _filesAddedAfterPost = false;
     _ui->nzbFileEdit->clear();
     _ui->compressNameEdit->clear();
     if (_hmi->hasAutoCompress())
@@ -882,6 +884,11 @@ void PostingWidget::addPath(const QString &path, int currentNbFiles, int isDir)
 {
     if (_ui->filesList->addPathIfNotInList(path, currentNbFiles, isDir))
     {
+        if (_postingFinished)
+        {
+            _filesAddedAfterPost = true;
+            _updateReleaseInfo();
+        }
         QFileInfo fileInfo(path);
         if (_ui->nzbFileEdit->text().isEmpty())
         {
@@ -1151,7 +1158,7 @@ void PostingWidget::_updateReleaseInfo()
     if (!_releaseInfo)
         return;
     // only while the post is prepared: during and after the upload the list shows the volumes of the archive
-    _releaseInfo->setVisible(_ui->filesList->count() > 1 && _state == STATE::IDLE && !_postingFinished);
+    _releaseInfo->setVisible(_ui->filesList->count() > 1 && _state == STATE::IDLE && (!_postingFinished || _filesAddedAfterPost));
 }
 
 void PostingWidget::_retranslateLayout()
