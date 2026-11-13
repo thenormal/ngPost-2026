@@ -2504,6 +2504,12 @@ QString NgPost::_parseConfig(const QString &configPath)
                         _notifier.settings().telegramChat = val.trimmed();
                     else if (opt == "notify_webhook")
                         _notifier.settings().webhook = val.trimmed();
+                    else if (opt == "auto_mode")
+                    {
+                        QString v = val.trimmed().toLower();
+                        if (v == "choose" || v == "scan" || v == "watch")
+                            _autoMode = v;
+                    }
                     else if (opt == "gen_nfo" || opt == "nfo_in_post" || opt == "nfo_password" || opt == "nfo_media")
                     {
                         val = val.toLower();
@@ -3135,6 +3141,7 @@ void NgPost::saveConfig(bool quiet)
                << "gen_nfo = " << (_genNfo ? "ON" : "OFF") << "\n"
                << "nfo_in_post = " << (_nfoInPost ? "ON" : "OFF") << "\n"
                << "nfo_password = " << (_nfoPassword ? "ON" : "OFF") << "\n"
+               << "auto_mode = " << _autoMode << "\n"
                << "nfo_media = " << (_nfoMedia ? "ON" : "OFF") << "\n"
                << (_mediaInfoPath.isEmpty() ? "#" : "") << "mediainfo_path = " << _mediaInfoPath << "\n"
                << (_nfoText.trimmed().isEmpty() ? "#" : "") << "nfo_text = " << QString(_nfoText).replace("\r", "").replace("\n", "\\n") << "\n"

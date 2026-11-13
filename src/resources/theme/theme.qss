@@ -182,6 +182,24 @@ QPushButton#linkButton {
 QPushButton#linkButton:hover {
     text-decoration: underline;
 }
+QPushButton#modeButton {
+    background: @alt@;
+    border: 1px solid @border@;
+    border-radius: 0px;
+    padding: 8px 14px;
+    font-weight: 600;
+}
+QPushButton#modeButton:hover {
+    background: @selection@;
+}
+QPushButton#modeButton:checked {
+    background: @accent@;
+    color: @accentText@;
+    border-color: @accent@;
+}
+QPushButton#modeButton:disabled:!checked {
+    color: @disabled@;
+}
 QTabWidget#postTabWidget > QStackedWidget > QWidget {
     background: @window@;
 }

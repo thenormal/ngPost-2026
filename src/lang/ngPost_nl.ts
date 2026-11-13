@@ -640,6 +640,104 @@ Al gestarte posts en de bestanden op schijf blijven ongemoeid.</translation>
         <source>start the posts directly</source>
         <translation>de posts direct starten</translation>
     </message>
+    <message>
+        <source>Post what I choose</source>
+        <translation>Post wat ik kies</translation>
+    </message>
+    <message>
+        <source>Scan a folder once</source>
+        <translation>Eén keer een map scannen</translation>
+    </message>
+    <message>
+        <source>Watch a folder and post what arrives</source>
+        <translation>Een map bewaken en posten wat binnenkomt</translation>
+    </message>
+    <message>
+        <source>Add the files and folders you want, then post them.</source>
+        <translation>Voeg de gewenste bestanden en mappen toe en post ze.</translation>
+    </message>
+    <message>
+        <source>List what is in a folder, uncheck what you don&apos;t want, then post.</source>
+        <translation>Toon de inhoud van een map, vink uit wat je niet wilt en post.</translation>
+    </message>
+    <message>
+        <source>Every new file or folder that arrives in the folder is posted automatically.</source>
+        <translation>Elk nieuw bestand of elke nieuwe map in de map wordt automatisch gepost.</translation>
+    </message>
+    <message>
+        <source>Watching</source>
+        <translation>Bewaking</translation>
+    </message>
+    <message>
+        <source>Watching %1</source>
+        <translation>Bewaakt: %1</translation>
+    </message>
+    <message>
+        <source>Posts of the watched folder</source>
+        <translation>Posts van de bewaakte map</translation>
+    </message>
+    <message>
+        <source>Folder to watch</source>
+        <translation>Te bewaken map</translation>
+    </message>
+    <message>
+        <source>Start watching</source>
+        <translation>Bewaking starten</translation>
+    </message>
+    <message>
+        <source>Stop watching</source>
+        <translation>Bewaking stoppen</translation>
+    </message>
+    <message>
+        <source>Post the list</source>
+        <translation>Lijst posten</translation>
+    </message>
+    <message>
+        <source>Drag here the files or folders to post, or choose them: each file or folder becomes a post.</source>
+        <translation>Sleep de te posten bestanden of mappen hierheen of kies ze: elk bestand of elke map wordt een post.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>Kies de te scannen map: de inhoud verschijnt hier, vink daarna uit wat je niet wilt posten.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>Kies de te bewaken map en druk op ‘Bewaking starten’: elk nieuw bestand of elke nieuwe map wordt gepost.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch</source>
+        <translation>Te bewaken map kiezen</translation>
+    </message>
+    <message>
+        <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
+        <translation>Vink uit wat je niet wilt posten. Om items uit de lijst te halen, selecteer ze en druk op DEL.</translation>
+    </message>
+    <message>
+        <source>%1 of %2 selected</source>
+        <translation>%1 van %2 geselecteerd</translation>
+    </message>
+    <message>
+        <source>calculating the size...</source>
+        <translation>grootte wordt berekend...</translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation>ongeveer %1 te uploaden</translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation>uploadtijd: na de eerste post</translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation>uploadtijd: ongeveer %1</translation>
+    </message>
+    <message>
+        <source>There is nothing to post!
+Add files or folders, or scan a folder, and keep checked what you want to post.</source>
+        <translation>Er is niets te posten!
+Voeg bestanden of mappen toe, of scan een map, en laat aangevinkt wat je wilt posten.</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

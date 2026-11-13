@@ -31,6 +31,16 @@
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QMimeData>
+#include <QTimer>
+#include <QStorageInfo>
+#include <QDirIterator>
+#include <QButtonGroup>
+#include <QStyledItemDelegate>
+#include <QPainter>
+#include "PostCheckDialog.h"
+#include "utils/NfoWriter.h"
+#include "utils/MediaInfoReader.h"
+#include "nntp/NntpServerParams.h"
 
 AutoPostWidget::AutoPostWidget(NgPost *ngPost, MainWindow *hmi) :
     QWidget(hmi),
@@ -40,19 +50,27 @@ AutoPostWidget::AutoPostWidget(NgPost *ngPost, MainWindow *hmi) :
     _isMonitoring(false),
     _currentPostIdx(1),
     _filesTitle(nullptr), _sourceTitle(nullptr), _archiveTitle(nullptr), _advancedTitle(nullptr),
-    _monitorTitle(nullptr), _advancedCard(nullptr), _profileBar(nullptr), _nfoCard(nullptr), _advancedToggle(nullptr), _showAdvanced(false)
+    _monitorTitle(nullptr), _advancedCard(nullptr), _profileBar(nullptr), _nfoCard(nullptr), _advancedToggle(nullptr), _showAdvanced(false),
+    _mode(Mode::Choose), _sourceCard(nullptr), _monitorCard(nullptr), _summary(nullptr), _sizeTimer(nullptr)
 {
     _ui->setupUi(this);
     _buildLayout();
-    _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose the folder to scan: each file or folder becomes a post."),
-                                  tr("Select Files"), tr("Choose a folder to scan"));
-    connect(_ui->filesList, &SignedListWidget::emptyAction1, this, &AutoPostWidget::onSelectFilesClicked);
+    connect(_ui->filesList, &SignedListWidget::emptyAction1, this, [this](){
+        if (_mode == Mode::Choose)
+            onSelectFilesClicked();
+        else
+        {
+            // choose the folder, then scan it directly (not when watching)
+            QString before = _ui->autoDirEdit->text();
+            onSelectAutoDirClicked();
+            if (_mode == Mode::Scan && !_ui->autoDirEdit->text().isEmpty() && _ui->autoDirEdit->text() != before)
+                onScanAutoDirClicked();
+        }
+    });
     connect(_ui->filesList, &SignedListWidget::emptyAction2, this, [this](){
-        // choose the folder then scan it directly
-        QString before = _ui->autoDirEdit->text();
-        onSelectAutoDirClicked();
-        if (!_ui->autoDirEdit->text().isEmpty() && _ui->autoDirEdit->text() != before)
-            onScanAutoDirClicked();
+        QString dir = QFileDialog::getExistingDirectory(this, tr("Select a Folder"), _ngPost->_inputDir, QFileDialog::ShowDirsOnly);
+        if (!dir.isEmpty())
+            _ui->filesList->addPathIfNotInList(dir, _ui->filesList->count(), true);
     });
     connect(_ui->filesList, &SignedListWidget::rightClick, this, &AutoPostWidget::onSelectFilesClicked);
 }
@@ -119,37 +137,40 @@ void AutoPostWidget::init()
     _ui->extensionFilterEdit->setText(_ngPost->_monitorExtensions.isEmpty()? "" : _ngPost->_monitorExtensions.join(","));
     _ui->dirAllowedCB->setChecked(!_ngPost->_monitorIgnoreDir);
 
+    _sizeTimer = new QTimer(this);
+    _sizeTimer->setSingleShot(true);
+    connect(_sizeTimer, &QTimer::timeout, this, &AutoPostWidget::_computeNextSize);
+    QAbstractItemModel *model = _ui->filesList->model();
+    connect(model, &QAbstractItemModel::rowsInserted, this, [this](){ QTimer::singleShot(0, this, [this](){ _decorateItems(); }); });
+    connect(model, &QAbstractItemModel::rowsRemoved,  this, [this](){ _updateSummary(); });
+    connect(model, &QAbstractItemModel::modelReset,   this, [this](){ _updateSummary(); });
+    connect(_ui->filesList, &QListWidget::itemChanged, this, [this](){ _updateSummary(); });
+    for (QAbstractButton *b : {static_cast<QAbstractButton*>(_ui->compressCB), static_cast<QAbstractButton*>(_ui->par2CB)})
+        connect(b, &QAbstractButton::toggled, this, [this](){ _updateSummary(); });
+    connect(_ui->redundancySB, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](){ _updateSummary(); });
+
     _profileBar->applyRecommendedIfNew(); // first start of a new installation
+
+    Mode mode = _ngPost->_autoMode == "scan" ? Mode::Scan : _ngPost->_autoMode == "watch" ? Mode::Watch : Mode::Choose;
+    _setMode(mode);
 }
 
 
 void AutoPostWidget::onGenQuickPosts()
 {
-    bool compress = _ui->compressCB->isChecked();
-
-    QFileInfoList files;
-    for (int i = 0 ; i < _ui->filesList->count() ; ++i)
-    {
-        QFileInfo fileInfo(_ui->filesList->item(i)->text());
-        if (fileInfo.exists())
-            files << fileInfo;
-        if (!compress && fileInfo.isDir())
-        {
-            _ngPost->error(tr("You can't use auto posting without compression on folders... (%1)").arg(fileInfo.fileName()));
-            return ;
-        }
-    }
+    bool hasFolder = false;
+    QFileInfoList files = _checkedFiles(&hasFolder);
     if (files.isEmpty())
     {
         QMessageBox::warning(nullptr,
                              tr("Nothing to post..."),
-                             tr("There is nothing to post!\n\
-Press the Scan button and remove what you don't want to post ;)\n\
-(To remove files, select in the list and press DEL or BackSpace)"));
+                             tr("There is nothing to post!\nAdd files or folders, or scan a folder, and keep checked what you want to post."));
         return;
     }
 
     if (!_hmi->checkGroups())
+        return;
+    if (!_checkBeforeStart(files, hasFolder)) // the same checks as Quick Post, once for the whole group
         return;
     _hmi->updateServers();
     _hmi->updateParams();
@@ -259,7 +280,7 @@ void AutoPostWidget::onMonitoringClicked()
         }
         _ui->filesList->clear2();
         _ngPost->_stopMonitoring();
-        _ui->monitorButton->setText(tr("Monitor Folder"));
+        _ui->monitorButton->setText(tr("Start watching"));
     }
     else
     {
@@ -278,11 +299,18 @@ void AutoPostWidget::onMonitoringClicked()
                                  tr("You can't monitor a folder without compression using the GUI...\nIt's possible in command line if MONITOR_IGNORE_DIR is enabled in your configuration file."));
             return;
         }
-        _ui->filesList->addItem(new QListWidgetItem(QIcon(":/icons/monitor.png"), tr("Monitoring %1").arg(folderPath)));
+        if (!_checkBeforeStart(QFileInfoList(), false)) // the same checks as Quick Post, before watching
+            return;
+        _hmi->updateServers();
+        _hmi->updateParams();
+        udatePostingParams();
+        _ui->filesList->addItem(new QListWidgetItem(QIcon(":/icons/monitor.png"), tr("Watching %1").arg(folderPath)));
         _ngPost->_startMonitoring(folderPath);
-        _ui->monitorButton->setText(tr("Stop Monitoring"));
+        _ui->monitorButton->setText(tr("Stop watching"));
     }
 
+    for (QPushButton *b : _modeButtons)
+        b->setEnabled(_isMonitoring);
     _ui->compressPathEdit->setEnabled(_isMonitoring);
     _ui->compressPathButton->setEnabled(_isMonitoring);
     _ui->rarEdit->setEnabled(_isMonitoring);
@@ -525,20 +553,12 @@ void AutoPostWidget::retranslate()
         _profileBar->retranslate();
     if (_nfoCard)
         _nfoCard->retranslate();
-    _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose the folder to scan: each file or folder becomes a post."),
-                                  tr("Select Files"), tr("Choose a folder to scan"));
     _ui->rarMaxCB->setToolTip(tr("limit the number of archive volume to %1 (cf config RAR_MAX)").arg(_ngPost->_rarMax));
     _ui->redundancySB->setToolTip(tr("Using PAR2_ARGS from config file: %1").arg(_ngPost->_par2Args));
     _ui->removeCompletedButton->setToolTip(tr("Remove from the list the files/folders that have been uploaded without error"));
     _ui->removeAllButton->setToolTip(tr("Empty the whole list (the posts already started and the files on disk are not touched)"));
     _ui->closeTabsButton->setToolTip(tr("Close the Quick Post tabs whose upload is finished"));
-    _ui->filesList->setToolTip(QString("%1<br/><br/>%2<ul><li>%3</li><li>%4</li><li>%5</li></ul>%6").arg(
-                                   tr("You can use the <b>Monitor Mode</b>")).arg(
-                                   tr("or <b>Generate Posts</b> by adding files:")).arg(
-                                   tr("Drag & Drop files/folders")).arg(
-                                   tr("Right Click to add Files")).arg(
-                                   tr("Click on the Scan Button")).arg(
-                                   tr("Bare in mind you can select items in the list and press DEL to remove them")));
+    _ui->filesList->setToolTip(tr("Uncheck what you don't want to post. To remove items from the list, select them and press DEL."));
 }
 
 PostProfile AutoPostWidget::currentProfile() const
@@ -671,6 +691,24 @@ void AutoPostWidget::_buildLayout()
     root->setContentsMargins(2, 12, 2, 2);
     root->setSpacing(12);
 
+    // the three ways of posting
+    QHBoxLayout *modes = new QHBoxLayout();
+    modes->setSpacing(0);
+    QButtonGroup *group = new QButtonGroup(this);
+    for (int i = 0; i < 3; ++i)
+    {
+        _modeButtons[i] = new QPushButton(page);
+        _modeButtons[i]->setObjectName("modeButton");
+        _modeButtons[i]->setCheckable(true);
+        _modeButtons[i]->setCursor(Qt::PointingHandCursor);
+        _modeButtons[i]->setMinimumHeight(40);
+        group->addButton(_modeButtons[i], i);
+        modes->addWidget(_modeButtons[i], 1);
+        const Mode m = static_cast<Mode>(i);
+        connect(_modeButtons[i], &QAbstractButton::clicked, this, [this, m](){ _setMode(m); });
+    }
+    root->addLayout(modes);
+
     // list: title + list actions
     QHBoxLayout *head = new QHBoxLayout();
     head->setSpacing(8);
@@ -682,7 +720,12 @@ void AutoPostWidget::_buildLayout()
     head->addWidget(_ui->removeAllButton);
     head->addWidget(_ui->closeTabsButton);
     root->addLayout(head);
+    _ui->filesList->setMinimumHeight(150);
     root->addWidget(_ui->filesList, 1);
+    _summary = new QLabel(page);
+    _summary->setObjectName("hint");
+    _summary->hide();
+    root->addWidget(_summary);
 
     // profiles of options (shared with Quick Post)
     _profileBar = new ProfileBar(_ngPost, page);
@@ -706,26 +749,28 @@ void AutoPostWidget::_buildLayout()
     _ui->autoDirEdit->setMaximumWidth(QWIDGETSIZE_MAX);
     _ui->extensionFilterEdit->setMaximumWidth(QWIDGETSIZE_MAX);
     cards->addWidget(source, 3);
+    _sourceCard = source;
 
     // monitoring
     QFrame *monitor = newAutoCard(_monitorTitle, g);
     g->addLayout(autoRow({_ui->monitorButton, _ui->addMonitoringFolderButton}, true), 0, 0);
     g->addWidget(_ui->delFilesCB, 1, 0);
     cards->addWidget(monitor, 2);
+    _monitorCard = monitor;
 
     // archive
     QFrame *archive = newAutoCard(_archiveTitle, g);
     g->addWidget(_ui->compressCB, 0, 0);
     g->addWidget(_ui->keepRarCB, 0, 1);
+    g->addWidget(_ui->par2CB, 0, 2);
+    g->addWidget(_ui->redundancySB, 0, 3);
     g->addWidget(_ui->genNameCB, 1, 0);
     g->addWidget(_ui->nameLengthSB, 1, 1);
-    g->addWidget(_ui->genPassCB, 2, 0);
-    g->addWidget(_ui->passLengthSB, 2, 1);
-    g->addWidget(_ui->par2CB, 3, 0);
-    g->addWidget(_ui->redundancySB, 3, 1);
+    g->addWidget(_ui->genPassCB, 1, 2);
+    g->addWidget(_ui->passLengthSB, 1, 3);
     _ui->redundancyLbl->hide();
     _ui->redundancySB->setSuffix(" %");
-    g->setColumnStretch(2, 1);
+    g->setColumnStretch(4, 1);
     cards->addWidget(archive, 3);
     root->addLayout(cards);
 
@@ -796,9 +841,14 @@ void AutoPostWidget::_retranslateLayout()
 {
     if (!_filesTitle)
         return;
+    _modeButtons[0]->setText(tr("Post what I choose"));
+    _modeButtons[1]->setText(tr("Scan a folder once"));
+    _modeButtons[2]->setText(tr("Watch a folder and post what arrives"));
+    _modeButtons[0]->setToolTip(tr("Add the files and folders you want, then post them."));
+    _modeButtons[1]->setToolTip(tr("List what is in a folder, uncheck what you don't want, then post."));
+    _modeButtons[2]->setToolTip(tr("Every new file or folder that arrives in the folder is posted automatically."));
+    _monitorTitle->setText(tr("Watching"));
     _filesTitle->setText(tr("Files and folders to post"));
-    _sourceTitle->setText(tr("Folder to scan"));
-    _monitorTitle->setText(tr("Monitoring"));
     _archiveTitle->setText(tr("Archive"));
     _advancedTitle->setText(tr("Advanced options"));
     _advancedToggle->setText(_showAdvanced ? tr("▾ Hide advanced options") : tr("▸ Advanced options (temporary folder, rar / 7z, volumes)"));
@@ -809,6 +859,7 @@ void AutoPostWidget::_retranslateLayout()
     _ui->scanAutoDirButton->setText(tr("Scan"));
     _ui->dirAllowedCB->setText(tr("post the folders"));
     _ui->delFilesCB->setText(tr("delete the files once posted"));
+    _ui->monitorButton->setText(_isMonitoring ? tr("Stop watching") : tr("Start watching"));
     _ui->compressCB->setText(tr("Compress"));
     _ui->keepRarCB->setText(tr("keep the archives"));
     _ui->genNameCB->setText(tr("random name"));
@@ -820,4 +871,268 @@ void AutoPostWidget::_retranslateLayout()
     _ui->rarSizeLbl->setText(tr("Volume size (MB)"));
     _ui->rarMaxCB->setText(tr("limit the number of volumes"));
     _ui->startJobsCB->setText(tr("start the posts directly"));
+    _applyMode();
+}
+
+//========================================================================
+// the three modes, the check boxes and sizes of the list, the checks
+//========================================================================
+namespace {
+//! draws the size of the item at the right of its name
+class SizeDelegate : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
+    {
+        QVariant size = index.data(Qt::UserRole + 2);
+        if (!size.isValid())
+        {
+            QStyledItemDelegate::paint(painter, option, index);
+            return;
+        }
+        const int w = 90;
+        QStyleOptionViewItem opt(option);
+        opt.rect.setRight(option.rect.right() - w);
+        QStyledItemDelegate::paint(painter, opt, index);
+        qint64 bytes = size.toLongLong();
+        painter->save();
+        painter->setPen(option.palette.color(QPalette::Disabled, QPalette::Text));
+        painter->drawText(QRect(option.rect.right() - w, option.rect.top(), w - 8, option.rect.height()),
+                          Qt::AlignRight | Qt::AlignVCenter, bytes < 0 ? QStringLiteral("...") : NfoWriter::humanSize(bytes));
+        painter->restore();
+    }
+};
+}
+
+void AutoPostWidget::_setMode(Mode mode)
+{
+    if (_isMonitoring)
+        return;
+    _mode = mode;
+    _ngPost->_autoMode = mode == Mode::Scan ? "scan" : mode == Mode::Watch ? "watch" : "choose";
+    _applyMode();
+    _decorateItems();
+}
+
+void AutoPostWidget::_applyMode()
+{
+    if (!_sourceCard)
+        return;
+    const bool choose = _mode == Mode::Choose, scan = _mode == Mode::Scan, watch = _mode == Mode::Watch;
+    _modeButtons[0]->setChecked(choose);
+    _modeButtons[1]->setChecked(scan);
+    _modeButtons[2]->setChecked(watch);
+
+    _sourceCard->setVisible(!choose);
+    _sourceTitle->setText(watch ? tr("Folder to watch") : tr("Folder to scan"));
+    _ui->scanAutoDirButton->setVisible(scan);
+    _ui->latestFilesFirstCB->setVisible(scan);
+    _monitorCard->setVisible(watch);
+    _ui->postButton->setVisible(!watch);
+    _ui->startJobsCB->setVisible(!watch);
+    _ui->postButton->setText(tr("Post the list"));
+    _filesTitle->setText(watch ? tr("Posts of the watched folder") : tr("Files and folders to post"));
+    _ui->removeCompletedButton->setVisible(true);
+
+    if (choose)
+        _ui->filesList->setEmptyState(tr("Drag here the files or folders to post, or choose them: each file or folder becomes a post."),
+                                      tr("Select Files"), tr("Select a Folder"));
+    else if (scan)
+        _ui->filesList->setEmptyState(tr("Choose the folder to scan: what is inside is listed here, then uncheck what you don't want to post."),
+                                      tr("Choose a folder to scan"), QString());
+    else
+        _ui->filesList->setEmptyState(tr("Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted."),
+                                      tr("Choose the folder to watch"), QString());
+    _updateSummary();
+}
+
+void AutoPostWidget::_decorateItems()
+{
+    if (_isMonitoring || _mode == Mode::Watch)
+        return;
+    if (!dynamic_cast<SizeDelegate*>(_ui->filesList->itemDelegate()))
+        _ui->filesList->setItemDelegate(new SizeDelegate(_ui->filesList));
+    bool added = false;
+    QSignalBlocker blocker(_ui->filesList);
+    for (int i = 0; i < _ui->filesList->count(); ++i)
+    {
+        QListWidgetItem *item = _ui->filesList->item(i);
+        if (item->data(sSizeRole).isValid())
+            continue;
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+        item->setCheckState(Qt::Checked);
+        item->setData(sSizeRole, qint64(-1));
+        added = true;
+    }
+    blocker.unblock();
+    if (added)
+        _sizeTimer->start(0);
+    _updateSummary();
+}
+
+void AutoPostWidget::_computeNextSize()
+{
+    for (int i = 0; i < _ui->filesList->count(); ++i)
+    {
+        QListWidgetItem *item = _ui->filesList->item(i);
+        QVariant size = item->data(sSizeRole);
+        if (size.isValid() && size.toLongLong() < 0)
+        {
+            QSignalBlocker blocker(_ui->filesList);
+            item->setData(sSizeRole, NgPost::recursiveSize(QFileInfo(item->text())));
+            blocker.unblock();
+            _ui->filesList->viewport()->update();
+            _updateSummary();
+            _sizeTimer->start(0); // one item at a time to keep the window responsive
+            return;
+        }
+    }
+    _updateSummary();
+}
+
+QFileInfoList AutoPostWidget::_checkedFiles(bool *hasFolder) const
+{
+    QFileInfoList files;
+    if (hasFolder)
+        *hasFolder = false;
+    for (int i = 0; i < _ui->filesList->count(); ++i)
+    {
+        QListWidgetItem *item = _ui->filesList->item(i);
+        if (item->checkState() != Qt::Checked)
+            continue;
+        QFileInfo fi(item->text());
+        if (!fi.exists())
+            continue;
+        files << fi;
+        if (hasFolder && fi.isDir())
+            *hasFolder = true;
+    }
+    return files;
+}
+
+void AutoPostWidget::_updateSummary()
+{
+    if (!_summary)
+        return;
+    if (_isMonitoring || _mode == Mode::Watch || _ui->filesList->count() == 0)
+    {
+        _summary->hide();
+        return;
+    }
+    int total = _ui->filesList->count(), checked = 0;
+    qint64 bytes = 0;
+    bool pending = false;
+    for (int i = 0; i < total; ++i)
+    {
+        QListWidgetItem *item = _ui->filesList->item(i);
+        if (item->checkState() != Qt::Checked)
+            continue;
+        ++checked;
+        qint64 size = item->data(sSizeRole).isValid() ? item->data(sSizeRole).toLongLong() : -1;
+        if (size < 0)
+            pending = true;
+        else
+            bytes += size;
+    }
+    QString text = tr("%1 of %2 selected").arg(checked).arg(total);
+    if (pending)
+        text += QString::fromUtf8("  ·  ") + tr("calculating the size...");
+    else
+    {
+        text += ", " + NfoWriter::humanSize(bytes);
+        qint64 up = PostChecker::uploadBytes(bytes, _ui->par2CB->isChecked(), static_cast<uint>(_ui->redundancySB->value()));
+        if (_ui->compressCB->isChecked() || _ui->par2CB->isChecked())
+            text += QString::fromUtf8(" → ") + tr("about %1 to upload").arg(NfoWriter::humanSize(up));
+        QString time = PostChecker::durationText(up, _ngPost->_lastUploadSpeed);
+        text += QString::fromUtf8("  ·  ") + (time.isEmpty() ? tr("upload time: shown after the first post") : tr("upload time: about %1").arg(time));
+    }
+    _summary->setText(text);
+    _summary->show();
+}
+
+bool AutoPostWidget::_checkBeforeStart(const QFileInfoList &files, bool hasFolder)
+{
+    auto makeInput = [this, &files, hasFolder]() {
+        _hmi->updateServers();
+        _hmi->updateParams();
+        udatePostingParams();
+
+        PostChecker::Input in;
+        for (NntpServerParams *srv : _ngPost->_nntpServers)
+            if (srv->enabled)
+                ++in.nbServers;
+        in.hasGroups     = _hmi->hasGroups();
+        in.invalidGroups = _hmi->invalidGroups().join(", ");
+        in.hasFolder     = hasFolder;
+        in.compress      = _ngPost->_doCompress;
+        in.rarPath       = _ngPost->_rarPath;
+        in.tmpPath       = _ngPost->_tmpPath;
+        in.par2          = _ngPost->_doPar2;
+        in.par2Path      = _ngPost->_par2Path;
+        in.par2Pct       = _ngPost->_par2Pct;
+        in.passwordChecked = false; // each post has its own password
+        if (!_ngPost->_nzbPath.isEmpty())
+            in.nzbFile = QDir(_ngPost->_nzbPath).filePath("ngpost.nzb");
+        for (const QFileInfo &fi : files)
+            in.sourceBytes += NgPost::recursiveSize(fi);
+        if (in.compress || in.par2)
+        {
+            QStorageInfo storage(QFileInfo(in.tmpPath).exists() ? in.tmpPath : QDir::tempPath());
+            in.freeBytesTmp = storage.isValid() ? storage.bytesAvailable() : -1;
+        }
+        in.mediaInfoWanted = _ngPost->_genNfo && _ngPost->_nfoMedia;
+        if (in.mediaInfoWanted)
+        {
+            in.mediaInfoFound = !MediaInfoReader::findProgram(_ngPost->_mediaInfoPath).isEmpty();
+            if (files.isEmpty())
+                in.hasMediaFiles = true; // watching: we don't know yet what will arrive
+            for (const QFileInfo &fi : files)
+            {
+                if (fi.isDir())
+                {
+                    QDirIterator it(fi.absoluteFilePath(), QDir::Files|QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+                    while (!in.hasMediaFiles && it.hasNext())
+                        in.hasMediaFiles = MediaInfoReader::isMediaFile(it.next());
+                }
+                else
+                    in.hasMediaFiles = MediaInfoReader::isMediaFile(fi.fileName());
+                if (in.hasMediaFiles)
+                    break;
+            }
+        }
+        return in;
+    };
+    return PostCheckDialog::run(this, makeInput, [this](PostChecker::Code code){ return _applyFix(code); });
+}
+
+bool AutoPostWidget::_applyFix(PostChecker::Code code)
+{
+    using Code = PostChecker::Code;
+    switch (code)
+    {
+    case Code::NoServer:
+        _hmi->showServersPage();
+        return false;
+    case Code::NoGroup:
+    case Code::NzbFolderNotWritable:
+        _hmi->showSettingsPage();
+        return false;
+    case Code::FoldersNoCompress:
+        _ui->compressCB->setChecked(true);
+        break;
+    case Code::RarMissing:
+        onRarPathClicked();
+        break;
+    case Code::Par2Missing:
+        _ui->par2CB->setChecked(false);
+        break;
+    case Code::MediaInfoMissing:
+        _ngPost->_nfoMedia = false;
+        emit _ngPost->nfoOptionsChanged();
+        break;
+    default:
+        break;
+    }
+    return true;
 }

@@ -637,6 +637,104 @@ As publicações já iniciadas e os ficheiros no disco não são alterados.</tra
         <source>start the posts directly</source>
         <translation>iniciar os posts diretamente</translation>
     </message>
+    <message>
+        <source>Post what I choose</source>
+        <translation>Publicar o que eu escolher</translation>
+    </message>
+    <message>
+        <source>Scan a folder once</source>
+        <translation>Verificar uma pasta uma vez</translation>
+    </message>
+    <message>
+        <source>Watch a folder and post what arrives</source>
+        <translation>Vigiar uma pasta e publicar o que chegar</translation>
+    </message>
+    <message>
+        <source>Add the files and folders you want, then post them.</source>
+        <translation>Adicione os arquivos e pastas desejados e publique-os.</translation>
+    </message>
+    <message>
+        <source>List what is in a folder, uncheck what you don&apos;t want, then post.</source>
+        <translation>Liste o conteúdo de uma pasta, desmarque o que não quiser e publique.</translation>
+    </message>
+    <message>
+        <source>Every new file or folder that arrives in the folder is posted automatically.</source>
+        <translation>Cada novo arquivo ou pasta que chegar à pasta é publicado automaticamente.</translation>
+    </message>
+    <message>
+        <source>Watching</source>
+        <translation>Vigilância</translation>
+    </message>
+    <message>
+        <source>Watching %1</source>
+        <translation>Vigiando %1</translation>
+    </message>
+    <message>
+        <source>Posts of the watched folder</source>
+        <translation>Publicações da pasta vigiada</translation>
+    </message>
+    <message>
+        <source>Folder to watch</source>
+        <translation>Pasta a vigiar</translation>
+    </message>
+    <message>
+        <source>Start watching</source>
+        <translation>Começar a vigiar</translation>
+    </message>
+    <message>
+        <source>Stop watching</source>
+        <translation>Parar de vigiar</translation>
+    </message>
+    <message>
+        <source>Post the list</source>
+        <translation>Publicar a lista</translation>
+    </message>
+    <message>
+        <source>Drag here the files or folders to post, or choose them: each file or folder becomes a post.</source>
+        <translation>Arraste para aqui os arquivos ou pastas a publicar, ou escolha-os: cada arquivo ou pasta vira uma publicação.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>Escolha a pasta a verificar: o conteúdo aparece aqui e depois desmarque o que não quiser publicar.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>Escolha a pasta a vigiar e clique em «Começar a vigiar»: cada novo arquivo ou pasta que chegar é publicado.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch</source>
+        <translation>Escolher a pasta a vigiar</translation>
+    </message>
+    <message>
+        <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
+        <translation>Desmarque o que não quiser publicar. Para remover itens da lista, selecione-os e pressione DEL.</translation>
+    </message>
+    <message>
+        <source>%1 of %2 selected</source>
+        <translation>%1 de %2 selecionados</translation>
+    </message>
+    <message>
+        <source>calculating the size...</source>
+        <translation>calculando o tamanho...</translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation>cerca de %1 a enviar</translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation>tempo de envio: após a primeira publicação</translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation>tempo de envio: cerca de %1</translation>
+    </message>
+    <message>
+        <source>There is nothing to post!
+Add files or folders, or scan a folder, and keep checked what you want to post.</source>
+        <translation>Não há nada para publicar!
+Adicione arquivos ou pastas, ou verifique uma pasta, e deixe marcado o que quiser publicar.</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

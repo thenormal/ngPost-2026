@@ -638,6 +638,104 @@ I post già avviati e i file sul disco non vengono toccati.</translation>
         <source>start the posts directly</source>
         <translation>avvia subito i post</translation>
     </message>
+    <message>
+        <source>Post what I choose</source>
+        <translation>Posta quello che scelgo</translation>
+    </message>
+    <message>
+        <source>Scan a folder once</source>
+        <translation>Scansiona una cartella una volta</translation>
+    </message>
+    <message>
+        <source>Watch a folder and post what arrives</source>
+        <translation>Controlla una cartella e posta quello che arriva</translation>
+    </message>
+    <message>
+        <source>Add the files and folders you want, then post them.</source>
+        <translation>Aggiungi i file e le cartelle che vuoi, poi postali.</translation>
+    </message>
+    <message>
+        <source>List what is in a folder, uncheck what you don&apos;t want, then post.</source>
+        <translation>Elenca il contenuto di una cartella, deseleziona ciò che non vuoi, poi posta.</translation>
+    </message>
+    <message>
+        <source>Every new file or folder that arrives in the folder is posted automatically.</source>
+        <translation>Ogni nuovo file o cartella che arriva nella cartella viene postato automaticamente.</translation>
+    </message>
+    <message>
+        <source>Watching</source>
+        <translation>Controllo</translation>
+    </message>
+    <message>
+        <source>Watching %1</source>
+        <translation>Controllo di %1</translation>
+    </message>
+    <message>
+        <source>Posts of the watched folder</source>
+        <translation>Post della cartella controllata</translation>
+    </message>
+    <message>
+        <source>Folder to watch</source>
+        <translation>Cartella da controllare</translation>
+    </message>
+    <message>
+        <source>Start watching</source>
+        <translation>Avvia il controllo</translation>
+    </message>
+    <message>
+        <source>Stop watching</source>
+        <translation>Ferma il controllo</translation>
+    </message>
+    <message>
+        <source>Post the list</source>
+        <translation>Posta la lista</translation>
+    </message>
+    <message>
+        <source>Drag here the files or folders to post, or choose them: each file or folder becomes a post.</source>
+        <translation>Trascina qui i file o le cartelle da postare, oppure sceglili: ogni file o cartella diventa un post.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>Scegli la cartella da scansionare: il contenuto appare qui, poi deseleziona ciò che non vuoi postare.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>Scegli la cartella da controllare e premi «Avvia il controllo»: ogni nuovo file o cartella che arriva viene postato.</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch</source>
+        <translation>Scegli la cartella da controllare</translation>
+    </message>
+    <message>
+        <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
+        <translation>Deseleziona ciò che non vuoi postare. Per togliere elementi dalla lista, selezionali e premi CANC.</translation>
+    </message>
+    <message>
+        <source>%1 of %2 selected</source>
+        <translation>%1 di %2 selezionati</translation>
+    </message>
+    <message>
+        <source>calculating the size...</source>
+        <translation>calcolo della dimensione...</translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation>circa %1 da caricare</translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation>tempo di caricamento: dopo il primo post</translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation>tempo di caricamento: circa %1</translation>
+    </message>
+    <message>
+        <source>There is nothing to post!
+Add files or folders, or scan a folder, and keep checked what you want to post.</source>
+        <translation>Non c&apos;è niente da postare!
+Aggiungi file o cartelle, o scansiona una cartella, e lascia selezionato ciò che vuoi postare.</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>

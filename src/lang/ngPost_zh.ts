@@ -637,6 +637,104 @@ The posts already started and the files on disk are not touched.</source>
         <source>start the posts directly</source>
         <translation>直接开始发布</translation>
     </message>
+    <message>
+        <source>Post what I choose</source>
+        <translation>发布我选择的内容</translation>
+    </message>
+    <message>
+        <source>Scan a folder once</source>
+        <translation>扫描一次文件夹</translation>
+    </message>
+    <message>
+        <source>Watch a folder and post what arrives</source>
+        <translation>监视文件夹并发布新文件</translation>
+    </message>
+    <message>
+        <source>Add the files and folders you want, then post them.</source>
+        <translation>添加所需的文件和文件夹，然后发布。</translation>
+    </message>
+    <message>
+        <source>List what is in a folder, uncheck what you don&apos;t want, then post.</source>
+        <translation>列出文件夹内容，取消勾选不需要的项目，然后发布。</translation>
+    </message>
+    <message>
+        <source>Every new file or folder that arrives in the folder is posted automatically.</source>
+        <translation>文件夹中出现的每个新文件或文件夹都会自动发布。</translation>
+    </message>
+    <message>
+        <source>Watching</source>
+        <translation>监视</translation>
+    </message>
+    <message>
+        <source>Watching %1</source>
+        <translation>正在监视 %1</translation>
+    </message>
+    <message>
+        <source>Posts of the watched folder</source>
+        <translation>被监视文件夹的发布</translation>
+    </message>
+    <message>
+        <source>Folder to watch</source>
+        <translation>要监视的文件夹</translation>
+    </message>
+    <message>
+        <source>Start watching</source>
+        <translation>开始监视</translation>
+    </message>
+    <message>
+        <source>Stop watching</source>
+        <translation>停止监视</translation>
+    </message>
+    <message>
+        <source>Post the list</source>
+        <translation>发布列表</translation>
+    </message>
+    <message>
+        <source>Drag here the files or folders to post, or choose them: each file or folder becomes a post.</source>
+        <translation>将要发布的文件或文件夹拖到这里，或选择它们：每个文件或文件夹都会成为一个发布。</translation>
+    </message>
+    <message>
+        <source>Choose the folder to scan: what is inside is listed here, then uncheck what you don&apos;t want to post.</source>
+        <translation>选择要扫描的文件夹：其内容会列在这里，然后取消勾选不想发布的项目。</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch, then press Start watching: every new file or folder that arrives is posted.</source>
+        <translation>选择要监视的文件夹，然后点击“开始监视”：每个新文件或文件夹都会被发布。</translation>
+    </message>
+    <message>
+        <source>Choose the folder to watch</source>
+        <translation>选择要监视的文件夹</translation>
+    </message>
+    <message>
+        <source>Uncheck what you don&apos;t want to post. To remove items from the list, select them and press DEL.</source>
+        <translation>取消勾选不想发布的项目。要从列表中移除项目，请选中后按 DEL。</translation>
+    </message>
+    <message>
+        <source>%1 of %2 selected</source>
+        <translation>已选择 %1 / %2</translation>
+    </message>
+    <message>
+        <source>calculating the size...</source>
+        <translation>正在计算大小...</translation>
+    </message>
+    <message>
+        <source>about %1 to upload</source>
+        <translation>约 %1 待上传</translation>
+    </message>
+    <message>
+        <source>upload time: shown after the first post</source>
+        <translation>上传时间：首次发布后显示</translation>
+    </message>
+    <message>
+        <source>upload time: about %1</source>
+        <translation>上传时间：约 %1</translation>
+    </message>
+    <message>
+        <source>There is nothing to post!
+Add files or folders, or scan a folder, and keep checked what you want to post.</source>
+        <translation>没有可发布的内容！
+请添加文件或文件夹，或扫描一个文件夹，并保持勾选想发布的项目。</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
