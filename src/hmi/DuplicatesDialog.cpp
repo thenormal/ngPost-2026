@@ -28,6 +28,7 @@
 #include <QPushButton>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <QCheckBox>
 
 static QString T(const char *text) { return QCoreApplication::translate("AutoPostWidget", text); }
 
@@ -51,6 +52,7 @@ bool DuplicatesDialog::run(QWidget *parent, const QList<Item> &items, QSet<QStri
     QTableWidget *table = new QTableWidget(items.size(), 4, &dlg);
     table->setHorizontalHeaderLabels({T("Post again"), T("Name"), T("Size"), T("Posted on")});
     table->verticalHeader()->hide();
+    table->setFocusPolicy(Qt::NoFocus); // the focus of the first cell was drawn as a light box next to the check box
     table->setSelectionMode(QAbstractItemView::NoSelection);
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
@@ -59,10 +61,13 @@ bool DuplicatesDialog::run(QWidget *parent, const QList<Item> &items, QSet<QStri
     table->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
     for (int i = 0; i < items.size(); ++i)
     {
-        QTableWidgetItem *box = new QTableWidgetItem();
-        box->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-        box->setCheckState(Qt::Unchecked);
-        table->setItem(i, 0, box);
+        // a real check box centered in its cell (a check state on the item leaves an empty box next to the indicator)
+        QWidget *cell = new QWidget(table);
+        QHBoxLayout *cellLayout = new QHBoxLayout(cell);
+        cellLayout->setContentsMargins(0, 0, 0, 0);
+        QCheckBox *box = new QCheckBox(cell);
+        cellLayout->addWidget(box, 0, Qt::AlignCenter);
+        table->setCellWidget(i, 0, cell);
         QTableWidgetItem *name = new QTableWidgetItem(items[i].name);
         name->setToolTip(items[i].path);
         table->setItem(i, 1, name);
@@ -77,8 +82,9 @@ bool DuplicatesDialog::run(QWidget *parent, const QList<Item> &items, QSet<QStri
     QHBoxLayout *row = new QHBoxLayout();
     QPushButton *all  = new QPushButton(T("Select all"), &dlg);
     QPushButton *none = new QPushButton(T("Select none"), &dlg);
-    QObject::connect(all,  &QPushButton::clicked, &dlg, [table](){ for (int i = 0; i < table->rowCount(); ++i) table->item(i, 0)->setCheckState(Qt::Checked); });
-    QObject::connect(none, &QPushButton::clicked, &dlg, [table](){ for (int i = 0; i < table->rowCount(); ++i) table->item(i, 0)->setCheckState(Qt::Unchecked); });
+    auto boxOf = [table](int i) { return table->cellWidget(i, 0)->findChild<QCheckBox*>(); };
+    QObject::connect(all,  &QPushButton::clicked, &dlg, [table, boxOf](){ for (int i = 0; i < table->rowCount(); ++i) boxOf(i)->setChecked(true); });
+    QObject::connect(none, &QPushButton::clicked, &dlg, [table, boxOf](){ for (int i = 0; i < table->rowCount(); ++i) boxOf(i)->setChecked(false); });
     row->addWidget(all);
     row->addWidget(none);
     row->addStretch();
@@ -95,7 +101,7 @@ bool DuplicatesDialog::run(QWidget *parent, const QList<Item> &items, QSet<QStri
     if (dlg.exec() != QDialog::Accepted)
         return false;
     for (int i = 0; i < items.size(); ++i)
-        if (table->item(i, 0)->checkState() == Qt::Checked)
+        if (boxOf(i)->isChecked())
             again.insert(items[i].path);
     return true;
 }
