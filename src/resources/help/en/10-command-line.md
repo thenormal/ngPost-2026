@@ -26,6 +26,7 @@ Watch a folder and delete the files once posted:
 - `--resume_queue` post again the posts not finished
 - `--allow_repost` post again the files that are already in the history (by default they are skipped)
 - `--gen_nfo` write an NFO file next to the nzb; `--nfo_in_post` also post it; `--nfo_password` write the archive password in it; `--nfo_text file.txt` add a text at the end
+- `--notify_discord URL`, `--notify_telegram_token T` with `--notify_telegram_chat ID`, `--notify_webhook URL` and `--notify_when each|all_done`: notifications at the end of the posts (see [Progress and log](06-progress-and-log.md))
 - `--help` the full list
 
 See [Auto Posting](08-auto-posting.md).

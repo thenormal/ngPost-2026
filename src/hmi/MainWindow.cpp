@@ -40,6 +40,7 @@
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QPlainTextEdit>
+#include <QSystemTrayIcon>
 #include <QSpinBox>
 #include <QComboBox>
 #include <QFileDialog>
@@ -212,6 +213,30 @@ void MainWindow::init(NgPost *ngPost)
     connect(_historyCB,         &QAbstractButton::toggled, this, &MainWindow::onHistoryToggled);
     _duplicatesCB->setChecked(_ngPost->_checkDuplicates);
     connect(_duplicatesCB,      &QAbstractButton::toggled, this, [this](bool checked){ _ngPost->_checkDuplicates = checked; });
+    {
+        Notifier::Settings &ns = _ngPost->_notifier.settings();
+        _notifyOkCB->setChecked(ns.onSuccess);
+        _notifyErrCB->setChecked(ns.onErrors);
+        _notifyTrayCB->setChecked(ns.tray);
+        _notifyWhenCB->setCurrentIndex(ns.allDone ? 0 : 1);
+        _notifyDiscordEdit->setText(ns.discord);
+        _notifyTgTokenEdit->setText(ns.telegramToken);
+        _notifyTgChatEdit->setText(ns.telegramChat);
+        _notifyWebhookEdit->setText(ns.webhook);
+        connect(_notifyOkCB,   &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_notifier.settings().onSuccess = on; });
+        connect(_notifyErrCB,  &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_notifier.settings().onErrors = on; });
+        connect(_notifyTrayCB, &QAbstractButton::toggled, this, [this](bool on){ _ngPost->_notifier.settings().tray = on; });
+        connect(_notifyWhenCB, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+                [this](int idx){ _ngPost->_notifier.settings().allDone = (idx == 0); });
+        connect(_notifyDiscordEdit,   &QLineEdit::textChanged, this, [this](const QString &t){ _ngPost->_notifier.settings().discord = t.trimmed(); });
+        connect(_notifyTgTokenEdit,   &QLineEdit::textChanged, this, [this](const QString &t){ _ngPost->_notifier.settings().telegramToken = t.trimmed(); });
+        connect(_notifyTgChatEdit,    &QLineEdit::textChanged, this, [this](const QString &t){ _ngPost->_notifier.settings().telegramChat = t.trimmed(); });
+        connect(_notifyWebhookEdit,   &QLineEdit::textChanged, this, [this](const QString &t){ _ngPost->_notifier.settings().webhook = t.trimmed(); });
+        connect(_notifyTestButton,    &QAbstractButton::clicked, this, [this](){
+            QMessageBox::information(this, tr("Notifications"), _ngPost->_notifier.sendTest(_ngPost->appName()));
+        });
+        connect(&_ngPost->_notifier, &Notifier::trayMessage, this, &MainWindow::_showTrayMessage);
+    }
     _nfoCB->setChecked(_ngPost->_genNfo);
     _nfoInPostCB->setChecked(_ngPost->_nfoInPost);
     _nfoPassCB->setChecked(_ngPost->_nfoPassword);
@@ -1556,6 +1581,44 @@ QWidget *MainWindow::_buildSettingsPage()
     g->setColumnStretch(0, 1);
     left->insertWidget(left->count() - 1, nfo);
 
+    // notifications
+    QFrame *notif = _card("notify", g);
+    _notifyOkCB    = new QCheckBox(notif);
+    _notifyErrCB   = new QCheckBox(notif);
+    _notifyTrayCB  = new QCheckBox(notif);
+    _notifyWhenLbl = new QLabel(notif);
+    _notifyWhenCB  = new QComboBox(notif);
+    _notifyWhenCB->addItems({QString(), QString()}); // texts set in retranslate()
+    _notifyDiscordLbl = new QLabel(notif);
+    _notifyTgTokenLbl = new QLabel(notif);
+    _notifyTgChatLbl  = new QLabel(notif);
+    _notifyWebhookLbl = new QLabel(notif);
+    for (QLineEdit **e : {&_notifyDiscordEdit, &_notifyTgTokenEdit, &_notifyTgChatEdit, &_notifyWebhookEdit})
+    {
+        *e = new QLineEdit(notif);
+        (*e)->setEchoMode(QLineEdit::Password); // addresses and tokens are secrets, like the passwords
+    }
+    _notifyTestButton = new QPushButton(notif);
+    _notifyHint = newLabel("hint", notif);
+    _notifyHint->setWordWrap(true);
+    g->addWidget(_notifyOkCB, 0, 0, 1, 2);
+    g->addWidget(_notifyErrCB, 1, 0, 1, 2);
+    g->addWidget(_notifyTrayCB, 2, 0, 1, 2);
+    g->addWidget(_notifyWhenLbl, 3, 0);
+    g->addWidget(_notifyWhenCB, 3, 1);
+    g->addWidget(_notifyDiscordLbl, 4, 0);
+    g->addWidget(_notifyDiscordEdit, 4, 1);
+    g->addWidget(_notifyTgTokenLbl, 5, 0);
+    g->addWidget(_notifyTgTokenEdit, 5, 1);
+    g->addWidget(_notifyTgChatLbl, 6, 0);
+    g->addWidget(_notifyTgChatEdit, 6, 1);
+    g->addWidget(_notifyWebhookLbl, 7, 0);
+    g->addWidget(_notifyWebhookEdit, 7, 1);
+    g->addWidget(_notifyTestButton, 8, 0, 1, 2);
+    g->addWidget(_notifyHint, 9, 0, 1, 2);
+    g->setColumnStretch(1, 1);
+    left->insertWidget(left->count() - 1, notif);
+
     // queue of the posts
     QFrame *queue = _card("queue", g);
     _queueCB = new QCheckBox(queue);
@@ -1629,6 +1692,20 @@ void MainWindow::_retranslateShell()
     _cardTitles["privacy"]->setText(tr("Privacy"));
     _cardTitles["interface"]->setText(tr("Interface"));
     _cardTitles["history"]->setText(tr("History of the uploads"));
+    _cardTitles["notify"]->setText(tr("Notifications"));
+    _notifyOkCB->setText(tr("Notify when a post is finished"));
+    _notifyErrCB->setText(tr("Notify when a post has errors or fails"));
+    _notifyTrayCB->setText(tr("System notification (icon in the notification area)"));
+    _notifyWhenLbl->setText(tr("Send:"));
+    _notifyWhenCB->setItemText(0, tr("one message when all the posts are done"));
+    _notifyWhenCB->setItemText(1, tr("a message after each post"));
+    _notifyDiscordLbl->setText(tr("Discord webhook:"));
+    _notifyTgTokenLbl->setText(tr("Telegram bot token:"));
+    _notifyTgChatLbl->setText(tr("Telegram chat id:"));
+    _notifyWebhookLbl->setText(tr("Other webhook:"));
+    _notifyTestButton->setText(tr("Send a test message"));
+    _notifyHint->setText(tr("The messages never contain the password or the names of the files. The addresses and the token are saved "
+                            "in clear text in the configuration file (like the other passwords): keep it private."));
     _cardTitles["nfo"]->setText(tr("NFO file"));
     _nfoCB->setText(tr("Write an NFO file next to the nzb (name, date, files, archive, par2)"));
     _nfoInPostCB->setText(tr("Also post the NFO file with the files"));
@@ -1946,6 +2023,19 @@ void MainWindow::_offerQueue()
             closeTab(tab);
         }
     }
+}
+
+void MainWindow::_showTrayMessage(const QString &title, const QString &text)
+{
+    if (!QSystemTrayIcon::isSystemTrayAvailable())
+        return;
+    if (!_tray)
+    {
+        _tray = new QSystemTrayIcon(QIcon(":/icons/ngPost.png"), this);
+        connect(_tray, &QSystemTrayIcon::messageClicked, this, [this](){ showNormal(); raise(); activateWindow(); });
+        _tray->show();
+    }
+    _tray->showMessage(title, text, QSystemTrayIcon::Information, 10000);
 }
 
 void MainWindow::_updateNfoSettings()

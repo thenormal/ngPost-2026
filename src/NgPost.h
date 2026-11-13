@@ -35,6 +35,8 @@
 #include "ProgressInfo.h"
 #include <QProcess>
 #include <QNetworkAccessManager>
+#include "utils/Notifier.h"
+#include <functional>
 #include <QNetworkProxy>
 class QTranslator;
 class NntpConnection;
@@ -204,6 +206,7 @@ private:
     bool        _queueTried   = false; //!< we tried to open it (only once)
     bool        _queueEnabled = true;  //!< key "queue" of the config
     bool        _resumeQueue  = false; //!< command line: post again the unfinished posts (--resume_queue or key "resume_queue")
+    Notifier    _notifier;             //!< notifications at the end of the posts (keys notify_*)
     bool        _genNfo       = false; //!< write an NFO file next to the nzb (key "gen_nfo", --gen_nfo)
     bool        _nfoInPost    = false; //!< and post it with the files (key "nfo_in_post", --nfo_in_post)
     bool        _nfoPassword  = false; //!< write the password of the archive in it (key "nfo_password", --nfo_password)
@@ -486,6 +489,9 @@ public slots:
 //    void onShutdownProcStarted();
 //    void onShutdownProcStateChanged(QProcess::ProcessState newState);
     void onShutdownProcError(QProcess::ProcessError error);
+
+    void _whenNotificationsSent(const std::function<void()> &action); //!< runs action now, or when the notifications being sent are done
+    void _runShutdown();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     void onNetworkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accessible);

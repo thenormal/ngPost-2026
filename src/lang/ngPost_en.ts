@@ -1582,6 +1582,58 @@ Decide later: they stay in the queue and will be offered again at the next start
         <source>When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. Careful: a password in a posted NFO is readable by everyone who downloads the post.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Notifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify when a post is finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notify when a post has errors or fails</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System notification (icon in the notification area)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>one message when all the posts are done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>a message after each post</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Discord webhook:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Telegram bot token:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Telegram chat id:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Other webhook:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send a test message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The messages never contain the password or the names of the files. The addresses and the token are saved in clear text in the configuration file (like the other passwords): keep it private.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3047,6 +3099,38 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \n = new line)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>send a notification to this Discord webhook address when the posts are done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>token of the Telegram bot that sends the notifications (with --notify_telegram_chat)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Telegram chat id that receives the notifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>send a JSON POST {&quot;title&quot;, &quot;text&quot;} to this address when the posts are done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>notify &quot;each&quot; (after each post) or &quot;all_done&quot; (once, when all the posts are done, default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>## Notifications when the posts end: events (notify_ok, notify_errors), system notification (notify_tray, GUI only),</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>## notify_when = all_done (one message when all the posts are done) or each (after each post)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>## Discord / Telegram / webhook addresses and tokens are secrets, like the passwords: keep this file private</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -4286,6 +4370,69 @@ Click on &quot;Add&quot; to configure your Usenet provider.</translation>
     </message>
     <message>
         <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Notifier</name>
+    <message>
+        <source>finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>finished with errors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>stopped or failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 of %2 articles failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2 post(s) done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 OK, %2 with errors, %3 stopped or failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>... and %1 more</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is a test message.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>system notification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No notification channel is set.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test message sent: %1 (a failure is written in the log).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notification (%1) not sent: the address is not valid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notification (%1) failed: the server answered %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notification (%1) failed: no answer from the server</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -41,6 +41,7 @@ class QFrame;
 class QLineEdit;
 class QCheckBox;
 class QPlainTextEdit;
+class QSystemTrayIcon;
 class HistoryWidget;
 class HelpWidget;
 class GroupsEdit;
@@ -92,6 +93,16 @@ private:
     QLabel         *_nfoTextLbl;
     QPlainTextEdit *_nfoText;
     QLabel         *_nfoHint;
+    QCheckBox      *_notifyOkCB = nullptr;
+    QCheckBox      *_notifyErrCB = nullptr;
+    QCheckBox      *_notifyTrayCB = nullptr;
+    QComboBox      *_notifyWhenCB = nullptr;
+    QLabel         *_notifyWhenLbl = nullptr;
+    QLabel         *_notifyDiscordLbl = nullptr, *_notifyTgTokenLbl = nullptr, *_notifyTgChatLbl = nullptr, *_notifyWebhookLbl = nullptr;
+    QLineEdit      *_notifyDiscordEdit = nullptr, *_notifyTgTokenEdit = nullptr, *_notifyTgChatEdit = nullptr, *_notifyWebhookEdit = nullptr;
+    QPushButton    *_notifyTestButton = nullptr;
+    QLabel         *_notifyHint = nullptr;
+    QSystemTrayIcon *_tray = nullptr;   //!< created when the first system notification is shown
     QLabel         *_queueHint;
     QLabel         *_supportHint;
     QPushButton    *_supportButton;
@@ -193,6 +204,7 @@ private slots:
     void onAutoSave();
     void onDiagnosticReport();
     void _updateNfoSettings();
+    void _showTrayMessage(const QString &title, const QString &text);
 
     void onObfucateToggled(bool checked);
 

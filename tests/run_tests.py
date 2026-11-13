@@ -850,6 +850,121 @@ def test_nfo_file(work):
         stub.stop()
 
 
+class HttpSink:
+    """small HTTP server that keeps the POST requests it receives (for the notifications)"""
+    def __init__(self):
+        import http.server
+        import threading
+        self.requests = []
+        sink = self
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):
+                n = int(self.headers.get("Content-Length", 0))
+                sink.requests.append((self.path, self.rfile.read(n).decode("utf-8")))
+                self.send_response(200)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+
+            def log_message(self, *a):
+                pass
+
+        self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.port = self.server.server_address[1]
+        threading.Thread(target=self.server.serve_forever, daemon=True).start()
+
+    def stop(self):
+        self.server.shutdown()
+        self.server.server_close()
+
+
+def test_notifications(work):
+    # a message when the posts end: generic webhook, Discord, Telegram; nothing is sent when nothing is set
+    import json
+    stub = NntpStub().start()
+    sink = HttpSink()
+    try:
+        src = os.path.join(work, "notif.bin")
+        make_file(src, 90_000, 31)
+        base = "http://127.0.0.1:%d" % sink.port
+
+        # nothing configured: nothing sent
+        run_ngpost_conf([stub], work, [src], os.path.join(work, "n0.nzb"), conns=1, threads=1)
+        check(not sink.requests, "a notification was sent without any setting")
+
+        # generic webhook, after each post
+        r = run_ngpost_conf([stub], work, [src], os.path.join(work, "n1.nzb"), conns=1, threads=1,
+                            conf_extra="notify_webhook = %s/hook\nnotify_when = each\n" % base)
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        check(len(sink.requests) == 1 and sink.requests[0][0] == "/hook", "webhook requests: %s" % sink.requests)
+        body = json.loads(sink.requests[0][1])
+        check("n1.nzb" in body["text"] and "finished" in body["title"], "unexpected message: %s" % body)
+
+        # Discord: {"content": ...}
+        sink.requests.clear()
+        run_ngpost_conf([stub], work, [src], os.path.join(work, "n2.nzb"), conns=1, threads=1,
+                        conf_extra="notify_discord = %s/discord\n" % base)
+        check(len(sink.requests) == 1 and "n2.nzb" in json.loads(sink.requests[0][1]).get("content", ""),
+              "Discord requests: %s" % sink.requests)
+
+        # Telegram: the address of the API is replaced for the test
+        sink.requests.clear()
+        cmd, env = ngpost_conf_cmd([stub], work, [src], os.path.join(work, "n3.nzb"), 1, 1,
+                                   env_extra={"NGPOST_TELEGRAM_API": base},
+                                   conf_extra="notify_telegram_token = tok123\nnotify_telegram_chat = 4242\n")
+        subprocess.run(cmd, env=env, cwd=work, capture_output=True, text=True, timeout=120)
+        check(len(sink.requests) == 1 and sink.requests[0][0] == "/bottok123/sendMessage", "Telegram requests: %s" % sink.requests)
+        check(json.loads(sink.requests[0][1])["chat_id"] == "4242", "wrong chat id")
+
+        # the notifications of errors can be turned off, the post is not affected
+        sink.requests.clear()
+        run_ngpost_conf([stub], work, [src], os.path.join(work, "n4.nzb"), conns=1, threads=1,
+                        conf_extra="notify_webhook = %s/hook\nnotify_ok = off\n" % base)
+        check(not sink.requests, "a success was notified with notify_ok = off")
+
+        # the server of the notifications is down: the post still ends well
+        dead = HttpSink()
+        dead_port = dead.port
+        dead.stop()
+        r = run_ngpost_conf([stub], work, [src], os.path.join(work, "n5.nzb"), conns=1, threads=1,
+                            conf_extra="notify_webhook = http://127.0.0.1:%d/x\n" % dead_port)
+        check(r.returncode == 0 and os.path.exists(os.path.join(work, "n5.nzb")), "the post failed because of the notification\n" + LAST_OUTPUT)
+    finally:
+        sink.stop()
+        stub.stop()
+
+
+def test_notification_when_all_done(work):
+    # two posts (auto posting) => ONE message at the end by default, two with notify_when = each; no password in it
+    import json
+    seven = shutil.which("7z")
+    if not seven:
+        print("SKIP  (7z is not installed)")
+        return
+    stub = NntpStub().start()
+    sink = HttpSink()
+    try:
+        tmp = os.path.join(work, "tmp")
+        os.makedirs(tmp)
+        os.makedirs(os.path.join(work, "inbox"))
+        for name, seed in (("alpha", 41), ("beta", 42)):
+            make_file(os.path.join(work, "inbox", name + ".bin"), 60_000, seed)
+        nzbdir = os.path.join(work, "nzbs")
+        os.makedirs(nzbdir)
+        base = "TMP_DIR = %s\nRAR_PATH = %s\nRAR_SIZE = 0\nnzbPath = %s\n" % (tmp, seven, nzbdir)
+        hook = "notify_webhook = http://127.0.0.1:%d/hook\n" % sink.port
+        extra = ["--auto", os.path.join(work, "inbox"), "--compress", "--rar_pass", "topsecret"]
+        r = run_ngpost_conf([stub], work, [], None, conns=1, threads=1, conf_extra=base + hook, extra=extra)
+        check(r.returncode == 0, "exit code %d\n%s" % (r.returncode, LAST_OUTPUT))
+        check(len(sink.requests) == 1, "%d messages instead of one: %s" % (len(sink.requests), sink.requests))
+        text = json.loads(sink.requests[0][1])
+        check("alpha" in text["text"] and "beta" in text["text"] and "2 post" in text["title"], "unexpected message: %s" % text)
+        check("topsecret" not in sink.requests[0][1], "the password is in the notification")
+    finally:
+        sink.stop()
+        stub.stop()
+
+
 TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_retry_after_refusals, test_wrong_password, test_some_logins_refused,
          test_article_always_refused_on_one_connection, test_server_going_down,
@@ -859,7 +974,8 @@ TESTS = [test_single_file, test_several_files_and_folder, test_obfuscation,
          test_queue_resume_after_crash, test_queue_file_gone, test_queue_missing_articles,
          test_queue_used_by_another_ngpost, test_phase_durations, test_progress_line_has_eta, test_groups_are_cleaned,
          test_help_pages, test_latency_is_measured, test_feedback_forms,
-         test_duplicate_is_skipped, test_nfo_file]
+         test_duplicate_is_skipped, test_nfo_file, test_notifications,
+         test_notification_when_all_done]
 
 
 def main():

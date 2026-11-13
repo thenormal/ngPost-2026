@@ -60,6 +60,7 @@ These ones are read every time the container starts:
 - New files are detected with the file system notifications of Linux (inotify). If you copy files to the watch folder
   from another computer through the network, wait for the copy to end: a file is posted when its size stops changing.
 - Extra options of `ngPost` can be added after the image name (for example `--debug`). The list: `docker run --rm --entrypoint ngPost ghcr.io/thenormal/ngpost-deluxe --help`.
+- To be told when the posts are done (Discord, Telegram or a webhook) add the options after the image name, for example `--notify_discord https://discord.com/api/webhooks/...`, or the `notify_*` keys in your `ngPost.conf` (see the Help page *Progress and log*). The address is a secret: keep the config folder private.
 - The image is built for `amd64` (x86-64).
 
 ## Unraid

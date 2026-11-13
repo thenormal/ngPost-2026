@@ -1599,6 +1599,58 @@ Decidir depois: permanecem na fila e serão oferecidos novamente na próxima ini
         <source>When the names of the files are hidden (obfuscation) the NFO that is posted lists no file name. Careful: a password in a posted NFO is readable by everyone who downloads the post.</source>
         <translation>Quando os nomes dos arquivos estão ocultos (ofuscação), o NFO postado não lista nenhum nome de arquivo. Atenção: uma senha em um NFO postado pode ser lida por qualquer pessoa que baixe o post.</translation>
     </message>
+    <message>
+        <source>Notifications</source>
+        <translation>Notificações</translation>
+    </message>
+    <message>
+        <source>Notify when a post is finished</source>
+        <translation>Avisar quando um post termina</translation>
+    </message>
+    <message>
+        <source>Notify when a post has errors or fails</source>
+        <translation>Avisar quando um post tem erros ou falha</translation>
+    </message>
+    <message>
+        <source>System notification (icon in the notification area)</source>
+        <translation>Notificação do sistema (ícone na área de notificação)</translation>
+    </message>
+    <message>
+        <source>Send:</source>
+        <translation>Enviar:</translation>
+    </message>
+    <message>
+        <source>one message when all the posts are done</source>
+        <translation>uma mensagem quando todos os posts terminam</translation>
+    </message>
+    <message>
+        <source>a message after each post</source>
+        <translation>uma mensagem após cada post</translation>
+    </message>
+    <message>
+        <source>Discord webhook:</source>
+        <translation>Webhook do Discord:</translation>
+    </message>
+    <message>
+        <source>Telegram bot token:</source>
+        <translation>Token do bot do Telegram:</translation>
+    </message>
+    <message>
+        <source>Telegram chat id:</source>
+        <translation>Id do chat do Telegram:</translation>
+    </message>
+    <message>
+        <source>Other webhook:</source>
+        <translation>Outro webhook:</translation>
+    </message>
+    <message>
+        <source>Send a test message</source>
+        <translation>Enviar uma mensagem de teste</translation>
+    </message>
+    <message>
+        <source>The messages never contain the password or the names of the files. The addresses and the token are saved in clear text in the configuration file (like the other passwords): keep it private.</source>
+        <translation>As mensagens nunca contêm a senha nem os nomes dos arquivos. Os endereços e o token são salvos em texto claro no arquivo de configuração (como as outras senhas): mantenha-o privado.</translation>
+    </message>
 </context>
 <context>
     <name>NgPost</name>
@@ -3074,6 +3126,38 @@ OU use --par2_pct ou coloque PAR2_PCT ou PAR2_ARGS na configuração de arquivo.
         <source>## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \n = new line)</source>
         <translation>## com a senha do arquivo compactado (nfo_password) e um texto seu (nfo_text, em uma linha, \n = nova linha)</translation>
     </message>
+    <message>
+        <source>send a notification to this Discord webhook address when the posts are done</source>
+        <translation>envia uma notificação para este endereço de webhook do Discord quando os posts terminam</translation>
+    </message>
+    <message>
+        <source>token of the Telegram bot that sends the notifications (with --notify_telegram_chat)</source>
+        <translation>token do bot do Telegram que envia as notificações (com --notify_telegram_chat)</translation>
+    </message>
+    <message>
+        <source>Telegram chat id that receives the notifications</source>
+        <translation>id do chat do Telegram que recebe as notificações</translation>
+    </message>
+    <message>
+        <source>send a JSON POST {&quot;title&quot;, &quot;text&quot;} to this address when the posts are done</source>
+        <translation>envia um POST JSON {&quot;title&quot;, &quot;text&quot;} para este endereço quando os posts terminam</translation>
+    </message>
+    <message>
+        <source>notify &quot;each&quot; (after each post) or &quot;all_done&quot; (once, when all the posts are done, default)</source>
+        <translation>notificar &quot;each&quot; (após cada post) ou &quot;all_done&quot; (uma vez, quando todos terminam, padrão)</translation>
+    </message>
+    <message>
+        <source>## Notifications when the posts end: events (notify_ok, notify_errors), system notification (notify_tray, GUI only),</source>
+        <translation>## Notificações ao fim dos posts: eventos (notify_ok, notify_errors), notificação do sistema (notify_tray, só GUI),</translation>
+    </message>
+    <message>
+        <source>## notify_when = all_done (one message when all the posts are done) or each (after each post)</source>
+        <translation>## notify_when = all_done (uma mensagem quando todos terminam) ou each (após cada post)</translation>
+    </message>
+    <message>
+        <source>## Discord / Telegram / webhook addresses and tokens are secrets, like the passwords: keep this file private</source>
+        <translation>## Os endereços do Discord / Telegram / webhook e os tokens são segredos, como as senhas: mantenha este arquivo privado</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -4323,6 +4407,69 @@ Clique em «Adicionar» para configurar o seu fornecedor Usenet.</translation>
     <message>
         <source>Close</source>
         <translation>Fechar</translation>
+    </message>
+</context>
+<context>
+    <name>Notifier</name>
+    <message>
+        <source>finished</source>
+        <translation>concluído</translation>
+    </message>
+    <message>
+        <source>finished with errors</source>
+        <translation>concluído com erros</translation>
+    </message>
+    <message>
+        <source>stopped or failed</source>
+        <translation>parado ou falhou</translation>
+    </message>
+    <message>
+        <source>%1 of %2 articles failed</source>
+        <translation>%1 de %2 artigos falharam</translation>
+    </message>
+    <message>
+        <source>%1: %2 post(s) done</source>
+        <translation>%1: %2 post(s) concluído(s)</translation>
+    </message>
+    <message>
+        <source>%1 OK, %2 with errors, %3 stopped or failed</source>
+        <translation>%1 OK, %2 com erros, %3 parados ou com falha</translation>
+    </message>
+    <message>
+        <source>... and %1 more</source>
+        <translation>... e mais %1</translation>
+    </message>
+    <message>
+        <source>%1: test</source>
+        <translation>%1: teste</translation>
+    </message>
+    <message>
+        <source>This is a test message.</source>
+        <translation>Esta é uma mensagem de teste.</translation>
+    </message>
+    <message>
+        <source>system notification</source>
+        <translation>notificação do sistema</translation>
+    </message>
+    <message>
+        <source>No notification channel is set.</source>
+        <translation>Nenhum canal de notificação está configurado.</translation>
+    </message>
+    <message>
+        <source>Test message sent: %1 (a failure is written in the log).</source>
+        <translation>Mensagem de teste enviada: %1 (uma falha é escrita no registro).</translation>
+    </message>
+    <message>
+        <source>Notification (%1) not sent: the address is not valid</source>
+        <translation>Notificação (%1) não enviada: o endereço não é válido</translation>
+    </message>
+    <message>
+        <source>Notification (%1) failed: the server answered %2</source>
+        <translation>Notificação (%1) falhou: o servidor respondeu %2</translation>
+    </message>
+    <message>
+        <source>Notification (%1) failed: no answer from the server</source>
+        <translation>Notificação (%1) falhou: sem resposta do servidor</translation>
     </message>
 </context>
 </TS>
