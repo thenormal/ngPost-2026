@@ -18,6 +18,7 @@
 //========================================================================
 
 #include "NgPost.h"
+#include "utils/PostedMover.h"
 #include <QSaveFile>
 #include "utils/Diagnostics.h"
 #include "PostingJob.h"
@@ -115,6 +116,7 @@ const QMap<NgPost::Opt, QString> NgPost::sOptionNames =
     {Opt::AUTO_DIR,     "auto"},
     {Opt::MONITOR_DIR,  "monitor"},
     {Opt::DEL_AUTO,     "rm_posted"},
+    {Opt::MOVE_POSTED,  "move_posted"},
     {Opt::OUTPUT,       "output"},
     {Opt::NZB_PATH,     "nzbpath"},
     {Opt::THREAD,       "thread"},
@@ -189,6 +191,7 @@ const QList<QCommandLineOption> NgPost::sCmdOptions = {
     { sOptionNames[Opt::AUTO_DIR],            tr("parse directory and post every file/folder separately. You must use --compress, should add --gen_par2, --gen_name and --gen_pass"), sOptionNames[Opt::AUTO_DIR]},
     { sOptionNames[Opt::MONITOR_DIR],         tr("monitor directory and post every new file/folder. You must use --compress, should add --gen_par2, --gen_name and --gen_pass"), sOptionNames[Opt::MONITOR_DIR]},
     { sOptionNames[Opt::DEL_AUTO],            tr("delete file/folder once posted. You must use --auto or --monitor with this option.")},
+    { sOptionNames[Opt::MOVE_POSTED],         tr("move the file/folder to this folder once posted (a name like Posted is created next to each file/folder, a full path is used as it is). You must use --auto or --monitor with this option."), sOptionNames[Opt::MOVE_POSTED]},
     { "resume_queue",                         tr("post again the posts that were not finished (queue saved next to the config file)")},
     { "notify_discord",                       tr("send a notification to this Discord webhook address when the posts are done"), "notify_discord"},
     { "notify_telegram_token",                tr("token of the Telegram bot that sends the notifications (with --notify_telegram_chat)"), "notify_telegram_token"},
@@ -764,6 +767,12 @@ void NgPost::onRefreshprogressbarBar()
 
 void NgPost::onNewFileToProcess(const QFileInfo & fileInfo)
 {
+    if (isPostedFolder(fileInfo))
+    {
+        if (_debug)
+            _log(tr("Ignoring the Posted folder %1").arg(fileInfo.absoluteFilePath()));
+        return;
+    }
     if (fileInfo.isDir())
     {
         if (_monitorIgnoreDir)
@@ -792,6 +801,7 @@ void NgPost::onNewFileToProcess(const QFileInfo & fileInfo)
         _hmi->updateAutoPostingParams();
         _hmi->setJobLabel(-1);
         _delAuto = _hmi->autoWidget()->deleteFilesOncePosted();
+        _movePosted = _hmi->autoWidget()->movePostedTo();
         _hmi->autoWidget()->newFileToProcess(fileInfo);
     }
 #endif
@@ -1019,13 +1029,15 @@ void NgPost::_post(const QFileInfo &fileInfo, const QString &monitorFolder)
              << " with rar_name: " << _rarName << " and pass: " << _rarPass
              << " (auto delete: " << _delAuto << ")";
 
-    startPostingJob(new PostingJob(this, nzbFilePath, {fileInfo}, nullptr,
-                                   getPostingGroups(), from(),
-                                   _obfuscateArticles, _obfuscateFileName,
-                                   _tmpPath, _rarPath, _rarArgs,
-                                   _rarSize, _useRarMax, _par2Pct,
-                                   _doCompress, _doPar2, _rarName, _rarPass,
-                                   _keepRar, _delAuto, false));
+    PostingJob *job = new PostingJob(this, nzbFilePath, {fileInfo}, nullptr,
+                                     getPostingGroups(), from(),
+                                     _obfuscateArticles, _obfuscateFileName,
+                                     _tmpPath, _rarPath, _rarArgs,
+                                     _rarSize, _useRarMax, _par2Pct,
+                                     _doCompress, _doPar2, _rarName, _rarPass,
+                                     _keepRar, _delAuto || !_movePosted.isEmpty(), false);
+    job->setMovePostedTo(_movePosted);
+    startPostingJob(job);
 }
 
 
@@ -1730,6 +1742,25 @@ bool NgPost::parseCommandLine(int argc, char *argv[])
         else
             _delAuto = true;
     }
+    if (parser.isSet(sOptionNames[Opt::MOVE_POSTED]))
+    {
+        if (!parser.isSet(sOptionNames[Opt::AUTO_DIR]) && !parser.isSet(sOptionNames[Opt::MONITOR_DIR]))
+        {
+            _error(tr("Error syntax: --move_posted option is only available with --auto or --monitor"),
+                   ERROR_CODE::ERR_DEL_AUTO);
+            return false;
+        }
+        _movePosted = parser.value(sOptionNames[Opt::MOVE_POSTED]).trimmed();
+    }
+    if (parser.isSet(sOptionNames[Opt::DEL_AUTO]))
+    {
+        if (parser.isSet(sOptionNames[Opt::MOVE_POSTED]))
+        {
+            _error(tr("Error syntax: --rm_posted and --move_posted can't be used together"), ERROR_CODE::ERR_DEL_AUTO);
+            return false;
+        }
+        _movePosted.clear(); // --rm_posted wins over move_posted of the configuration file
+    }
 
     if (parser.isSet(sOptionNames[Opt::PACK]))
         enableAutoPacking();
@@ -2194,7 +2225,8 @@ bool NgPost::parseCommandLine(int argc, char *argv[])
         {
             _cout << "===> Auto dir: " << dir.absolutePath() << "\n" << MB_FLUSH;
             for (const QFileInfo & fileInfo : dir.entryInfoList(QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot, QDir::Name))
-                _post(fileInfo, _monitor_nzb_folders ? QDir(fileInfo.absolutePath()).dirName() : QString());
+                if (!isPostedFolder(fileInfo))
+                    _post(fileInfo, _monitor_nzb_folders ? QDir(fileInfo.absolutePath()).dirName() : QString());
         }
     }
 
@@ -2504,6 +2536,8 @@ QString NgPost::_parseConfig(const QString &configPath)
                         _notifier.settings().telegramChat = val.trimmed();
                     else if (opt == "notify_webhook")
                         _notifier.settings().webhook = val.trimmed();
+                    else if (opt == "move_posted")
+                        _movePosted = val.trimmed();
                     else if (opt == "auto_mode")
                     {
                         QString v = val.trimmed().toLower();
@@ -3136,12 +3170,16 @@ void NgPost::saveConfig(bool quiet)
                << (_notifier.settings().telegramChat.isEmpty() ? "#" : "") << "notify_telegram_chat = " << _notifier.settings().telegramChat << "\n"
                << (_notifier.settings().webhook.isEmpty() ? "#" : "") << "notify_webhook = " << _notifier.settings().webhook << "\n"
                << "\n"
+               << tr("## Auto Posting: last mode used (choose, scan or watch) and the folder where the posted files are moved") << "\n"
+               << tr("## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)") << "\n"
+               << "auto_mode = " << _autoMode << "\n"
+               << (_movePosted.isEmpty() ? "#" : "") << "move_posted = " << (_movePosted.isEmpty() ? QString("Posted") : _movePosted) << "\n"
+               << "\n"
                << tr("## NFO file: written next to the nzb (gen_nfo), also posted with the files (nfo_in_post),")  << "\n"
                << tr("## with the password of the archive (nfo_password) and a text of yours (nfo_text, one line, \\n = new line)") << "\n"
                << "gen_nfo = " << (_genNfo ? "ON" : "OFF") << "\n"
                << "nfo_in_post = " << (_nfoInPost ? "ON" : "OFF") << "\n"
                << "nfo_password = " << (_nfoPassword ? "ON" : "OFF") << "\n"
-               << "auto_mode = " << _autoMode << "\n"
                << "nfo_media = " << (_nfoMedia ? "ON" : "OFF") << "\n"
                << (_mediaInfoPath.isEmpty() ? "#" : "") << "mediainfo_path = " << _mediaInfoPath << "\n"
                << (_nfoText.trimmed().isEmpty() ? "#" : "") << "nfo_text = " << QString(_nfoText).replace("\r", "").replace("\n", "\\n") << "\n"
@@ -3375,6 +3413,20 @@ void NgPost::saveConfig(bool quiet)
     else
         _error(tr("Error: Couldn't write default configuration file: %1").arg(conf));
 
+}
+
+bool NgPost::isPostedFolder(const QFileInfo &fi) const
+{
+    return PostedMover::isPostedFolder(_movePosted, fi);
+}
+
+void NgPost::setMovePosted(const QString &folder)
+{
+    _movePosted = folder;
+    if (_activeJob)
+        _activeJob->setMovePostedTo(folder);
+    for (PostingJob *job : _pendingJobs)
+        job->setMovePostedTo(folder);
 }
 
 void NgPost::setDelFilesAfterPosted(bool delFiles)

@@ -742,6 +742,26 @@ Voeg bestanden of mappen toe, of scan een map, en laat aangevinkt wat je wilt po
         <source>Watch one more folder while the watching is running</source>
         <translation>Een extra map bewaken terwijl de bewaking loopt</translation>
     </message>
+    <message>
+        <source>After posting:</source>
+        <translation>Na het posten:</translation>
+    </message>
+    <message>
+        <source>Do nothing with the files</source>
+        <translation>Niets doen met de bestanden</translation>
+    </message>
+    <message>
+        <source>Move them to a "Posted" folder</source>
+        <translation>Verplaats naar een map ‘Posted’</translation>
+    </message>
+    <message>
+        <source>Delete them</source>
+        <translation>Verwijderen</translation>
+    </message>
+    <message>
+        <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
+        <translation>Een naam als Posted maakt deze map naast elk bestand of elke map aan. Een volledig pad wordt zoals het is gebruikt. De bestanden worden alleen verplaatst als alles zonder fouten is gepost.</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3298,6 +3318,30 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
         <source>path of the MediaInfo program (default: automatic)</source>
         <translation>pad van het programma MediaInfo (standaard: automatisch)</translation>
     </message>
+    <message>
+        <source>move the file/folder to this folder once posted (a name like Posted is created next to each file/folder, a full path is used as it is). You must use --auto or --monitor with this option.</source>
+        <translation>verplaats het bestand/de map naar deze map na het posten (een naam als Posted wordt naast elk bestand/elke map aangemaakt, een volledig pad wordt zoals het is gebruikt). Je moet --auto of --monitor met deze optie gebruiken.</translation>
+    </message>
+    <message>
+        <source>Error syntax: --move_posted option is only available with --auto or --monitor</source>
+        <translation>Syntaxfout: de optie --move_posted is alleen beschikbaar met --auto of --monitor</translation>
+    </message>
+    <message>
+        <source>Error syntax: --rm_posted and --move_posted can&apos;t be used together</source>
+        <translation>Syntaxfout: --rm_posted en --move_posted kunnen niet samen worden gebruikt</translation>
+    </message>
+    <message>
+        <source>Ignoring the Posted folder %1</source>
+        <translation>De map Posted %1 wordt genegeerd</translation>
+    </message>
+    <message>
+        <source>## Auto Posting: last mode used (choose, scan or watch) and the folder where the posted files are moved</source>
+        <translation>## Auto Posting: laatst gebruikte modus (choose, scan of watch) en de map waarheen geposte bestanden worden verplaatst</translation>
+    </message>
+    <message>
+        <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
+        <translation>## (een naam als Posted wordt naast elk bestand/elke map aangemaakt, een volledig pad wordt zoals het is gebruikt; zonder wordt niets verplaatst)</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3880,6 +3924,18 @@ Gebruik --par2_pct of stel PAR2_PCT of PAR2_ARGS in het configuratiebestand in.<
     <message>
         <source>MediaInfo was not found: the NFO file has no media information</source>
         <translation>MediaInfo is niet gevonden: het NFO-bestand heeft geen media-informatie</translation>
+    </message>
+    <message>
+        <source>Moved the posted %1 %2 to %3</source>
+        <translation>Gepost %1 %2 verplaatst naar %3</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t move the posted %1: %2</source>
+        <translation>Kon %1 niet verplaatsen: %2</translation>
+    </message>
+    <message>
+        <source>The original files have NOT been moved because some Articles couldn&apos;t be posted.</source>
+        <translation>De originele bestanden zijn NIET verplaatst omdat sommige artikelen niet gepost konden worden.</translation>
     </message>
 </context>
 <context>

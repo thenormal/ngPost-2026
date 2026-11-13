@@ -96,6 +96,7 @@ SOURCES += \
         utils/MediaInfoReader.cpp \
         utils/PostProfile.cpp \
         utils/PostChecker.cpp \
+        utils/PostedMover.cpp \
         utils/NfoWriter.cpp \
         utils/Notifier.cpp \
         utils/Yenc.cpp
@@ -129,6 +130,7 @@ HEADERS += \
     utils/MediaInfoReader.h \
     utils/PostProfile.h \
     utils/PostChecker.h \
+    utils/PostedMover.h \
     utils/NfoWriter.h \
     utils/Notifier.h \
     utils/Macros.h \

@@ -25,7 +25,8 @@ When you press **Post the list** or **Start watching**, the program checks the s
 ## Tips
 
 - Use compression, random names, random passwords and par2: this is the usual setup for automated posting. The **Recommended** profile (menu **Profile**) sets it with one click.
-- You can choose to delete the files once posted (command line only, `--rm_posted`). Do it only when you are sure: the files are removed for good.
+- **After posting** (the row above the Post button): do nothing (default), move the files to a **"Posted" folder**, or delete them. The default name `Posted` creates that folder next to each file or folder; you can also choose another folder. Nothing is moved or deleted unless the post finished without error. A name already used in the folder is never overwritten: the file becomes `name (2)`. The scan and the folder watching ignore the "Posted" folder. Deleting is for good: use it only when you are sure.
+- On the command line the same choice is `--move_posted` or `--rm_posted` (see [Command line](10-command-line.md)).
 - The program remembers the last button you used.
 - For a NAS or a server without screen, the command line and the Docker image do the same job.
 

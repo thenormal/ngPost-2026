@@ -739,6 +739,26 @@ Adicione arquivos ou pastas, ou verifique uma pasta, e deixe marcado o que quise
         <source>Watch one more folder while the watching is running</source>
         <translation>Vigiar mais uma pasta enquanto a vigilância está ativa</translation>
     </message>
+    <message>
+        <source>After posting:</source>
+        <translation>Depois de publicar:</translation>
+    </message>
+    <message>
+        <source>Do nothing with the files</source>
+        <translation>Não fazer nada com os arquivos</translation>
+    </message>
+    <message>
+        <source>Move them to a "Posted" folder</source>
+        <translation>Movê-los para uma pasta «Posted»</translation>
+    </message>
+    <message>
+        <source>Delete them</source>
+        <translation>Excluí-los</translation>
+    </message>
+    <message>
+        <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
+        <translation>Um nome como Posted cria essa pasta ao lado de cada arquivo ou pasta. Um caminho completo é usado como está. Os arquivos só são movidos quando tudo foi publicado sem erros.</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3292,6 +3312,30 @@ OU use --par2_pct ou coloque PAR2_PCT ou PAR2_ARGS na configuração de arquivo.
         <source>path of the MediaInfo program (default: automatic)</source>
         <translation>caminho do programa MediaInfo (padrão: automático)</translation>
     </message>
+    <message>
+        <source>move the file/folder to this folder once posted (a name like Posted is created next to each file/folder, a full path is used as it is). You must use --auto or --monitor with this option.</source>
+        <translation>mover o arquivo/pasta para esta pasta depois de publicado (um nome como Posted é criado ao lado de cada arquivo/pasta, um caminho completo é usado como está). Você deve usar --auto ou --monitor com esta opção.</translation>
+    </message>
+    <message>
+        <source>Error syntax: --move_posted option is only available with --auto or --monitor</source>
+        <translation>Erro de sintaxe: a opção --move_posted só está disponível com --auto ou --monitor</translation>
+    </message>
+    <message>
+        <source>Error syntax: --rm_posted and --move_posted can&apos;t be used together</source>
+        <translation>Erro de sintaxe: --rm_posted e --move_posted não podem ser usados juntos</translation>
+    </message>
+    <message>
+        <source>Ignoring the Posted folder %1</source>
+        <translation>Ignorando a pasta Posted %1</translation>
+    </message>
+    <message>
+        <source>## Auto Posting: last mode used (choose, scan or watch) and the folder where the posted files are moved</source>
+        <translation>## Auto Posting: último modo usado (choose, scan ou watch) e pasta para onde os arquivos publicados são movidos</translation>
+    </message>
+    <message>
+        <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
+        <translation>## (um nome como Posted é criado ao lado de cada arquivo/pasta, um caminho completo é usado como está; sem ele nada é movido)</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3874,6 +3918,18 @@ OU use --par2_pct ou coloque PAR2_PCT ou PAR2_ARGS na configuração de arquivo.
     <message>
         <source>MediaInfo was not found: the NFO file has no media information</source>
         <translation>O MediaInfo não foi encontrado: o NFO não tem informações de mídia</translation>
+    </message>
+    <message>
+        <source>Moved the posted %1 %2 to %3</source>
+        <translation>%1 publicado %2 movido para %3</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t move the posted %1: %2</source>
+        <translation>Não foi possível mover %1: %2</translation>
+    </message>
+    <message>
+        <source>The original files have NOT been moved because some Articles couldn&apos;t be posted.</source>
+        <translation>Os arquivos originais NÃO foram movidos porque alguns artigos não puderam ser publicados.</translation>
     </message>
 </context>
 <context>

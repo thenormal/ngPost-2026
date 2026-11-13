@@ -33,7 +33,7 @@ Goal: the program should be simple for someone who opens it for the first time, 
 | Done | A ready profile, "Recommended for automatic posting" (compression, random name and password, par2 10 %), with the single settings under "Advanced options" |
 | Done | Checks in plain words before starting (for example: folders need compression), fixed with one click instead of an error message |
 | Done | Preview of what will be posted (sizes), with a box to leave an item out |
-| Planned | After posting, the user chooses: do nothing (default), **move to a "Posted" folder**, or delete the files |
+| Done | After posting, the user chooses: do nothing (default), **move to a "Posted" folder** (never overwrites, ignored by the scan and the watching; `--move_posted` and `move_posted` in the configuration file), or delete the files |
 | Planned | Items already in the history found by a one-time scan: one window lists them (name, date of the previous post) with a "Post again" box, off by default, instead of skipping them silently. The folder watching keeps skipping them with a line in the log |
 | Planned | State of the folder watching always visible (folder, how many posts today), with a pause button |
 | Planned | One list of the posts (state, progress, size, NZB, password) instead of one tab for each; if it turns out too big for this version it moves to 1.4 |

@@ -739,6 +739,26 @@ Add files or folders, or scan a folder, and keep checked what you want to post.<
         <source>Watch one more folder while the watching is running</source>
         <translation>在监视运行期间再监视一个文件夹</translation>
     </message>
+    <message>
+        <source>After posting:</source>
+        <translation>发布后：</translation>
+    </message>
+    <message>
+        <source>Do nothing with the files</source>
+        <translation>不处理文件</translation>
+    </message>
+    <message>
+        <source>Move them to a "Posted" folder</source>
+        <translation>移动到“Posted”文件夹</translation>
+    </message>
+    <message>
+        <source>Delete them</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <source>A name like Posted creates this folder next to each file or folder. A full path is used as it is. The files are moved only when everything is posted without error.</source>
+        <translation>像 Posted 这样的名称会在每个文件或文件夹旁边创建该文件夹；完整路径则按原样使用。只有全部无错误发布后才会移动文件。</translation>
+    </message>
 </context>
 <context>
     <name>FileUploader</name>
@@ -3293,6 +3313,30 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
         <source>path of the MediaInfo program (default: automatic)</source>
         <translation>MediaInfo 程序的路径（默认：自动）</translation>
     </message>
+    <message>
+        <source>move the file/folder to this folder once posted (a name like Posted is created next to each file/folder, a full path is used as it is). You must use --auto or --monitor with this option.</source>
+        <translation>发布后将文件/文件夹移动到此文件夹（像 Posted 这样的名称会在每个文件/文件夹旁边创建，完整路径则按原样使用）。此选项必须与 --auto 或 --monitor 一起使用。</translation>
+    </message>
+    <message>
+        <source>Error syntax: --move_posted option is only available with --auto or --monitor</source>
+        <translation>语法错误：--move_posted 选项仅可与 --auto 或 --monitor 一起使用</translation>
+    </message>
+    <message>
+        <source>Error syntax: --rm_posted and --move_posted can&apos;t be used together</source>
+        <translation>语法错误：--rm_posted 和 --move_posted 不能同时使用</translation>
+    </message>
+    <message>
+        <source>Ignoring the Posted folder %1</source>
+        <translation>忽略 Posted 文件夹 %1</translation>
+    </message>
+    <message>
+        <source>## Auto Posting: last mode used (choose, scan or watch) and the folder where the posted files are moved</source>
+        <translation>## Auto Posting：上次使用的模式（choose、scan 或 watch）以及已发布文件的移动目标文件夹</translation>
+    </message>
+    <message>
+        <source>## (a name like Posted is created next to each file/folder, a full path is used as it is; without it nothing is moved)</source>
+        <translation>## （像 Posted 这样的名称会在每个文件/文件夹旁边创建，完整路径按原样使用；不设置则不移动任何内容）</translation>
+    </message>
 </context>
 <context>
     <name>NntpCheckCon</name>
@@ -3875,6 +3919,18 @@ Either use --par2_pct or set PAR2_PCT or PAR2_ARGS in the config file.</source>
     <message>
         <source>MediaInfo was not found: the NFO file has no media information</source>
         <translation>未找到 MediaInfo：NFO 文件没有媒体信息</translation>
+    </message>
+    <message>
+        <source>Moved the posted %1 %2 to %3</source>
+        <translation>已将已发布的%1 %2 移动到 %3</translation>
+    </message>
+    <message>
+        <source>Couldn&apos;t move the posted %1: %2</source>
+        <translation>无法移动 %1：%2</translation>
+    </message>
+    <message>
+        <source>The original files have NOT been moved because some Articles couldn&apos;t be posted.</source>
+        <translation>由于部分文章无法发布，原始文件未被移动。</translation>
     </message>
 </context>
 <context>

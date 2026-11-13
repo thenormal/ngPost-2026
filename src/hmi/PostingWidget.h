@@ -72,6 +72,8 @@ private:
     void _buildLayout();
     void _retranslateLayout();
     void _showAdvanced(bool show);
+    bool    _afterAct = false;
+    QString _afterMoveTo;
     bool _checkBeforePosting(const QFileInfoList &files, bool hasFolder); //!< checks (and fixes) before a post started with the button
     bool _applyFix(PostChecker::Code code); //!< false: the user has to continue elsewhere (the post is cancelled)
     void _updateReleaseInfo();
@@ -88,6 +90,8 @@ public:
 
     void init();
     void genNameAndPassword(bool genName, bool genPass, bool doPar2, bool useRarMax);
+    //! what to do with the original files once posted (Auto Posting): nothing, delete them, or move them to \a moveTo
+    void setAfterPost(bool act, const QString &moveTo) { _afterAct = act; _afterMoveTo = moveTo; }
     inline uint jobNumber() const;
 
     void handleDropEvent(QDropEvent *e);

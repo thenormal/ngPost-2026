@@ -37,6 +37,8 @@ class AutoPostWidget;
 class QLabel;
 class QPushButton;
 class QFrame;
+class QComboBox;
+class QLineEdit;
 class QTimer;
 
 class AutoPostWidget : public QWidget
@@ -66,6 +68,12 @@ private:
     QFrame             *_sourceCard;
     QFrame             *_monitorCard;
     QLabel             *_summary;
+    // after posting: nothing / move to "Posted" / delete
+    QLabel             *_afterTitle;
+    QComboBox          *_afterCombo;
+    QLineEdit          *_postedEdit;
+    QPushButton        *_postedButton;
+    QWidget            *_afterCard;
     QTimer             *_sizeTimer;
     static constexpr int sSizeRole = Qt::UserRole + 2; //!< size in bytes of a list item (-1: not computed yet)
     void _setMode(Mode mode);
@@ -100,6 +108,7 @@ public:
     void updateFinishedJob(const QString &path, uint nbArticles, uint nbUploaded, uint nbFailed);
 
     bool deleteFilesOncePosted() const;
+    QString movePostedTo() const;     //!< folder "Posted" (empty: the files are not moved)
 
     void retranslate();
 
@@ -118,7 +127,8 @@ private slots:
     void onSelectAutoDirClicked();
     void onScanAutoDirClicked();
     void onMonitoringClicked();
-    void onDelFilesToggled(bool checked);
+    void onAfterPostChanged();
+    void onPostedFolderClicked();
     void onAddMonitoringFolder();
     void onCompressToggled(bool checked);
     void onGenPar2Toggled(bool checked);
